@@ -3,108 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | DGXEN</title>
+    <title>DGXEN | Admin Control</title>
     <style>
-        :root { --bg: #000000; --card: #121212; --text: #ffffff; --accent: #00ff88; --error: #ff4444; }
+        :root {
+            --bg: #050505;
+            --card-bg: rgba(15, 15, 15, 0.8);
+            --text: #ffffff;
+            --accent: #00ff88;
+            --error: #ff4d4d;
+            --warn: #ffae00;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        body { 
-            background-color: var(--bg); color: var(--text); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
-            padding: 20px; margin: 0;
+        body {
+            background: radial-gradient(circle at top, #111 0%, #000 100%);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .container { max-width: 900px; margin: 40px auto; }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        .header h1 { color: var(--accent); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; }
+        .header p { color: #888; font-size: 14px; margin-top: 5px; }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* --- Master Key Section --- */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-card h2 { font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+
+        .input-group { display: flex; gap: 10px; }
+        input[type="text"] {
+            flex: 1; padding: 12px 15px; background: rgba(0,0,0,0.5); border: 1px solid #333;
+            color: white; border-radius: 8px; outline: none; font-family: monospace; font-size: 16px;
+        }
+        input[type="text"]:focus { border-color: var(--accent); }
+
+        .btn {
+            padding: 12px 20px; background: var(--accent); color: #000; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); background: #ffffff; }
         
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 24px; }
+        .btn-ban { background: var(--warn); }
+        .btn-unban { background: var(--accent); }
+        .btn-delete { background: var(--error); color: white; }
 
-        .card { 
-            background: var(--card); border: 1px solid #222; border-radius: 20px; 
-            padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        /* --- User List Section --- */
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        h2 { color: var(--accent); margin-top: 0; font-size: 18px; margin-bottom: 20px; }
-
-        /* Inputs & Buttons */
-        .input-group { display: flex; gap: 15px; margin-bottom: 10px; }
-        input { 
-            flex-grow: 1; padding: 15px; background: #000; border: 1px solid #333; 
-            color: white; border-radius: 12px; font-size: 16px; 
+        .user-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            position: relative;
+            transition: 0.3s;
         }
-        input:focus { outline: none; border-color: var(--accent); }
+        .user-card:hover { border-color: rgba(255,255,255,0.2); }
+
+        .user-card.banned { border-color: var(--error); background: rgba(30, 5, 5, 0.9); }
         
-        .btn { 
-            padding: 15px 25px; background: #fff; color: #000; border: none; 
-            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; 
-        }
-        .btn:hover { background: var(--accent); transform: scale(1.02); }
-
-        /* Table Styles */
-        .table-wrapper { overflow-x: auto; background: #000; border-radius: 12px; border: 1px solid #222; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; }
-        th { color: #888; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; background: #0a0a0a; }
-        tr:hover { background: #1a1a1a; }
+        .user-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--accent); }
+        .banned .user-name { color: var(--error); }
         
-        .status-badge { 
-            padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase;
-        }
-        .status-active { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent); }
-        .status-banned { background: rgba(255, 68, 68, 0.1); color: var(--error); border: 1px solid var(--error); }
+        .user-id { font-size: 11px; color: #666; font-family: monospace; word-break: break-all; margin-bottom: 15px; }
+        .user-date { font-size: 12px; color: #888; position: absolute; top: 15px; right: 15px; }
 
-        .action-btn { 
-            padding: 8px 15px; border: none; border-radius: 8px; font-weight: bold; 
-            cursor: pointer; font-size: 12px; transition: 0.2s;
-        }
-        .ban-btn { background: var(--error); color: white; }
-        .ban-btn:hover { background: #cc0000; }
-        .unban-btn { background: #444; color: white; }
-        .unban-btn:hover { background: #666; }
+        .action-buttons { display: flex; gap: 8px; }
+        .action-buttons button { flex: 1; padding: 8px; font-size: 13px; border-radius: 6px; }
 
-        .user-count { float: right; color: #888; font-size: 14px; font-weight: normal; }
+        #statusMsg { text-align: center; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div class="container">
     <div class="header">
-        <h1>DGXEN Admin Control</h1>
+        <h1>DGXEN Admin</h1>
+        <p>Security & Access Control Panel</p>
     </div>
 
-    <!-- MASTER KEY SECTION -->
-    <div class="card">
-        <h2>Update Universal Master Key</h2>
-        <div class="input-group">
-            <input type="text" id="masterKeyInput" placeholder="Enter new master key (e.g. DGXEN-VIP-100)">
-            <button class="btn" onclick="updateMasterKey()">SET KEY</button>
-        </div>
-        <div id="keyStatus" style="font-size: 13px; color: #888; margin-top: 10px;">
-            Current Master Key: <span id="currentKeyDisplay" style="color: white; font-weight: bold;">Loading...</span>
-        </div>
-    </div>
-
-    <!-- USER MANAGEMENT SECTION -->
-    <div class="card">
-        <h2>
-            User Management 
-            <span class="user-count">Total Users: <b id="totalUsersCount" style="color:white;">0</b></span>
-        </h2>
+    <div class="container">
         
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Device ID</th>
-                        <th>Joined Date</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <tr><td colspan="5" style="text-align: center; color: #666;">Loading users...</td></tr>
-                </tbody>
-            </table>
+        <!-- Master Key Control -->
+        <div class="section-card">
+            <h2>Set Master VIP Key</h2>
+            <div class="input-group">
+                <input type="text" id="masterKeyInput" placeholder="Enter new master key (e.g., DGXEN-VIP-1)">
+                <button class="btn" onclick="updateMasterKey()">UPDATE KEY</button>
+            </div>
+            <div id="statusMsg"></div>
+        </div>
+
+        <!-- Users Management -->
+        <div class="section-card">
+            <h2>Registered Devices (<span id="userCount">0</span>)</h2>
+            <div class="user-grid" id="userList">
+                <!-- User cards will load here -->
+                <p style="color: #666;">Loading users...</p>
+            </div>
+        </div>
+
+    </div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // --- Master Key Logic ---
+    window.updateMasterKey = async function() {
+        const newKey = document.getElementById('masterKeyInput').value.trim();
+        const msg = document.getElementById('statusMsg');
+        
+        if(!newKey) {
+            msg.style.color = "var(--error)";
+            msg.innerText = "Key cannot be empty!";
+            return;
+        }
+
+        try {
+            await set(ref(db, 'settings/masterKey'), newKey);
+            msg.style.color = "var(--accent)";
+            msg.innerText = "Master Key Updated Successfully!";
+            setTimeout(() => msg.innerText = "", 3000);
+        } catch(e) {
+            msg.style.color = "var(--error)";
+            msg.innerText = "Failed to update key.";
+        }
+    }
+
+    // Fetch existing Master Key on load
+    get(ref(db, 'settings/masterKey')).then((snapshot) => {
+        if(snapshot.exists()) {
+            document.getElementById('masterKeyInput').value = snapshot.val();
+        }
+    });
+
+    // --- User Management Logic ---
+    const usersRef = ref(db, 'users');
+
+    onValue(usersRef, (snapshot) => {
+        const userListDiv = document.getElementById('userList');
+        const userCountSpan = document.getElementById('userCount');
+        userListDiv.innerHTML = ''; 
+
+        if (!snapshot.exists()) {
+            userListDiv.innerHTML = '<p style="color: #666;">No users found. Database is clean.</p>';
+            userCountSpan.innerText = "0";
+            return;
+        }
+
+        const data = snapshot.val();
+        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        
+        // Sort newest first
+        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
+        
+        userCountSpan.innerText = users.length;
+
+        users.forEach(user => {
+            const isBanned = user.status === 'banned';
+            const dateStr = new Date(user.joined).toLocaleDateString();
+
+            const card = document.createElement('div');
+            card.className = `user-card ${isBanned ? 'banned' : ''}`;
+            
+            card.innerHTML = `
+                <div class="user-date">${dateStr}</div>
+                <div class="user-name">${user.name}</div>
+                <div class="user-id">ID: ${user.id}</div>
+                <div class="action-buttons">
+                    <button class="btn ${isBanned ? 'btn-unban' : 'btn-ban'}" 
+                        onclick="toggleBan('${user.id}', '${isBanned ? 'active' : 'banned'}')">
+                        ${isBanned ? 'UNBAN' : 'BAN'}
+                    </button>
+                    <button class="btn btn-delete" onclick="deleteUser('${user.id}')">DELETE</button>
+                </div>
+            `;
+            userListDiv.appendChild(card);
+        });
+    });
+
+    // Ban / Unban Function
+    window.toggleBan = async function(userId, newStatus) {
+        try {
+            await set(ref(db, 'users/' + userId + '/status'), newStatus);
+        } catch (error) {
+            alert("Error updating status!");
+        }
+    }
+
+    // Delete (Clean) Function
+    window.deleteUser = async function(userId) {
+        const confirmDelete = confirm("Are you sure you want to permanently delete this user? This will clean their data.");
+        if(confirmDelete) {
+            try {
+                await remove(ref(db, 'users/' + userId));
+            } catch (error) {
+                alert("Error deleting user!");
+            }
+        }
+    }
+</script>
+</body>
+</html>
         </div>
     </div>
 </div>
