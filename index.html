@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg: #050505;
-            --card-bg: rgba(15, 15, 15, 0.8);
+            --card-bg: rgba(15, 15, 15, 0.85);
             --text: #ffffff;
             --accent: #00ff88;
             --error: #ff4d4d;
@@ -17,29 +17,18 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            background: radial-gradient(circle at top, #111 0%, #000 100%);
+            background: radial-gradient(circle at center, #151515 0%, #000000 100%);
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-top: 20px;
-        }
-
-        .header h1 { color: var(--accent); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; }
+        .header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+        .header h1 { color: var(--accent); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
         .header p { color: #888; font-size: 14px; margin-top: 5px; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
+        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
 
         /* --- Master Key Section --- */
         .section-card {
@@ -47,28 +36,34 @@
             border: 1px solid rgba(0, 255, 136, 0.2);
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
         }
 
         .section-card h2 { font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
-        .input-group { display: flex; gap: 10px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
         input[type="text"] {
-            flex: 1; padding: 12px 15px; background: rgba(0,0,0,0.5); border: 1px solid #333;
-            color: white; border-radius: 8px; outline: none; font-family: monospace; font-size: 16px;
+            flex: 1; padding: 12px 15px; background: rgba(0,0,0,0.6); border: 1px solid #333;
+            color: var(--accent); border-radius: 8px; outline: none; font-family: monospace; font-size: 15px; font-weight: bold;
         }
-        input[type="text"]:focus { border-color: var(--accent); }
+        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
 
         .btn {
             padding: 12px 20px; background: var(--accent); color: #000; font-weight: bold;
             border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
         .btn:hover { transform: scale(1.05); background: #ffffff; }
-        
-        .btn-ban { background: var(--warn); }
-        .btn-unban { background: var(--accent); }
-        .btn-delete { background: var(--error); color: white; }
+
+        /* Master Key List */
+        .mk-list { display: flex; flex-direction: column; gap: 10px; }
+        .mk-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0, 0, 0, 0.4); border: 1px solid #222; padding: 12px 15px; border-radius: 8px;
+        }
+        .mk-text { color: var(--text); font-family: monospace; font-size: 15px; }
+        .mk-del { background: transparent; color: var(--error); border: none; cursor: pointer; font-size: 18px; transition: 0.2s; }
+        .mk-del:hover { transform: scale(1.2); }
 
         /* --- User List Section --- */
         .user-grid {
@@ -82,24 +77,38 @@
             background: rgba(20, 20, 20, 0.9);
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 15px;
+            padding: 40px 15px 15px 15px; /* Top padding extra for the absolute buttons */
             position: relative;
             transition: 0.3s;
         }
         .user-card:hover { border-color: rgba(255,255,255,0.2); }
-
         .user-card.banned { border-color: var(--error); background: rgba(30, 5, 5, 0.9); }
         
         .user-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--accent); }
         .banned .user-name { color: var(--error); }
         
         .user-id { font-size: 11px; color: #666; font-family: monospace; word-break: break-all; margin-bottom: 15px; }
-        .user-date { font-size: 12px; color: #888; position: absolute; top: 15px; right: 15px; }
+        
+        .user-date { font-size: 12px; color: #888; position: absolute; top: 12px; left: 15px; }
+        
+        /* Trash Button at Top Right */
+        .trash-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            filter: grayscale(100%);
+        }
+        .trash-btn:hover { filter: grayscale(0%); transform: scale(1.1); }
 
-        .action-buttons { display: flex; gap: 8px; }
-        .action-buttons button { flex: 1; padding: 8px; font-size: 13px; border-radius: 6px; }
+        .btn-ban { background: var(--warn); width: 100%; border-radius: 6px; padding: 10px; }
+        .btn-unban { background: var(--accent); width: 100%; border-radius: 6px; padding: 10px; }
 
-        #statusMsg { text-align: center; margin-top: 10px; font-size: 14px; }
+        #statusMsg { text-align: center; margin-top: 10px; font-size: 14px; height: 20px; }
     </style>
 </head>
 <body>
@@ -111,22 +120,24 @@
 
     <div class="container">
         
-        <!-- Master Key Control -->
+        <!-- Master Keys Control -->
         <div class="section-card">
-            <h2>Set Master VIP Key</h2>
+            <h2>Manage Master Keys</h2>
             <div class="input-group">
-                <input type="text" id="masterKeyInput" placeholder="Enter new master key (e.g., DGXEN-VIP-1)">
-                <button class="btn" onclick="updateMasterKey()">UPDATE KEY</button>
+                <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
+                <button class="btn" onclick="addMasterKey()">ADD KEY</button>
             </div>
             <div id="statusMsg"></div>
+            <div class="mk-list" id="masterKeysList">
+                <p style="color: #666; text-align: center;">Loading keys...</p>
+            </div>
         </div>
 
         <!-- Users Management -->
         <div class="section-card">
             <h2>Registered Devices (<span id="userCount">0</span>)</h2>
             <div class="user-grid" id="userList">
-                <!-- User cards will load here -->
-                <p style="color: #666;">Loading users...</p>
+                <p style="color: #666; text-align: center;">Loading users...</p>
             </div>
         </div>
 
@@ -135,7 +146,7 @@
 <!-- Firebase SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, set, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, remove, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/"
@@ -143,34 +154,49 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- Master Key Logic ---
-    window.updateMasterKey = async function() {
+    // --- Master Key Logic (Multi-Key Support) ---
+    const keysRef = ref(db, 'settings/masterKeys');
+
+    onValue(keysRef, (snapshot) => {
+        const listDiv = document.getElementById('masterKeysList');
+        listDiv.innerHTML = '';
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            Object.keys(data).forEach(pushId => {
+                const keyStr = data[pushId];
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <span class="mk-text">${keyStr}</span>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}')">🗑️</button>
+                    </div>
+                `;
+            });
+        } else {
+            listDiv.innerHTML = '<p style="color: #666; text-align: center;">No Master Keys setup yet.</p>';
+        }
+    });
+
+    window.addMasterKey = async function() {
         const newKey = document.getElementById('masterKeyInput').value.trim();
         const msg = document.getElementById('statusMsg');
-        
         if(!newKey) {
-            msg.style.color = "var(--error)";
-            msg.innerText = "Key cannot be empty!";
-            return;
+            msg.style.color = "var(--error)"; msg.innerText = "Key cannot be empty!"; return;
         }
-
         try {
-            await set(ref(db, 'settings/masterKey'), newKey);
-            msg.style.color = "var(--accent)";
-            msg.innerText = "Master Key Updated Successfully!";
-            setTimeout(() => msg.innerText = "", 3000);
+            await push(ref(db, 'settings/masterKeys'), newKey);
+            document.getElementById('masterKeyInput').value = '';
+            msg.style.color = "var(--accent)"; msg.innerText = "Key Added!";
+            setTimeout(() => msg.innerText = "", 2000);
         } catch(e) {
-            msg.style.color = "var(--error)";
-            msg.innerText = "Failed to update key.";
+            msg.style.color = "var(--error)"; msg.innerText = "Failed to add key.";
         }
     }
 
-    // Fetch existing Master Key on load
-    get(ref(db, 'settings/masterKey')).then((snapshot) => {
-        if(snapshot.exists()) {
-            document.getElementById('masterKeyInput').value = snapshot.val();
+    window.deleteMasterKey = async function(pushId) {
+        if(confirm("Delete this master key? Users with this key will instantly lose access.")) {
+            await remove(ref(db, 'settings/masterKeys/' + pushId));
         }
-    });
+    }
 
     // --- User Management Logic ---
     const usersRef = ref(db, 'users');
@@ -181,7 +207,7 @@
         userListDiv.innerHTML = ''; 
 
         if (!snapshot.exists()) {
-            userListDiv.innerHTML = '<p style="color: #666;">No users found. Database is clean.</p>';
+            userListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1; text-align: center;">Database is clean.</p>';
             userCountSpan.innerText = "0";
             return;
         }
@@ -189,35 +215,36 @@
         const data = snapshot.val();
         const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
         
-        // Sort newest first
-        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
-        
+        users.sort((a, b) => new Date(b.joined) - new Date(a.joined)); // Newest first
         userCountSpan.innerText = users.length;
 
         users.forEach(user => {
             const isBanned = user.status === 'banned';
             const dateStr = new Date(user.joined).toLocaleDateString();
 
+            // TRASH BUTTON LOGIC: Sirf tab render hoga jab user banned hoga
+            const trashButtonHTML = isBanned ? 
+                `<button class="trash-btn" title="Permanently Delete User" onclick="deleteUser('${user.id}')">🗑️</button>` : '';
+
             const card = document.createElement('div');
             card.className = `user-card ${isBanned ? 'banned' : ''}`;
             
             card.innerHTML = `
+                ${trashButtonHTML}
                 <div class="user-date">${dateStr}</div>
                 <div class="user-name">${user.name}</div>
                 <div class="user-id">ID: ${user.id}</div>
-                <div class="action-buttons">
+                <div style="display: flex;">
                     <button class="btn ${isBanned ? 'btn-unban' : 'btn-ban'}" 
-                        onclick="toggleBan('${user.id}', '${isBanned ? 'active' : 'banned'}')">
-                        ${isBanned ? 'UNBAN' : 'BAN'}
+                        onclick="toggleBan('${user.id}', '${isBanned ? 'active' : 'banned'})'">
+                        ${isBanned ? 'UNBAN' : 'BAN USER'}
                     </button>
-                    <button class="btn btn-delete" onclick="deleteUser('${user.id}')">DELETE</button>
                 </div>
             `;
             userListDiv.appendChild(card);
         });
     });
 
-    // Ban / Unban Function
     window.toggleBan = async function(userId, newStatus) {
         try {
             await set(ref(db, 'users/' + userId + '/status'), newStatus);
@@ -226,125 +253,11 @@
         }
     }
 
-    // Delete (Clean) Function
     window.deleteUser = async function(userId) {
-        const confirmDelete = confirm("Are you sure you want to permanently delete this user? This will clean their data.");
+        const confirmDelete = confirm("Permanently delete this banned user?");
         if(confirmDelete) {
-            try {
-                await remove(ref(db, 'users/' + userId));
-            } catch (error) {
-                alert("Error deleting user!");
-            }
-        }
-    }
-</script>
-</body>
-</html>
-        </div>
-    </div>
-</div>
-
-<!-- Firebase SDK -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    // Linked directly to your Firebase
-    const firebaseConfig = {
-        databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // --- MASTER KEY LOGIC ---
-    const keyRef = ref(db, 'settings/masterKey');
-    
-    onValue(keyRef, (snapshot) => {
-        const key = snapshot.val();
-        document.getElementById('currentKeyDisplay').innerText = key ? key : "Not Set";
-    });
-
-    window.updateMasterKey = async function() {
-        const input = document.getElementById('masterKeyInput').value.trim();
-        
-        if (!input) {
-            alert("Key cannot be empty!");
-            return;
-        }
-
-        try {
-            await set(ref(db, 'settings/masterKey'), input);
-            document.getElementById('masterKeyInput').value = ""; 
-            alert("Master Key updated successfully! ✅");
-        } catch (error) {
-            alert("Error updating key: " + error.message);
-        }
-    }
-
-    // --- USER MANAGEMENT LOGIC ---
-    const usersRef = ref(db, 'users');
-
-    onValue(usersRef, (snapshot) => {
-        const users = snapshot.val();
-        const tbody = document.getElementById('userTableBody');
-        const countDisplay = document.getElementById('totalUsersCount');
-        
-        tbody.innerHTML = ""; 
-
-        if (!users) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">No users found.</td></tr>';
-            countDisplay.innerText = "0";
-            return;
-        }
-
-        const userIds = Object.keys(users);
-        countDisplay.innerText = userIds.length; 
-
-        userIds.forEach(id => {
-            const user = users[id];
-            const isBanned = user.status === 'banned';
-            
-            let dateStr = "Unknown";
-            if (user.joined) {
-                const dateObj = new Date(user.joined);
-                dateStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString();
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight: bold; color: white;">${user.name || 'Unknown'}</td>
-                <td style="color: #888; font-family: monospace; font-size: 12px;">${id.substring(0, 15)}...</td>
-                <td style="color: #888;">${dateStr}</td>
-                <td>
-                    <span class="status-badge ${isBanned ? 'status-banned' : 'status-active'}">
-                        ${isBanned ? 'Banned' : 'Active'}
-                    </span>
-                </td>
-                <td>
-                    <button class="action-btn ${isBanned ? 'unban-btn' : 'ban-btn'}" 
-                        onclick="toggleBan('${id}', '${user.status}')">
-                        ${isBanned ? 'UNBAN USER' : 'BAN DEVICE'}
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    });
-
-    window.toggleBan = async function(deviceId, currentStatus) {
-        const newStatus = currentStatus === 'active' ? 'banned' : 'active';
-        const confirmMsg = currentStatus === 'active' ? 
-            "Are you sure you want to BAN this user?" : "Are you sure you want to UNBAN this user?";
-
-        if(confirm(confirmMsg)) {
-            try {
-                await update(ref(db, 'users/' + deviceId), {
-                    status: newStatus
-                });
-            } catch (error) {
-                alert("Error updating status: " + error.message);
-            }
+            try { await remove(ref(db, 'users/' + userId)); } 
+            catch (error) { alert("Error deleting user!"); }
         }
     }
 </script>
