@@ -111,9 +111,10 @@
             <!-- NAYA: Expiry Control Panel -->
             <div class="section-box" style="border-color: var(--accent); background: rgba(0, 255, 136, 0.05);">
                 <h2>⏳ Global Key Expiry Control</h2>
-                <p style="color: var(--dim); font-size: 13px; margin-bottom: 15px;">Set how many hours a normal user's generated key will remain valid.</p>
+                <p style="color: var(--dim); font-size: 13px; margin-bottom: 15px;">Set how many hours a normal user's generated key will remain valid. (e.g., 1.5 for 1.5 hours)</p>
                 <div class="input-group">
-                    <input type="number" id="expiryHoursInput" placeholder="Enter hours (e.g. 4)" min="1">
+                    <!-- YAHAN FIX KIYA HAI: step="any" lagaya hai aur min="0.01" -->
+                    <input type="number" id="expiryHoursInput" placeholder="Enter hours (e.g. 0.5 or 4)" min="0.01" step="any">
                     <button class="btn" onclick="updateExpiryHours()">UPDATE EXPIRY</button>
                 </div>
                 <p style="font-size: 14px;">Current Expiry Time: <strong id="currentExpiryDisplay" style="color: var(--accent); font-size: 18px;">...</strong> <strong style="color: white;">Hours</strong></p>
@@ -257,7 +258,8 @@
     });
 
     window.updateExpiryHours = async function() {
-        const hrs = parseInt(document.getElementById('expiryHoursInput').value);
+        // YAHAN FIX KIYA HAI: parseFloat lagaya hai parseInt ki jagah
+        const hrs = parseFloat(document.getElementById('expiryHoursInput').value);
         if(hrs > 0) {
             await set(ref(db, 'settings/keyExpiryHours'), hrs);
             alert("✅ Key Expiry Time updated to " + hrs + " hours for all new keys!");
