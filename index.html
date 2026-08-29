@@ -180,6 +180,33 @@
         .btn-confirm:hover { background: #ff2519; box-shadow: 0 5px 15px rgba(255, 59, 48, 0.4); transform: translateY(-2px); }
         .btn-cancel { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); font-weight: 700; cursor: pointer; background: rgba(255,255,255,0.05); color: white; transition: 0.2s; }
         .btn-cancel:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        /* --- Floating Info Button --- */
+        .info-btn {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            color: var(--accent); font-size: 24px; font-weight: bold; font-family: monospace;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 100; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.15);
+        }
+        .info-btn:hover {
+            transform: scale(1.1) rotate(10deg); background: var(--accent); color: #000;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* --- Custom Guide Modal --- */
+        .guide-modal { max-width: 650px !important; max-height: 85vh; overflow-y: auto; text-align: left; padding: 40px !important; }
+        .guide-modal::-webkit-scrollbar { width: 8px; }
+        .guide-modal::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        .guide-modal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        .guide-section { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+        .guide-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .guide-section h3 { color: var(--accent); margin-bottom: 10px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .guide-section p { margin-bottom: 10px; font-size: 14px; color: #ddd; line-height: 1.6; }
+        .guide-section strong { color: white; }
     </style>
 </head>
 <body>
@@ -201,7 +228,6 @@
         <!-- 1. Analytics Dashboard -->
         <div id="dashboard" class="tab-section active">
             
-            <!-- NAYA: Expiry Control Panel -->
             <div class="section-box glass-panel" style="border-color: rgba(0, 255, 136, 0.3); box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.05), 0 16px 40px rgba(0, 0, 0, 0.4);">
                 <h2 style="color: var(--accent);">⏳ Global Key Expiry Control</h2>
                 <p>Set how many hours a normal user's generated key will remain valid. (e.g., 1.5 for 1.5 hours)</p>
@@ -274,7 +300,6 @@
                 </div>
             </div>
 
-            <!-- FACTORY RESET DANGER ZONE -->
             <div class="section-box glass-panel" style="border-color: rgba(255, 59, 48, 0.4); background: linear-gradient(135deg, rgba(255, 59, 48, 0.1), rgba(0,0,0,0));">
                 <h2 style="color: var(--error);">⚠️ Danger Zone: Website / Database Reset</h2>
                 <p>This will completely delete <strong>EVERYTHING</strong> in the database (all users, all master keys, banned keys, tracking data). The entire admin panel will start fresh.</p>
@@ -283,7 +308,44 @@
         </div>
     </div>
 
-    <!-- BAN MODAL (device ban) -->
+    <!-- FLOATING INFO BUTTON -->
+    <button class="info-btn" onclick="openGuideModal()">i</button>
+
+    <!-- USER GUIDE MODAL -->
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal guide-modal">
+            <h2 style="margin-bottom: 20px; text-align: center; color: var(--accent);">📖 DGXEN System Manual</h2>
+            
+            <div class="guide-section">
+                <h3>1. Global Key Expiry ⏳</h3>
+                <p>Controls the lifespan of every new key generated via the website. Input values in hours. <strong>Example:</strong> `2` = 2 Hours. `0.5` = 30 Minutes. Changes apply instantly to all keys generated *after* the update.</p>
+            </div>
+            
+            <div class="guide-section">
+                <h3>2. Master Keys 🔑</h3>
+                <p>Special bypass strings (e.g., `DGXEN-VIP-1`). Master Keys never expire and cannot be banned via the normal ban tool. <strong>Smart Tracker:</strong> Usage is counted per unique device. Sharing a master key will rapidly increase its usage count, allowing you to track leaks.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3>3. Ban Normal Keys 🚫</h3>
+                <p>Use this to blacklist a specific auto-generated key (Format: `DGXEN-XXXX-XXXX-XXXX-XXXX`). Once banned here, the key instantly stops working everywhere, even if its expiry time hasn't finished.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3>4. Device Tracking & User Bans 🟢🔴</h3>
+                <p>Every phone accessing the generator is assigned a hidden unique Device ID. <strong>Ban Device:</strong> Permanently blocks that phone from generating new keys OR using existing keys. <strong>Unbind (Delete):</strong> Removes their data entirely, allowing them to register fresh.</p>
+            </div>
+
+            <div class="guide-section">
+                <h3>5. Factory Reset ⚠️</h3>
+                <p>The nuclear option. Wipes the entire Firebase Realtime Database. All users, all keys, and all bans will be permanently erased. Proceed with extreme caution.</p>
+            </div>
+
+            <button class="btn-full bg-green" style="margin-top: 15px;" onclick="closeModals()">CLOSE MANUAL</button>
+        </div>
+    </div>
+
+    <!-- BAN MODAL -->
     <div class="modal-overlay" id="banModal">
         <div class="modal">
             <h2>Ban User</h2>
@@ -296,7 +358,7 @@
         </div>
     </div>
 
-    <!-- KEY BAN MODAL (normal key ban) -->
+    <!-- KEY BAN MODAL -->
     <div class="modal-overlay" id="keyBanModal">
         <div class="modal">
             <h2 style="color: var(--error);">Ban Key</h2>
@@ -309,7 +371,7 @@
         </div>
     </div>
 
-    <!-- FACTORY RESET 2-STEP CONFIRMATION MODAL -->
+    <!-- FACTORY RESET MODAL -->
     <div class="modal-overlay" id="resetModal">
         <div class="modal">
             <h2 id="resetModalTitle" style="color: var(--error);">⚠️ Factory Reset</h2>
@@ -330,7 +392,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Global variables
     let currentBanUserId = null;
     let pendingKeyToBan = null;
     let mkUsageData = {};
@@ -338,7 +399,7 @@
 
     // --- Key Expiry Control Logic ---
     onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
-        const hrs = snap.exists() ? snap.val() : 24; // Default 24 hours
+        const hrs = snap.exists() ? snap.val() : 24;
         document.getElementById('currentExpiryDisplay').innerText = hrs;
         document.getElementById('expiryHoursInput').value = hrs;
     });
@@ -407,7 +468,7 @@
         }
     }
 
-    // --- Ban / Unban Normal Keys Logic ---
+    // --- Ban Normal Keys Logic ---
     onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
         const listDiv = document.getElementById('bannedKeysList');
         listDiv.innerHTML = '';
@@ -523,6 +584,10 @@
     });
 
     // --- Modals & Actions ---
+    window.openGuideModal = () => {
+        document.getElementById('guideModal').style.display = 'flex';
+    }
+
     window.openBanModal = (userId) => {
         currentBanUserId = userId;
         document.getElementById('banReasonInput').value = '';
@@ -533,6 +598,7 @@
         document.getElementById('banModal').style.display = 'none';
         document.getElementById('resetModal').style.display = 'none';
         document.getElementById('keyBanModal').style.display = 'none';
+        document.getElementById('guideModal').style.display = 'none';
     }
 
     window.confirmBan = async function() {
@@ -562,7 +628,7 @@
         }
     }
 
-    // --- FACTORY RESET 2-STEP LOGIC ---
+    // --- FACTORY RESET LOGIC ---
     window.startFactoryReset = function() {
         resetStep = 1;
         document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)";
@@ -584,7 +650,7 @@
 
     async function wipeEntireDatabase() {
         try {
-            await remove(ref(db)); // Wipes the entire Firebase Realtime Database root node
+            await remove(ref(db));
             alert("Database successfully wiped! Everything is fresh.");
             location.reload();
         } catch (error) {
