@@ -25,30 +25,27 @@
         .nav-link { padding: 12px 15px; color: var(--dim); text-decoration: none; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .nav-link:hover, .nav-link.active { background: rgba(0, 255, 136, 0.1); color: var(--accent); }
 
-        .settings-btn {
-            margin-top: auto; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333;
-            color: white; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .settings-btn:hover { background: rgba(255,255,255,0.1); border-color: #555; }
-
         /* --- Main Content --- */
         .main-content { margin-left: 260px; padding: 40px; flex: 1; }
 
+        /* Tab Sections */
+        .tab-section { display: none; animation: fadeIn 0.4s ease; }
+        .tab-section.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         /* --- Dashboard Stats --- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .stat-card {
-            background: var(--card-bg); border: 1px solid #222; border-radius: 16px; padding: 20px;
-            text-align: center; backdrop-filter: blur(10px); transition: 0.3s;
-        }
+        .stat-card { background: var(--card-bg); border: 1px solid #222; border-radius: 16px; padding: 20px; text-align: center; backdrop-filter: blur(10px); transition: 0.3s; }
         .stat-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,255,136,0.1); }
         .stat-card h3 { color: var(--dim); font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .stat-card .val { font-size: 32px; font-weight: bold; color: white; }
         .stat-card .val.green { color: var(--accent); }
         .stat-card .val.red { color: var(--error); }
 
-        /* --- Sections --- */
-        .section { background: var(--card-bg); border: 1px solid #222; border-radius: 16px; padding: 25px; margin-bottom: 30px; }
-        .section h2 { font-size: 18px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); }
+        /* --- Sections & Cards --- */
+        .section-box { background: var(--card-bg); border: 1px solid #222; border-radius: 16px; padding: 25px; margin-bottom: 30px; }
+        .section-box h2 { font-size: 18px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; color: var(--accent); }
 
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
         input[type="text"] { flex: 1; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid #333; color: white; border-radius: 8px; outline: none; font-family: monospace; }
@@ -61,21 +58,24 @@
         .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 8px; }
         .mk-text { font-family: monospace; font-size: 15px; color: white; }
         .mk-usage { background: rgba(0,255,136,0.2); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-left: 10px; }
+        .mk-del { background: transparent; border: none; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .mk-del:hover { transform: scale(1.2); }
 
         /* Users Grid */
         .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-        .user-card { background: rgba(20, 20, 20, 0.9); border: 1px solid #333; border-radius: 12px; padding: 40px 15px 15px; position: relative; transition: 0.3s; }
+        .user-card { background: rgba(20, 20, 20, 0.9); border: 1px solid #333; border-radius: 12px; padding: 40px 15px 15px; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
         .user-card.banned { border-color: var(--error); background: rgba(30, 5, 5, 0.9); }
         .user-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--accent); }
         .banned .user-name { color: var(--error); }
-        .user-id { font-size: 11px; color: #666; font-family: monospace; word-break: break-all; margin-bottom: 15px; }
+        .user-id { font-size: 11px; color: #666; font-family: monospace; word-break: break-all; margin-bottom: auto; padding-bottom: 15px; }
         .user-date { font-size: 12px; color: #888; position: absolute; top: 12px; left: 15px; }
-        .trash-btn, .mk-del { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 20px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
-        .mk-del { position: static; filter: none; }
+        .trash-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 20px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; }
         .trash-btn:hover { filter: grayscale(0%); transform: scale(1.1); }
+        
         .btn-full { width: 100%; border-radius: 6px; padding: 12px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
         .btn-full:active { transform: scale(0.95); }
-        .bg-warn { background: var(--warn); color: black; } .bg-green { background: var(--accent); color: black; }
+        .bg-warn { background: var(--warn); color: black; } 
+        .bg-green { background: var(--accent); color: black; }
 
         /* --- Modals (Popup) --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 999; }
@@ -85,7 +85,6 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
         .btn-cancel { background: #333; color: white; } .btn-confirm { background: var(--error); color: white; }
-        
     </style>
 </head>
 <body>
@@ -93,38 +92,65 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <h1>DGXEN</h1>
-        <div class="nav-link active">Dashboard</div>
-        <div class="nav-link" onclick="document.getElementById('keys-section').scrollIntoView({behavior: 'smooth'})">Master Keys</div>
-        <div class="nav-link" onclick="document.getElementById('users-section').scrollIntoView({behavior: 'smooth'})">User Management</div>
-        
-        <button class="settings-btn" onclick="openSettingsModal()">⚙️ Device Settings</button>
+        <div class="nav-link active" onclick="switchTab('dashboard', this)">📊 Dashboard</div>
+        <div class="nav-link" onclick="switchTab('keys', this)">🔑 Master Keys</div>
+        <div class="nav-link" onclick="switchTab('active-users', this)">🟢 Active Users</div>
+        <div class="nav-link" onclick="switchTab('banned-users', this)">🔴 Banned Users</div>
+        <div class="nav-link" onclick="switchTab('reset-device', this)">⚙️ Device Reset</div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         
-        <!-- Analytics Dashboard -->
-        <div class="stats-grid">
-            <div class="stat-card"><h3>Total Devices</h3><div class="val" id="stat-total">0</div></div>
-            <div class="stat-card"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
-            <div class="stat-card"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
-            <div class="stat-card"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
-        </div>
-
-        <!-- Master Keys -->
-        <div class="section" id="keys-section">
-            <h2>Manage Master Keys</h2>
-            <div class="input-group">
-                <input type="text" id="masterKeyInput" placeholder="Add new master key...">
-                <button class="btn" onclick="addMasterKey()">ADD KEY</button>
+        <!-- 1. Analytics Dashboard -->
+        <div id="dashboard" class="tab-section active">
+            <div class="stats-grid">
+                <div class="stat-card"><h3>Total Devices</h3><div class="val" id="stat-total">0</div></div>
+                <div class="stat-card"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
+                <div class="stat-card"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
+                <div class="stat-card"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
             </div>
-            <div class="mk-list" id="masterKeysList">Loading keys...</div>
         </div>
 
-        <!-- Users Management -->
-        <div class="section" id="users-section">
-            <h2>Registered Devices</h2>
-            <div class="user-grid" id="userList">Loading users...</div>
+        <!-- 2. Master Keys -->
+        <div id="keys" class="tab-section">
+            <div class="section-box">
+                <h2>Manage Master Keys</h2>
+                <div class="input-group">
+                    <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
+                    <button class="btn" onclick="addMasterKey()">ADD KEY</button>
+                </div>
+                <div class="mk-list" id="masterKeysList">Loading keys...</div>
+            </div>
+        </div>
+
+        <!-- 3. Active Users -->
+        <div id="active-users" class="tab-section">
+            <div class="section-box">
+                <h2>Active Registered Devices</h2>
+                <div class="user-grid" id="activeUserList">Loading users...</div>
+            </div>
+        </div>
+
+        <!-- 4. Banned Users -->
+        <div id="banned-users" class="tab-section">
+            <div class="section-box" style="border-color: rgba(255, 77, 77, 0.3);">
+                <h2 style="color: var(--error);">Banned Devices Database</h2>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">Review, Unban, or Permanently Delete these devices.</p>
+                <div class="user-grid" id="bannedUserList">Loading banned users...</div>
+            </div>
+        </div>
+
+        <!-- 5. Device Reset Section -->
+        <div id="reset-device" class="tab-section">
+            <div class="section-box">
+                <h2>Manual Device Reset / Unbind</h2>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">Paste a specific Device ID here to completely wipe it from the database. The user will be required to register their name again.</p>
+                <div class="input-group">
+                    <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
+                    <button class="btn" style="background: var(--error); color: white;" onclick="resetDevice()">UNBIND DEVICE</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -141,19 +167,6 @@
         </div>
     </div>
 
-    <!-- SETTINGS / RESET MODAL -->
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal">
-            <h2 style="color: var(--accent);">Device Reset / Unbind</h2>
-            <p>Enter Device ID to permanently unbind and delete it.</p>
-            <input type="text" id="resetIdInput" placeholder="Paste Device ID here..." style="width: 100%; margin-bottom: 0;">
-            <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeModals()">Cancel</button>
-                <button class="btn-confirm" onclick="resetDevice()">UNBIND DEVICE</button>
-            </div>
-        </div>
-    </div>
-
 <!-- Firebase SDK -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -163,16 +176,23 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Global variables for Modals
+    // Global variables
     let currentBanUserId = null;
     let mkUsageData = {};
 
-    // Listen for Master Key Usage Stats
+    // --- UI Tabs Logic ---
+    window.switchTab = function(tabId, el) {
+        document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // --- Master Key Logic (Wipe Usage Fix Included) ---
     onValue(ref(db, 'settings/mkUsage'), (snap) => {
         if(snap.exists()) mkUsageData = snap.val();
     });
 
-    // --- Master Key Logic ---
     onValue(ref(db, 'settings/masterKeys'), (snapshot) => {
         const listDiv = document.getElementById('masterKeysList');
         listDiv.innerHTML = '';
@@ -183,14 +203,14 @@
             
             keys.forEach(pushId => {
                 const keyStr = data[pushId];
-                const usageCount = mkUsageData[keyStr] || 0; // Fetch usage!
+                const usageCount = mkUsageData[keyStr] || 0; 
                 listDiv.innerHTML += `
                     <div class="mk-item">
                         <div>
                             <span class="mk-text">${keyStr}</span>
                             <span class="mk-usage">Used: ${usageCount}</span>
                         </div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}')">🗑️</button>
+                        <button class="mk-del" title="Delete Key & Data" onclick="deleteMasterKey('${pushId}', '${keyStr}')">🗑️</button>
                     </div>
                 `;
             });
@@ -206,18 +226,28 @@
         await push(ref(db, 'settings/masterKeys'), newKey);
         document.getElementById('masterKeyInput').value = '';
     }
-    window.deleteMasterKey = async function(pushId) {
-        if(confirm("Delete this master key?")) await remove(ref(db, 'settings/masterKeys/' + pushId));
+
+    window.deleteMasterKey = async function(pushId, keyStr) {
+        if(confirm("Delete this master key? Its usage data will also be cleared.")) {
+            await remove(ref(db, 'settings/masterKeys/' + pushId));
+            await remove(ref(db, 'settings/mkUsage/' + keyStr)); // Data Wipe
+        }
     }
 
-    // --- User Management Logic ---
+    // --- User Management Logic (Split into Active & Banned) ---
     onValue(ref(db, 'users'), (snapshot) => {
-        const userListDiv = document.getElementById('userList');
-        userListDiv.innerHTML = ''; 
+        const activeListDiv = document.getElementById('activeUserList');
+        const bannedListDiv = document.getElementById('bannedUserList');
+        
+        activeListDiv.innerHTML = ''; 
+        bannedListDiv.innerHTML = ''; 
+
         if (!snapshot.exists()) {
             document.getElementById('stat-total').innerText = 0;
             document.getElementById('stat-active').innerText = 0;
             document.getElementById('stat-banned').innerText = 0;
+            activeListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No active users.</p>';
+            bannedListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No banned users.</p>';
             return;
         }
 
@@ -225,39 +255,48 @@
         const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
         users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
 
+        let activeCount = 0;
         let bannedCount = 0;
         
         users.forEach(user => {
             const isBanned = user.status === 'banned';
-            if(isBanned) bannedCount++;
-            
             const dateStr = new Date(user.joined).toLocaleDateString();
-            const trashBtn = isBanned ? `<button class="trash-btn" onclick="deleteUser('${user.id}')">🗑️</button>` : '';
 
-            const card = document.createElement('div');
-            card.className = `user-card ${isBanned ? 'banned' : ''}`;
-            card.innerHTML = `
-                ${trashBtn}
-                <div class="user-date">${dateStr}</div>
-                <div class="user-name">${user.name}</div>
-                <div class="user-id">ID: ${user.id}</div>
-                ${user.banReason ? `<p style="font-size:11px; color:#ff4d4d; margin-bottom:10px;">"${user.banReason}"</p>` : ''}
-                <button class="btn-full ${isBanned ? 'bg-green' : 'bg-warn'}" 
-                    onclick="${isBanned ? `unbanUser('${user.id}')` : `openBanModal('${user.id}')`}">
-                    ${isBanned ? 'UNBAN DEVICE' : 'BAN DEVICE'}
-                </button>
-            `;
-            userListDiv.appendChild(card);
+            if(isBanned) {
+                bannedCount++;
+                bannedListDiv.innerHTML += `
+                    <div class="user-card banned">
+                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')">🗑️</button>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name">${user.name}</div>
+                        <div class="user-id">ID: ${user.id}</div>
+                        ${user.banReason ? `<p style="font-size:11px; color:#ff4d4d; margin-bottom:15px; font-style:italic;">Reason: "${user.banReason}"</p>` : ''}
+                        <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
+                    </div>
+                `;
+            } else {
+                activeCount++;
+                activeListDiv.innerHTML += `
+                    <div class="user-card">
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name">${user.name}</div>
+                        <div class="user-id">ID: ${user.id}</div>
+                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>
+                `;
+            }
         });
+
+        if(activeCount === 0) activeListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No active users found.</p>';
+        if(bannedCount === 0) bannedListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No banned users found.</p>';
 
         // Update Dashboard Stats
         document.getElementById('stat-total').innerText = users.length;
-        document.getElementById('stat-active').innerText = users.length - bannedCount;
+        document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
     });
 
     // --- Modals & Actions ---
-    window.openSettingsModal = () => document.getElementById('settingsModal').style.display = 'flex';
     window.openBanModal = (userId) => {
         currentBanUserId = userId;
         document.getElementById('banReasonInput').value = '';
@@ -265,7 +304,6 @@
     }
     window.closeModals = () => {
         document.getElementById('banModal').style.display = 'none';
-        document.getElementById('settingsModal').style.display = 'none';
     }
 
     window.confirmBan = async function() {
@@ -273,19 +311,25 @@
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason });
         closeModals();
     }
+    
     window.unbanUser = async function(userId) {
         await update(ref(db, 'users/' + userId), { status: 'active', banReason: null });
     }
+    
     window.deleteUser = async function(userId) {
-        if(confirm("Permanently delete this user?")) await remove(ref(db, 'users/' + userId));
+        if(confirm("Permanently delete this user? They will have to register again.")) {
+            await remove(ref(db, 'users/' + userId));
+        }
     }
+    
     window.resetDevice = async function() {
         const id = document.getElementById('resetIdInput').value.trim();
         if(id) {
             await remove(ref(db, 'users/' + id));
-            alert("Device unbound successfully!");
-            closeModals();
+            alert("Device unbound successfully! If the user opens the generator, they will be prompted to register again.");
             document.getElementById('resetIdInput').value = '';
+        } else {
+            alert("Please enter a valid Device ID.");
         }
     }
 </script>
