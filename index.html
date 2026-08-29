@@ -53,7 +53,7 @@
         .btn { padding: 15px 25px; background: var(--accent); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .btn:hover { background: #fff; transform: scale(1.05); }
 
-        /* Master Key List */
+        /* Master Key List (also reused for banned-keys list) */
         .mk-list { display: flex; flex-direction: column; gap: 10px; }
         .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 15px; border-radius: 8px; }
         .mk-text { font-family: monospace; font-size: 15px; color: white; }
@@ -96,6 +96,7 @@
         <h1>DGXEN</h1>
         <div class="nav-link active" onclick="switchTab('dashboard', this)">📊 Dashboard</div>
         <div class="nav-link" onclick="switchTab('keys', this)">🔑 Master Keys</div>
+        <div class="nav-link" onclick="switchTab('ban-keys', this)">🚫 Ban Keys</div>
         <div class="nav-link" onclick="switchTab('active-users', this)">🟢 Active Users</div>
         <div class="nav-link" onclick="switchTab('banned-users', this)">🔴 Banned Users</div>
         <div class="nav-link" onclick="switchTab('reset-device', this)">⚙️ Device Reset</div>
@@ -111,6 +112,7 @@
                 <div class="stat-card"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
                 <div class="stat-card"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
                 <div class="stat-card"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
+                <div class="stat-card"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
             </div>
         </div>
 
@@ -126,7 +128,24 @@
             </div>
         </div>
 
-        <!-- 3. Active Users -->
+        <!-- 3. Ban Normal Keys -->
+        <div id="ban-keys" class="tab-section">
+            <div class="section-box" style="border-color: rgba(255, 77, 77, 0.3);">
+                <h2 style="color: var(--error);">Ban Normal Keys (UKM-XXXX Keys)</h2>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">
+                    Normal keys are generated on the user's device and are never stored anywhere until
+                    someone tries to unlock with one. Paste the exact key here to block it - it will stop
+                    working instantly even though it still looks like a valid key.
+                </p>
+                <div class="input-group">
+                    <input type="text" id="keyToBanInput" placeholder="e.g., UKM-AB12-CD34-EF56-GH78" style="font-family: monospace; text-transform: uppercase;">
+                    <button class="btn" style="background: var(--error); color: white;" onclick="openKeyBanModal()">BAN KEY</button>
+                </div>
+                <div class="mk-list" id="bannedKeysList">Loading banned keys...</div>
+            </div>
+        </div>
+
+        <!-- 4. Active Users -->
         <div id="active-users" class="tab-section">
             <div class="section-box">
                 <h2>Active Registered Devices</h2>
@@ -134,7 +153,7 @@
             </div>
         </div>
 
-        <!-- 4. Banned Users -->
+        <!-- 5. Banned Users -->
         <div id="banned-users" class="tab-section">
             <div class="section-box" style="border-color: rgba(255, 77, 77, 0.3);">
                 <h2 style="color: var(--error);">Banned Devices Database</h2>
@@ -143,7 +162,7 @@
             </div>
         </div>
 
-        <!-- 5. Device Reset & Factory Reset Section -->
+        <!-- 6. Device Reset & Factory Reset Section -->
         <div id="reset-device" class="tab-section">
             <div class="section-box">
                 <h2>Manual Device Reset / Unbind</h2>
@@ -157,13 +176,13 @@
             <!-- FACTORY RESET DANGER ZONE -->
             <div class="section-box" style="border-color: rgba(255, 77, 77, 0.5); background: rgba(30, 5, 5, 0.6);">
                 <h2 style="color: var(--error);">⚠️ Danger Zone: Website / Database Reset</h2>
-                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">This will completely delete <strong>EVERYTHING</strong> in the database (all users, all master keys, tracking data). The entire admin panel will start fresh.</p>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">This will completely delete <strong>EVERYTHING</strong> in the database (all users, all master keys, banned keys, tracking data). The entire admin panel will start fresh.</p>
                 <button class="btn" style="background: var(--error); color: white; width: 100%;" onclick="startFactoryReset()">WIPE ENTIRE DATABASE (FACTORY RESET)</button>
             </div>
         </div>
     </div>
 
-    <!-- BAN MODAL -->
+    <!-- BAN MODAL (device ban) -->
     <div class="modal-overlay" id="banModal">
         <div class="modal">
             <h2>Ban User</h2>
@@ -172,6 +191,19 @@
             <!-- Confirm left, Cancel right -->
             <div class="modal-btns">
                 <button class="btn-confirm" onclick="confirmBan()">CONFIRM</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KEY BAN MODAL (normal key ban) -->
+    <div class="modal-overlay" id="keyBanModal">
+        <div class="modal" style="border-color: var(--error);">
+            <h2 style="color: var(--error);">Ban Key</h2>
+            <p>Key: <span id="keyBanTarget" style="color: var(--accent); font-family: monospace;"></span></p>
+            <input type="text" id="keyBanReasonInput" placeholder="e.g., Key was shared/leaked publicly." style="width: 100%; margin-bottom: 0;">
+            <div class="modal-btns">
+                <button class="btn-confirm" onclick="confirmKeyBan()">CONFIRM</button>
                 <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
             </div>
         </div>
@@ -201,6 +233,7 @@
 
     // Global variables
     let currentBanUserId = null;
+    let pendingKeyToBan = null;
     let mkUsageData = {};
     let resetStep = 0;
 
@@ -255,6 +288,60 @@
         if(confirm("Delete this master key? Its usage data will also be cleared.")) {
             await remove(ref(db, 'settings/masterKeys/' + pushId));
             await remove(ref(db, 'settings/mkUsage/' + keyStr));
+        }
+    }
+
+    // --- Ban / Unban Normal Keys Logic ---
+    onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
+        const listDiv = document.getElementById('bannedKeysList');
+        listDiv.innerHTML = '';
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            document.getElementById('stat-banned-keys').innerText = keys.length;
+
+            keys.forEach(keyStr => {
+                const info = data[keyStr] || {};
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <div>
+                            <span class="mk-text" style="color: var(--error);">${keyStr}</span>
+                            ${info.reason ? `<div style="font-size:11px; color:#888; margin-top:4px;">Reason: "${info.reason}"</div>` : ''}
+                        </div>
+                        <button class="mk-del" title="Unban Key" onclick="unbanKey('${keyStr}')">✅</button>
+                    </div>
+                `;
+            });
+        } else {
+            document.getElementById('stat-banned-keys').innerText = "0";
+            listDiv.innerHTML = '<p style="color: #666;">No keys banned yet.</p>';
+        }
+    });
+
+    window.openKeyBanModal = function() {
+        const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
+        if (!key) return alert("Enter a key first!");
+        pendingKeyToBan = key;
+        document.getElementById('keyBanTarget').innerText = key;
+        document.getElementById('keyBanReasonInput').value = '';
+        document.getElementById('keyBanModal').style.display = 'flex';
+    }
+
+    window.confirmKeyBan = async function() {
+        if (!pendingKeyToBan) return;
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Banned by administrator.";
+        await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), {
+            reason: reason,
+            bannedAt: new Date().toISOString()
+        });
+        document.getElementById('keyToBanInput').value = '';
+        pendingKeyToBan = null;
+        closeModals();
+    }
+
+    window.unbanKey = async function(keyStr) {
+        if (confirm("Unban this key? It will work again immediately.")) {
+            await remove(ref(db, 'settings/bannedKeys/' + keyStr));
         }
     }
 
@@ -329,6 +416,7 @@
     window.closeModals = () => {
         document.getElementById('banModal').style.display = 'none';
         document.getElementById('resetModal').style.display = 'none';
+        document.getElementById('keyBanModal').style.display = 'none';
     }
 
     window.confirmBan = async function() {
