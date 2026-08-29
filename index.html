@@ -82,9 +82,11 @@
         .modal { background: #111; border: 1px solid #333; border-radius: 16px; padding: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
         .modal h2 { margin-bottom: 10px; color: white; }
         .modal p { color: var(--dim); font-size: 13px; margin-bottom: 20px; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-cancel { background: #333; color: white; } .btn-confirm { background: var(--error); color: white; }
+        
+        /* Modal Buttons: Left = Confirm, Right = Cancel */
+        .modal-btns { display: flex; flex-direction: row; gap: 10px; margin-top: 20px; }
+        .btn-confirm { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--error); color: white; }
+        .btn-cancel { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: #333; color: white; }
     </style>
 </head>
 <body>
@@ -141,15 +143,22 @@
             </div>
         </div>
 
-        <!-- 5. Device Reset Section -->
+        <!-- 5. Device Reset & Factory Reset Section -->
         <div id="reset-device" class="tab-section">
             <div class="section-box">
                 <h2>Manual Device Reset / Unbind</h2>
-                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">Paste a specific Device ID here to completely wipe it from the database. The user will be required to register their name again.</p>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
                     <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
                     <button class="btn" style="background: var(--error); color: white;" onclick="resetDevice()">UNBIND DEVICE</button>
                 </div>
+            </div>
+
+            <!-- FACTORY RESET DANGER ZONE -->
+            <div class="section-box" style="border-color: rgba(255, 77, 77, 0.5); background: rgba(30, 5, 5, 0.6);">
+                <h2 style="color: var(--error);">⚠️ Danger Zone: Website / Database Reset</h2>
+                <p style="color: var(--dim); font-size: 14px; margin-bottom: 20px;">This will completely delete <strong>EVERYTHING</strong> in the database (all users, all master keys, tracking data). The entire admin panel will start fresh.</p>
+                <button class="btn" style="background: var(--error); color: white; width: 100%;" onclick="startFactoryReset()">WIPE ENTIRE DATABASE (FACTORY RESET)</button>
             </div>
         </div>
     </div>
@@ -160,9 +169,23 @@
             <h2>Ban User</h2>
             <p>Enter a custom reason for this ban (User will see this).</p>
             <input type="text" id="banReasonInput" placeholder="e.g., Suspicious activity detected." style="width: 100%; margin-bottom: 0;">
+            <!-- Confirm left, Cancel right -->
             <div class="modal-btns">
-                <button class="btn-cancel" onclick="closeModals()">Cancel</button>
-                <button class="btn-confirm" onclick="confirmBan()">BAN USER</button>
+                <button class="btn-confirm" onclick="confirmBan()">CONFIRM</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FACTORY RESET 2-STEP CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal" style="border-color: var(--error);">
+            <h2 id="resetModalTitle" style="color: var(--error);">⚠️ Factory Reset</h2>
+            <p id="resetModalDesc">Are you sure you want to wipe everything?</p>
+            <!-- Confirm left, Cancel right -->
+            <div class="modal-btns">
+                <button class="btn-confirm" id="resetConfirmBtn">CONFIRM</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
             </div>
         </div>
     </div>
@@ -179,6 +202,7 @@
     // Global variables
     let currentBanUserId = null;
     let mkUsageData = {};
+    let resetStep = 0;
 
     // --- UI Tabs Logic ---
     window.switchTab = function(tabId, el) {
@@ -188,7 +212,7 @@
         document.getElementById(tabId).classList.add('active');
     }
 
-    // --- Master Key Logic (Wipe Usage Fix Included) ---
+    // --- Master Key Logic ---
     onValue(ref(db, 'settings/mkUsage'), (snap) => {
         if(snap.exists()) mkUsageData = snap.val();
     });
@@ -230,11 +254,11 @@
     window.deleteMasterKey = async function(pushId, keyStr) {
         if(confirm("Delete this master key? Its usage data will also be cleared.")) {
             await remove(ref(db, 'settings/masterKeys/' + pushId));
-            await remove(ref(db, 'settings/mkUsage/' + keyStr)); // Data Wipe
+            await remove(ref(db, 'settings/mkUsage/' + keyStr));
         }
     }
 
-    // --- User Management Logic (Split into Active & Banned) ---
+    // --- User Management Logic ---
     onValue(ref(db, 'users'), (snapshot) => {
         const activeListDiv = document.getElementById('activeUserList');
         const bannedListDiv = document.getElementById('bannedUserList');
@@ -290,7 +314,6 @@
         if(activeCount === 0) activeListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No active users found.</p>';
         if(bannedCount === 0) bannedListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1;">No banned users found.</p>';
 
-        // Update Dashboard Stats
         document.getElementById('stat-total').innerText = users.length;
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
@@ -302,8 +325,10 @@
         document.getElementById('banReasonInput').value = '';
         document.getElementById('banModal').style.display = 'flex';
     }
+    
     window.closeModals = () => {
         document.getElementById('banModal').style.display = 'none';
+        document.getElementById('resetModal').style.display = 'none';
     }
 
     window.confirmBan = async function() {
@@ -317,7 +342,7 @@
     }
     
     window.deleteUser = async function(userId) {
-        if(confirm("Permanently delete this user? They will have to register again.")) {
+        if(confirm("Permanently delete this user?")) {
             await remove(ref(db, 'users/' + userId));
         }
     }
@@ -326,10 +351,40 @@
         const id = document.getElementById('resetIdInput').value.trim();
         if(id) {
             await remove(ref(db, 'users/' + id));
-            alert("Device unbound successfully! If the user opens the generator, they will be prompted to register again.");
+            alert("Device unbound successfully!");
             document.getElementById('resetIdInput').value = '';
         } else {
             alert("Please enter a valid Device ID.");
+        }
+    }
+
+    // --- FACTORY RESET 2-STEP LOGIC ---
+    window.startFactoryReset = function() {
+        resetStep = 1;
+        document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)";
+        document.getElementById('resetModalDesc').innerText = "Are you sure you want to wipe the entire database? All users and keys will be deleted.";
+        document.getElementById('resetModal').style.display = 'flex';
+        document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    }
+
+    function executeResetStep() {
+        if (resetStep === 1) {
+            resetStep = 2;
+            document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)";
+            document.getElementById('resetModalDesc').innerText = "This action CANNOT be undone. Everything will be completely erased. Proceed?";
+        } else if (resetStep === 2) {
+            closeModals();
+            wipeEntireDatabase();
+        }
+    }
+
+    async function wipeEntireDatabase() {
+        try {
+            await remove(ref(db)); // Wipes the entire Firebase Realtime Database root node
+            alert("Database successfully wiped! Everything is fresh.");
+            location.reload();
+        } catch (error) {
+            alert("Error wiping database: " + error.message);
         }
     }
 </script>
