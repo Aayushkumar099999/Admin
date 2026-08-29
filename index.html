@@ -49,9 +49,9 @@
             --accent-glow: rgba(0, 255, 213, 0.7);
             --text-main: #ffffff;
             --text-dim: #88a4c3;
-            --glass-bg: rgba(10, 15, 30, 0.35); 
-            --glass-border: rgba(0, 255, 213, 0.25);
-            --glass-shine: rgba(0, 255, 213, 0.4);
+            --glass-bg: rgba(10, 15, 30, 0.20); /* More transparent for full frost effect */
+            --glass-border: rgba(0, 255, 213, 0.3);
+            --glass-shine: rgba(0, 255, 213, 0.5);
             --shadow-color: rgba(0, 0, 0, 0.9);
             --orb-1: rgba(0, 255, 213, 0.35);
             --orb-2: rgba(138, 43, 226, 0.25); 
@@ -59,61 +59,70 @@
             --float-amount: -12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease; }
+        /* Removed laggy global transition, targeted specific properties safely */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
         
         body { 
             background-color: var(--bg-color); color: var(--text-main); 
             display: flex; min-height: 100vh; overflow-x: hidden; position: relative;
+            transition: background-color 0s; /* Handled by wave */
+        }
+
+        /* Target smooth transitions for specific UI elements only (Zero Lag) */
+        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
+            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         /* --- Ambient Glowing Orbs Background --- */
         body::before, body::after {
             content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; opacity: 0.8; pointer-events: none;
-            animation: orbFloat 10s infinite alternate ease-in-out; transition: all 1s ease;
+            animation: orbFloat 10s infinite alternate ease-in-out; transition: background 1s ease;
         }
         body::before { width: 450px; height: 450px; background: var(--orb-1); top: -100px; left: -100px; }
         body::after { width: 550px; height: 550px; background: var(--orb-2); bottom: -150px; right: 5vw; animation-delay: -5s; }
         @keyframes orbFloat { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(60px) scale(1.15); } }
 
-        /* --- MAX MODE WATER EFFECT (The Subtle Deep Liquid Waves) --- */
+        /* --- FULL SCREEN MAX MODE WATER EFFECT --- */
         .water-bg {
-            position: fixed; bottom: 0; left: 0; width: 100vw; height: 35vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2; opacity: 0; pointer-events: none; overflow: hidden;
             transition: opacity 1.5s ease-in-out;
-            mask-image: linear-gradient(to top, black 40%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to top, black 40%, transparent 100%);
         }
         body.max-mode .water-bg { opacity: 1; }
         .water-wave {
-            position: absolute; width: 250vw; height: 250vw;
-            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; /* Organic liquid blob shape */
-            background: linear-gradient(180deg, rgba(0, 255, 213, 0.08) 0%, rgba(1, 6, 14, 0.8) 100%);
-            left: -75vw; top: 10vh; animation: rotateWater 15s linear infinite;
+            position: absolute; width: 150vw; height: 150vw;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; 
+            background: linear-gradient(180deg, rgba(0, 255, 213, 0.12) 0%, rgba(1, 6, 14, 0.95) 100%);
+            left: -25vw; top: -20vh; animation: rotateWater 25s linear infinite;
         }
         .water-wave:nth-child(2) {
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-            background: linear-gradient(180deg, rgba(138, 43, 226, 0.05) 0%, rgba(1, 6, 14, 0.9) 100%);
-            animation-duration: 22s; animation-direction: reverse; top: 15vh;
+            background: linear-gradient(180deg, rgba(138, 43, 226, 0.08) 0%, rgba(1, 6, 14, 0.8) 100%);
+            animation-duration: 35s; animation-direction: reverse; top: -10vh;
         }
         .water-wave:nth-child(3) {
             border-radius: 50% 50% 40% 60% / 50% 60% 40% 50%;
-            background: linear-gradient(180deg, rgba(0, 150, 255, 0.06) 0%, rgba(1, 6, 14, 1) 100%);
-            animation-duration: 18s; top: 20vh;
+            background: linear-gradient(180deg, rgba(0, 150, 255, 0.08) 0%, rgba(1, 6, 14, 0.9) 100%);
+            animation-duration: 28s; top: 0vh;
         }
         @keyframes rotateWater { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- THEME CHANGE WAVE EFFECT --- */
+        /* --- THEME CHANGE WAVE EFFECT (Fix applied) --- */
         .theme-wave {
-            position: fixed; top: 40px; right: 80px; width: 10px; height: 10px; border-radius: 50%;
-            z-index: 9998; pointer-events: none; opacity: 1; transform: scale(1);
-            transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1), opacity 1s cubic-bezier(0.86, 0, 0.07, 1);
+            position: fixed; width: 10px; height: 10px; border-radius: 50%;
+            z-index: 9998; /* Below notch, above everything */
+            pointer-events: none; opacity: 1; transform: scale(1);
+            /* Fast expansion, slow fade */
+            transition: transform 0.4s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.5s ease;
+            transform-origin: center center;
+            will-change: transform, opacity;
         }
 
         /* --- LIQUID HOLD & FOLLOW EFFECT (Ripples) --- */
         .ripple-drop {
             position: fixed; width: 120px; height: 120px; border-radius: 50%; pointer-events: none;
             background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
-            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9999;
+            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9997;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
             mix-blend-mode: screen; filter: blur(15px);
         }
@@ -123,18 +132,20 @@
         .ripple-ring {
             position: fixed; border-radius: 50%; border: 3px solid var(--accent); pointer-events: none;
             transform: translate(-50%, -50%) scale(0); animation: rippleExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 9998; opacity: 0.8;
+            z-index: 9996; opacity: 0.8;
         }
         @keyframes rippleExpand { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; border-width: 4px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
 
         /* --- Premium Floating Glass Utility --- */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
+            backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine);
             box-shadow: 0 20px 50px var(--shadow-color), inset 0 1px 2px rgba(255,255,255,0.1);
             border-radius: 28px;
         }
+        /* Extra frost thickness for Max Mode */
+        body.max-mode .glass-panel { box-shadow: 0 30px 60px var(--shadow-color), inset 0 2px 20px rgba(0, 255, 213, 0.08); }
 
         .float-anim { animation: floatBlocks 6s infinite ease-in-out; }
         .float-anim:nth-child(2) { animation-delay: -1.5s; }
@@ -148,7 +159,6 @@
             background: #111; color: #fff; border-radius: 99px; padding: 12px 24px;
             display: flex; align-items: center; gap: 12px; cursor: pointer;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
         body.light-mode .dynamic-island { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); }
         body.max-mode .dynamic-island { background: linear-gradient(135deg, #011326, #01060e); color: #00ffd5; box-shadow: 0 10px 30px rgba(0,255,213,0.3); border: 1px solid rgba(0,255,213,0.3); }
@@ -157,10 +167,10 @@
         .di-text { font-size: 14px; font-weight: 800; font-family: "SF Pro Display", sans-serif; letter-spacing: 0.5px; }
 
         /* --- Sidebar & Main Content Layout --- */
-        .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(40px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
-        .nav-link { padding: 14px 20px; color: var(--text-dim); text-decoration: none; border-radius: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; border: 1px solid transparent; }
+        .nav-link { padding: 14px 20px; color: var(--text-dim); text-decoration: none; border-radius: 16px; margin-bottom: 12px; cursor: pointer; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; border: 1px solid transparent; }
         .nav-link svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .nav-link:hover { background: rgba(150, 150, 150, 0.1); color: var(--text-main); transform: translateX(8px); }
         .nav-link.active { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.05); }
@@ -173,7 +183,7 @@
 
         /* --- Dashboard Stats --- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-bottom: 45px; }
-        .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; }
         .stat-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 40px 70px var(--shadow-color); border-color: var(--accent); }
         .stat-card h3 { color: var(--text-dim); font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
         .stat-card .val { font-size: 46px; font-weight: 900; color: var(--text-main); line-height: 1; }
@@ -181,36 +191,35 @@
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
         /* --- Sections, Cards & Premium Inputs --- */
-        .section-box { padding: 40px; margin-bottom: 40px; transition: transform 0.4s ease; }
+        .section-box { padding: 40px; margin-bottom: 40px; }
         .section-box h2 { font-size: 24px; margin-bottom: 15px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; gap: 12px; }
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         .btn { 
             padding: 18px 36px; background: var(--text-main); color: var(--bg-color); font-weight: 800; font-size: 14px;
-            border: none; border-radius: 18px; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15); letter-spacing: 0.8px; white-space: nowrap;
+            border: none; border-radius: 18px; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.15); letter-spacing: 0.8px; white-space: nowrap;
         }
         .btn:hover { background: var(--accent); color: #000; box-shadow: 0 15px 35px var(--accent-glow); transform: translateY(-4px) scale(1.02); }
         .btn:active { transform: translateY(1px) scale(0.97); }
 
         /* Lists & Grids */
         .mk-list { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
-        .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; transition: 0.3s ease; }
+        .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; }
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
         .mk-text { font-family: monospace; font-size: 17px; color: var(--text-main); font-weight: 800; letter-spacing: 1px; }
         .mk-usage { background: rgba(0,255,136,0.1); color: var(--accent); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: 15px; border: 1px solid rgba(0,255,136,0.25); }
         body.max-mode .mk-usage { background: rgba(0,255,213,0.15); color: var(--accent); border-color: rgba(0,255,213,0.4); }
-        .mk-del { background: transparent; border: none; cursor: pointer; opacity: 0.5; transition: 0.3s; color: var(--text-main); }
+        .mk-del { background: transparent; border: none; cursor: pointer; opacity: 0.5; color: var(--text-main); }
         .mk-del:hover { transform: scale(1.3); opacity: 1; color: var(--error); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
 
         .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; }
-        .user-card { padding: 40px 30px 30px; position: relative; display: flex; flex-direction: column; transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .user-card { padding: 40px 30px 30px; position: relative; display: flex; flex-direction: column; }
         .user-card:hover { transform: translateY(-12px) scale(1.02); border-color: rgba(150,150,150,0.4); box-shadow: 0 35px 60px var(--shadow-color); }
         .user-card.banned { border-color: rgba(255, 59, 48, 0.5); background: linear-gradient(135deg, rgba(255, 59, 48, 0.08), transparent); }
         .user-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
@@ -218,10 +227,10 @@
         .user-id { font-size: 13px; color: var(--text-dim); font-family: monospace; word-break: break-all; margin-bottom: 30px; background: rgba(150,150,150,0.1); padding: 12px 16px; border-radius: 12px; font-weight: 600; }
         .user-date { font-size: 12px; font-weight: 800; color: var(--accent); position: absolute; top: 22px; left: 30px; letter-spacing: 1px; }
         .banned .user-date { color: var(--error); }
-        .trash-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: none; cursor: pointer; opacity: 0.4; transition: 0.3s; color: var(--text-main); }
+        .trash-btn { position: absolute; top: 20px; right: 20px; background: transparent; border: none; cursor: pointer; opacity: 0.4; color: var(--text-main); }
         .trash-btn:hover { opacity: 1; transform: scale(1.25) rotate(10deg); color: var(--error); }
         
-        .btn-full { width: 100%; border-radius: 16px; padding: 18px; font-weight: 800; cursor: pointer; border: none; transition: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); letter-spacing: 0.5px; }
+        .btn-full { width: 100%; border-radius: 16px; padding: 18px; font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.5px; }
         .btn-full:active { transform: scale(0.95); }
         .bg-warn { background: rgba(255, 159, 10, 0.1); color: var(--warn); border: 1px solid rgba(255, 159, 10, 0.3); } 
         .bg-warn:hover { background: var(--warn); color: #fff; box-shadow: 0 10px 30px rgba(255, 159, 10, 0.5); transform: translateY(-3px); }
@@ -236,13 +245,13 @@
         .modal h2 { margin-bottom: 15px; color: var(--text-main); font-size: 28px; font-weight: 900; }
         .modal p { color: var(--text-dim); font-size: 15px; margin-bottom: 35px; line-height: 1.6; font-weight: 500; }
         .modal-btns { display: flex; flex-direction: row; gap: 18px; margin-top: 30px; }
-        .btn-confirm { flex: 1; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; background: var(--error); color: white; transition: 0.3s; }
+        .btn-confirm { flex: 1; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; background: var(--error); color: white; }
         .btn-confirm:hover { background: #ff2519; box-shadow: 0 10px 30px rgba(255, 59, 48, 0.6); transform: translateY(-3px); }
-        .btn-cancel { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; background: rgba(150,150,150,0.1); color: var(--text-main); transition: 0.3s; }
+        .btn-cancel { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; background: rgba(150,150,150,0.1); color: var(--text-main); }
         .btn-cancel:hover { background: rgba(150,150,150,0.25); transform: translateY(-3px); }
 
         /* --- Floating Info Button --- */
-        .info-btn { position: fixed; bottom: 35px; right: 35px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); color: var(--accent); font-size: 28px; font-weight: bold; font-family: "SF Pro Display", sans-serif; font-style: italic; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2); }
+        .info-btn { position: fixed; bottom: 35px; right: 35px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); color: var(--accent); font-size: 28px; font-weight: bold; font-family: "SF Pro Display", sans-serif; font-style: italic; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2); }
         body.max-mode .info-btn { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: 0 10px 30px rgba(0, 255, 213, 0.2); }
         .info-btn:hover { transform: scale(1.15) rotate(10deg); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--accent-glow); }
 
@@ -260,7 +269,7 @@
 </head>
 <body>
 
-    <!-- MAX MODE DEEP WATER WAVES -->
+    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
@@ -472,13 +481,13 @@
     const drop = document.getElementById('rippleDrop');
 
     function startHold(e) {
-        if(e.target.closest('button, .nav-link, input, .dynamic-island')) return; // Ignore on clickable elements
+        if(e.target.closest('button, .nav-link, input, .dynamic-island, .info-btn')) return; 
         holdTimer = setTimeout(() => {
             isHolding = true;
             drop.classList.add('active');
             moveDrop(e);
             createRipple(e);
-        }, 300); // 0.3s hold to activate liquid drop
+        }, 300); // 0.3s hold to trigger
     }
 
     function endHold() {
@@ -493,7 +502,7 @@
         let y = e.touches ? e.touches[0].clientY : e.clientY;
         drop.style.left = x + 'px';
         drop.style.top = y + 'px';
-        if(Math.random() > 0.8) createRipple(e); // Randomly spawn ripples while moving
+        if(Math.random() > 0.85) createRipple(e);
     }
 
     function createRipple(e) {
@@ -514,28 +523,48 @@
     document.addEventListener('touchend', endHold);
     document.addEventListener('touchmove', moveDrop);
 
-    // --- 3-TIER THEME LOGIC (Dark -> Light -> Max Pro) ---
+    // --- PERFECT WAVE TIMING THEME TOGGLE (Bug Fixed) ---
     const themes = ['dark', 'light', 'max'];
     let currentThemeIndex = 0;
 
     const iconPaths = {
-        'dark': '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>', // Moon
-        'light': '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>', // Sun
-        'max': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' // Pro Star
+        'dark': '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+        'light': '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>',
+        'max': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
     };
 
     window.cycleTheme = function(e) {
-        // Theme Wave Animation
+        if(document.querySelector('.theme-wave')) return; // Prevent spam
+
+        const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
+        const nextTheme = themes[nextThemeIndex];
+        
+        // Match wave color to NEXT theme background
+        const waveColor = nextTheme === 'light' ? '#f2f2f7' : (nextTheme === 'max' ? '#01060e' : '#050507');
+
         let wave = document.createElement('div');
         wave.className = 'theme-wave';
-        wave.style.background = currentThemeIndex === 1 ? '#01060e' : (currentThemeIndex === 0 ? '#f2f2f7' : '#050507');
-        document.body.appendChild(wave);
-        setTimeout(() => { wave.style.transform = 'scale(400)'; }, 10);
-        setTimeout(() => { wave.style.opacity = '0'; }, 500);
-        setTimeout(() => { wave.remove(); }, 1000);
+        wave.style.background = waveColor;
 
-        currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-        applyTheme(themes[currentThemeIndex]);
+        // Position exactly on the notch
+        const rect = e.currentTarget.getBoundingClientRect();
+        wave.style.top = (rect.top + rect.height / 2 - 5) + 'px';
+        wave.style.left = (rect.left + rect.width / 2 - 5) + 'px';
+
+        document.body.appendChild(wave);
+        
+        // Trigger expansion
+        requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
+
+        // WAIT for wave to cover screen, THEN change theme behind it
+        setTimeout(() => {
+            currentThemeIndex = nextThemeIndex;
+            applyTheme(themes[currentThemeIndex]);
+            wave.style.opacity = '0'; // Fade wave to reveal new theme seamlessly
+        }, 400);
+
+        // Remove wave element
+        setTimeout(() => { wave.remove(); }, 900);
     }
 
     function applyTheme(theme) {
