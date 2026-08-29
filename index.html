@@ -3,263 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DGXEN | Admin Control</title>
+    <title>Key Generated | DGXEN</title>
     <style>
-        :root {
-            --bg: #050505;
-            --card-bg: rgba(15, 15, 15, 0.85);
-            --text: #ffffff;
-            --accent: #00ff88;
-            --error: #ff4d4d;
-            --warn: #ffae00;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --bg: #000000; --card: #121212; --text: #ffffff; --accent: #00ff88; --error: #ff4444; }
         
-        body {
-            background: radial-gradient(circle at center, #151515 0%, #000000 100%);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            min-height: 100vh;
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
             padding: 20px;
+            box-sizing: border-box;
         }
 
-        .header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
-        .header h1 { color: var(--accent); font-size: 28px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 15px rgba(0, 255, 136, 0.3); }
-        .header p { color: #888; font-size: 14px; margin-top: 5px; }
-
-        .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
-
-        /* --- Master Key Section --- */
-        .section-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
+        .container { 
+            width: 100%; 
+            max-width: 400px; 
+            text-align: center;
+            margin-top: 50px;
         }
 
-        .section-card h2 { font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        /* --- UI Visibility Controls --- */
+        #mainContainer { display: none; }
+        #bypassContainer { display: none; }
+        #bannedContainer { display: none; }
+        #namePrompt { display: none; }
 
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        input[type="text"] {
-            flex: 1; padding: 12px 15px; background: rgba(0,0,0,0.6); border: 1px solid #333;
-            color: var(--accent); border-radius: 8px; outline: none; font-family: monospace; font-size: 15px; font-weight: bold;
+        /* --- CARDS & MODALS --- */
+        .error-card { 
+            background: #1a0a0a; border: 1px solid #441111; border-radius: 28px; 
+            padding: 40px 30px; box-shadow: 0 10px 40px rgba(255,0,0,0.1);
         }
-        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+        .error-icon { font-size: 50px; margin-bottom: 20px; }
+        .error-title { color: var(--error); font-size: 24px; font-weight: bold; margin-bottom: 15px; }
 
-        .btn {
-            padding: 12px 20px; background: var(--accent); color: #000; font-weight: bold;
-            border: none; border-radius: 8px; cursor: pointer; transition: 0.2s;
+        .name-card {
+            background: var(--card); border: 1px solid var(--accent); border-radius: 24px; 
+            padding: 40px 30px; text-align: center; box-shadow: 0 15px 50px rgba(0,255,136,0.1);
         }
-        .btn:hover { transform: scale(1.05); background: #ffffff; }
-
-        /* Master Key List */
-        .mk-list { display: flex; flex-direction: column; gap: 10px; }
-        .mk-item {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0, 0, 0, 0.4); border: 1px solid #222; padding: 12px 15px; border-radius: 8px;
-        }
-        .mk-text { color: var(--text); font-family: monospace; font-size: 15px; }
-        .mk-del { background: transparent; color: var(--error); border: none; cursor: pointer; font-size: 18px; transition: 0.2s; }
-        .mk-del:hover { transform: scale(1.2); }
-
-        /* --- User List Section --- */
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .user-card {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 40px 15px 15px 15px; /* Top padding extra for the absolute buttons */
-            position: relative;
-            transition: 0.3s;
-        }
-        .user-card:hover { border-color: rgba(255,255,255,0.2); }
-        .user-card.banned { border-color: var(--error); background: rgba(30, 5, 5, 0.9); }
         
-        .user-name { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: var(--accent); }
-        .banned .user-name { color: var(--error); }
-        
-        .user-id { font-size: 11px; color: #666; font-family: monospace; word-break: break-all; margin-bottom: 15px; }
-        
-        .user-date { font-size: 12px; color: #888; position: absolute; top: 12px; left: 15px; }
-        
-        /* Trash Button at Top Right */
-        .trash-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            transition: 0.2s;
-            filter: grayscale(100%);
+        .name-input {
+            width: 90%; padding: 15px; margin: 20px 0; background: #000; 
+            border: 1px solid #333; color: white; border-radius: 12px; text-align: center; 
+            font-size: 16px;
         }
-        .trash-btn:hover { filter: grayscale(0%); transform: scale(1.1); }
+        .name-input:focus { outline: none; border-color: var(--accent); }
 
-        .btn-ban { background: var(--warn); width: 100%; border-radius: 6px; padding: 10px; }
-        .btn-unban { background: var(--accent); width: 100%; border-radius: 6px; padding: 10px; }
+        .key-icon { 
+            background: #1a1a1a; width: 85px; height: 85px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            margin: -45px auto 15px; border: 1px solid #333; overflow: hidden; 
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.1); position: relative; z-index: 10;
+        }
 
-        #statusMsg { text-align: center; margin-top: 10px; font-size: 14px; height: 20px; }
+        .key-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        h1 { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+        .subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
+
+        .card { 
+            background: var(--card); border: 1px solid #222; border-radius: 28px; 
+            padding: 40px 30px 30px; text-align: center; box-shadow: 0 15px 50px rgba(0,0,0,0.6); 
+        }
+
+        h2 { font-size: 22px; margin-bottom: 12px; color: var(--accent); font-weight: 700; }
+        .card-p { color: #999; font-size: 14px; line-height: 1.6; margin-bottom: 25px; }
+
+        .key-box { 
+            background: #000; padding: 22px; border-radius: 18px; 
+            border: 1px dashed var(--accent); margin-bottom: 25px; 
+        }
+        
+        #finalKey { 
+            color: var(--accent); font-family: 'Courier New', monospace; 
+            font-size: 19px; font-weight: bold; letter-spacing: 1px; 
+        }
+        
+        .btn { 
+            width: 100%; padding: 18px; background: #ffffff; color: #000; 
+            border: none; border-radius: 16px; font-size: 16px; font-weight: 800; 
+            cursor: pointer; transition: 0.4s; 
+        }
+
+        .btn:hover { background: var(--accent); transform: scale(1.03); }
+        .btn-red { background: var(--error); color: white; margin-top: 20px; }
+
+        .footer { 
+            margin-top: 80px; color: #333; font-size: 10px; 
+            letter-spacing: 2px; text-transform: uppercase; font-weight: bold; 
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>DGXEN Admin</h1>
-        <p>Security & Access Control Panel</p>
+<div class="container">
+    
+    <!-- NAME REGISTRATION PROMPT -->
+    <div id="namePrompt">
+        <div class="name-card">
+            <h2 style="color: white;">Welcome to DGXEN</h2>
+            <p style="color: #888; font-size: 14px;">Please enter your name to register your device on our network.</p>
+            <input type="text" id="userNameInput" class="name-input" placeholder="Enter your name..." autocomplete="off">
+            <button class="btn" id="saveNameBtn">REGISTER DEVICE</button>
+            <p id="regStatus" style="color: var(--error); font-size: 12px; margin-top: 10px;"></p>
+        </div>
     </div>
 
-    <div class="container">
-        
-        <!-- Master Keys Control -->
-        <div class="section-card">
-            <h2>Manage Master Keys</h2>
-            <div class="input-group">
-                <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
-                <button class="btn" onclick="addMasterKey()">ADD KEY</button>
-            </div>
-            <div id="statusMsg"></div>
-            <div class="mk-list" id="masterKeysList">
-                <p style="color: #666; text-align: center;">Loading keys...</p>
-            </div>
+    <!-- MAIN KEY GENERATOR -->
+    <div id="mainContainer">
+        <div class="key-icon">
+            <img src="./assets/logo.png" alt="DGXEN">
         </div>
-
-        <!-- Users Management -->
-        <div class="section-card">
-            <h2>Registered Devices (<span id="userCount">0</span>)</h2>
-            <div class="user-grid" id="userList">
-                <p style="color: #666; text-align: center;">Loading users...</p>
+        <h1>Access Unlocked</h1>
+        <p class="subtitle">Your device-locked license key is ready.</p>
+        <div class="card">
+            <h2>Generation Success!</h2>
+            <p class="card-p">This key is locked to your device. Share it, and it won't work for others.</p>
+            <div class="key-box">
+                <span id="finalKey">SECURE FETCHING...</span>
             </div>
+            <button class="btn" id="copyBtn">COPY TO CLIPBOARD</button>
         </div>
-
     </div>
 
-<!-- Firebase SDK -->
+    <!-- BANNED SCREEN -->
+    <div id="bannedContainer">
+        <div class="error-card">
+            <div class="error-icon">💀</div>
+            <div class="error-title">Account Banned</div>
+            <p style="color:#888; font-size: 14px; line-height: 1.5;">Your device has been permanently banned from the DGXEN network by the administrator.</p>
+        </div>
+    </div>
+
+    <!-- BYPASS SCREEN -->
+    <div id="bypassContainer">
+        <div class="error-card">
+            <div class="error-icon">🚫</div>
+            <div class="error-title">Bypass Detected!</div>
+            <p style="color:#888; font-size: 14px; line-height: 1.5;">Direct access is prohibited. Please use the official link from the script to generate your key.</p>
+            <button class="btn btn-red" id="returnBtn">RETURN TO STEPS</button>
+        </div>
+    </div>
+
+    <div class="footer">DGXEN SECURITY SYSTEM</div>
+</div>
+
+<!-- FIREBASE & LOGIC -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, remove, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // Linked to your Firebase Realtime DB
     const firebaseConfig = {
         databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/"
     };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // --- Master Key Logic (Multi-Key Support) ---
-    const keysRef = ref(db, 'settings/masterKeys');
-
-    onValue(keysRef, (snapshot) => {
-        const listDiv = document.getElementById('masterKeysList');
-        listDiv.innerHTML = '';
-        if (snapshot.exists()) {
-            const data = snapshot.val();
-            Object.keys(data).forEach(pushId => {
-                const keyStr = data[pushId];
-                listDiv.innerHTML += `
-                    <div class="mk-item">
-                        <span class="mk-text">${keyStr}</span>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}')">🗑️</button>
-                    </div>
-                `;
-            });
-        } else {
-            listDiv.innerHTML = '<p style="color: #666; text-align: center;">No Master Keys setup yet.</p>';
-        }
-    });
-
-    window.addMasterKey = async function() {
-        const newKey = document.getElementById('masterKeyInput').value.trim();
-        const msg = document.getElementById('statusMsg');
-        if(!newKey) {
-            msg.style.color = "var(--error)"; msg.innerText = "Key cannot be empty!"; return;
-        }
-        try {
-            await push(ref(db, 'settings/masterKeys'), newKey);
-            document.getElementById('masterKeyInput').value = '';
-            msg.style.color = "var(--accent)"; msg.innerText = "Key Added!";
-            setTimeout(() => msg.innerText = "", 2000);
-        } catch(e) {
-            msg.style.color = "var(--error)"; msg.innerText = "Failed to add key.";
-        }
+    // Generate a Random Device ID
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 
-    window.deleteMasterKey = async function(pushId) {
-        if(confirm("Delete this master key? Users with this key will instantly lose access.")) {
-            await remove(ref(db, 'settings/masterKeys/' + pushId));
-        }
-    }
+    async function verifyAndRun() {
+        const params = new URLSearchParams(window.location.search);
+        const source = params.get('source');
+        const referrer = (document.referrer || "").toLowerCase();
+        
+        // --- 1. Local Storage Bypass Check ---
+        const securePass = localStorage.getItem('dgxen_secure_pass');
 
-    // --- User Management Logic ---
-    const usersRef = ref(db, 'users');
+        const isValidAccess = (
+            securePass === 'true' || 
+            source === "official" ||
+            referrer.includes("earnlinks") ||
+            referrer.includes("vplink") ||
+            referrer.includes("steps.html")
+        );
 
-    onValue(usersRef, (snapshot) => {
-        const userListDiv = document.getElementById('userList');
-        const userCountSpan = document.getElementById('userCount');
-        userListDiv.innerHTML = ''; 
-
-        if (!snapshot.exists()) {
-            userListDiv.innerHTML = '<p style="color: #666; grid-column: 1/-1; text-align: center;">Database is clean.</p>';
-            userCountSpan.innerText = "0";
+        if (!isValidAccess) {
+            document.getElementById('bypassContainer').style.display = "block";
             return;
         }
 
-        const data = snapshot.val();
-        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-        
-        users.sort((a, b) => new Date(b.joined) - new Date(a.joined)); // Newest first
-        userCountSpan.innerText = users.length;
+        // Remove the pass immediately so they can't reuse it by refreshing
+        localStorage.removeItem('dgxen_secure_pass');
 
-        users.forEach(user => {
-            const isBanned = user.status === 'banned';
-            const dateStr = new Date(user.joined).toLocaleDateString();
+        // Clean the URL bar silently
+        if (window.history.replaceState) {
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
 
-            // TRASH BUTTON LOGIC: Sirf tab render hoga jab user banned hoga
-            const trashButtonHTML = isBanned ? 
-                `<button class="trash-btn" title="Permanently Delete User" onclick="deleteUser('${user.id}')">🗑️</button>` : '';
+        // --- 2. User Registration Check ---
+        let deviceId = localStorage.getItem('dgxen_device_id');
 
-            const card = document.createElement('div');
-            card.className = `user-card ${isBanned ? 'banned' : ''}`;
+        if (!deviceId) {
+            document.getElementById('namePrompt').style.display = "block";
+
+            document.getElementById('saveNameBtn').onclick = async () => {
+                const name = document.getElementById('userNameInput').value.trim();
+                if (name.length < 2) {
+                    document.getElementById('regStatus').innerText = "Enter a valid name (min 2 letters)";
+                    return;
+                }
+
+                document.getElementById('regStatus').style.color = "white";
+                document.getElementById('regStatus').innerText = "Registering...";
+
+                deviceId = generateUUID();
+                localStorage.setItem('dgxen_device_id', deviceId);
+
+                try {
+                    await set(ref(db, 'users/' + deviceId), {
+                        name: name,
+                        status: 'active',
+                        joined: new Date().toISOString()
+                    });
+                } catch (e) {
+                    console.error("Firebase write error:", e);
+                }
+
+                document.getElementById('namePrompt').style.display = "none";
+                proceedToKey();
+            };
+        } else {
+            // Check Ban Status for existing user
+            try {
+                const userRef = ref(db, 'users/' + deviceId);
+                const snapshot = await get(userRef);
+                if (snapshot.exists() && snapshot.val().status === 'banned') {
+                    // NEW: Custom Ban Message Fetching! 
+                    const reason = snapshot.val().banReason || "Your device has been permanently banned from the DGXEN network by the administrator.";
+                    document.querySelector('#bannedContainer p').innerText = reason;
+                    
+                    document.getElementById('bannedContainer').style.display = "block";
+                    return;
+                }
+            } catch (e) {
+                console.error("Firebase read error:", e);
+            }
+            proceedToKey();
+        }
+    }
+
+    function proceedToKey() {
+        document.getElementById('mainContainer').style.display = "block";
+        generateLockedKey();
+    }
+
+    async function generateLockedKey() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            const ip = data.ip;
+            const ipSeed = parseInt(ip.replace(/\./g, '').substring(0, 6)); 
             
-            card.innerHTML = `
-                ${trashButtonHTML}
-                <div class="user-date">${dateStr}</div>
-                <div class="user-name">${user.name}</div>
-                <div class="user-id">ID: ${user.id}</div>
-                <div style="display: flex;">
-                    <button class="btn ${isBanned ? 'btn-unban' : 'btn-ban'}" 
-                        onclick="toggleBan('${user.id}', '${isBanned ? 'active' : 'banned'})'">
-                        ${isBanned ? 'UNBAN' : 'BAN USER'}
-                    </button>
-                </div>
-            `;
-            userListDiv.appendChild(card);
+            let day;
+            try {
+                const pastebinResponse = await fetch('https://pastebin.com/raw/6TzV6L3G');
+                const pastebinData = await pastebinResponse.text();
+                day = parseInt(pastebinData.trim());
+                if (isNaN(day)) throw new Error("Invalid Pastebin data");
+            } catch(e) {
+                day = Math.floor(Date.now() / 86400000);
+            }
+            
+            let seed = ipSeed + day + 2026; 
+            
+            function rnd() { 
+                var x = Math.sin(seed++) * 10000; 
+                return Math.abs(x - Math.floor(x)); 
+            }
+            
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let segments = [];
+            for(let i=0; i<4; i++) {
+                let s = "";
+                for(let j=0; j<4; j++) {
+                    let r = Math.floor(rnd() * chars.length);
+                    s += chars.charAt(r);
+                }
+                segments.push(s);
+            }
+
+            const finalKey = "UKM-" + segments.join("-");
+            document.getElementById('finalKey').innerText = finalKey;
+
+        } catch (err) {
+            document.getElementById('finalKey').innerText = "CONNECT TO INTERNET";
+        }
+    }
+
+    // Button Listeners
+    document.getElementById('copyBtn').addEventListener('click', () => {
+        const keyText = document.getElementById('finalKey').innerText;
+        if(keyText.includes("SECURE") || keyText.includes("CONNECT") || keyText.includes("DENIED")) return;
+
+        navigator.clipboard.writeText(keyText).then(() => {
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = "COPIED SUCCESSFULLY! ✅";
+            btn.style.background = "#00ff88";
+            setTimeout(() => { 
+                btn.innerText = "COPY TO CLIPBOARD"; 
+                btn.style.background = "#ffffff";
+            }, 2000);
         });
     });
 
-    window.toggleBan = async function(userId, newStatus) {
-        try {
-            await set(ref(db, 'users/' + userId + '/status'), newStatus);
-        } catch (error) {
-            alert("Error updating status!");
-        }
-    }
+    document.getElementById('returnBtn').addEventListener('click', () => {
+        location.href = 'steps.html';
+    });
 
-    window.deleteUser = async function(userId) {
-        const confirmDelete = confirm("Permanently delete this banned user?");
-        if(confirmDelete) {
-            try { await remove(ref(db, 'users/' + userId)); } 
-            catch (error) { alert("Error deleting user!"); }
-        }
-    }
+    // Start everything on load
+    window.onload = verifyAndRun;
 </script>
 </body>
 </html>
