@@ -735,7 +735,11 @@
 
     window.executeConfirm = async function() {
         if(pendingConfirmAction) {
-            await pendingConfirmAction();
+            try {
+                await pendingConfirmAction();
+            } catch (err) {
+                console.error("Action error:", err);
+            }
             pendingConfirmAction = null;
         }
         closeModals();
@@ -743,8 +747,8 @@
 
     window.deleteMasterKey = function(pushId, keyStr) {
         showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
-            await remove(ref(db, 'settings/masterKeys/' + pushId));
-            await remove(ref(db, 'settings/mkUsage/' + keyStr));
+            try { await remove(ref(db, 'settings/masterKeys/' + pushId)); } catch(e) {}
+            try { await remove(ref(db, 'settings/mkUsage/' + keyStr)); } catch(e) {}
         });
     }
 
