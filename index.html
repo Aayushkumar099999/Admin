@@ -92,7 +92,7 @@
             overscroll-behavior-y: none;
         }
 
-        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .manual-refresh-btn {
+        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
             transform: translateZ(0);
             backface-visibility: hidden;
             transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -141,7 +141,7 @@
         }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
-        .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island, .manual-refresh-btn { position: relative; overflow: hidden; }
+        .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island { position: relative; overflow: hidden; }
         .click-ripple {
             position: absolute; border-radius: 50%; transform: scale(0);
             animation: btn-ripple 0.5s linear; background: rgba(255, 255, 255, 0.4); pointer-events: none;
@@ -171,35 +171,14 @@
         .float-anim:nth-child(4) { animation-delay: -4.5s; }
         @keyframes floatBlocks { 0%, 100% { transform: translateY(0) rotateX(0deg); } 50% { transform: translateY(var(--float-amount)) rotateX(1.5deg); } }
 
-        /* --- Top Controls (Theme Island & Refresh Button) --- */
-        .top-controls {
-            position: fixed; top: 25px; right: 35px; z-index: 9999;
-            display: flex; gap: 15px; align-items: center;
-        }
-
-        .dynamic-island { position: relative; background: #111; color: #fff; border-radius: 99px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); }
+        /* --- Sidebar & Main Content Layout --- */
+        .dynamic-island { position: fixed; top: 25px; right: 35px; z-index: 9999; background: #111; color: #fff; border-radius: 99px; padding: 12px 24px; display: flex; align-items: center; gap: 12px; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); }
         body.light-mode .dynamic-island { background: #fff; color: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1); }
         body.max-mode .dynamic-island { background: linear-gradient(135deg, #011326, #01060e); color: #00ffd5; box-shadow: 0 10px 30px rgba(0,255,213,0.3); border: 1px solid rgba(0,255,213,0.3); }
         .dynamic-island:hover { transform: scale(1.08); }
         .dynamic-island svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
         .di-text { font-size: 14px; font-weight: 800; font-family: "SF Pro Display", sans-serif; letter-spacing: 0.5px; }
 
-        .manual-refresh-btn {
-            width: 44px; height: 44px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            background: #111; border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            color: var(--accent);
-        }
-        body.light-mode .manual-refresh-btn { background: #fff; color: var(--accent); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        body.max-mode .manual-refresh-btn { background: linear-gradient(135deg, #011326, #01060e); color: #00ffd5; border: 1px solid rgba(0,255,213,0.3); box-shadow: 0 10px 30px rgba(0,255,213,0.3); }
-        .manual-refresh-btn:hover { transform: scale(1.15) rotate(15deg); }
-        .manual-refresh-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-        
-        .spin-anim { animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- Sidebar & Main Content Layout --- */
         .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
@@ -216,10 +195,10 @@
 
         /* --- Dashboard Stats --- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-bottom: 45px; }
-        .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; }
         .stat-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 40px 70px var(--shadow-color); border-color: var(--accent); }
-        .stat-card h3 { color: var(--text-dim); font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; pointer-events: none; }
-        .stat-card .val { font-size: 46px; font-weight: 900; color: var(--text-main); line-height: 1; pointer-events: none; }
+        .stat-card h3 { color: var(--text-dim); font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; }
+        .stat-card .val { font-size: 46px; font-weight: 900; color: var(--text-main); line-height: 1; }
         .stat-card .val.green { color: var(--accent); text-shadow: 0 0 25px var(--accent-glow); }
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
@@ -315,11 +294,6 @@
         .guide-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
         .guide-section p { margin-bottom: 10px; font-size: 16px; color: var(--text-dim); line-height: 1.8; font-weight: 500; }
         .guide-section strong { color: var(--text-main); font-weight: 700; }
-
-        @media (max-width: 1024px) {
-            .top-controls { top: auto; bottom: 25px; right: 25px; }
-            .info-btn { bottom: 25px; left: 25px; right: auto; }
-        }
     </style>
 </head>
 <body>
@@ -331,15 +305,10 @@
         <div class="water-wave"></div>
     </div>
 
-    <!-- NEW: TOP CONTROLS (Manual Refresh + Theme Island) -->
-    <div class="top-controls">
-        <div class="manual-refresh-btn" onclick="forceInternalRefresh()" title="Sync Database">
-            <svg id="refreshIcon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="dynamic-island" onclick="cycleTheme(event)">
-            <svg id="themeIcon" viewBox="0 0 24 24"></svg>
-            <span class="di-text" id="themeText">DARK</span>
-        </div>
+    <!-- 3-State Dynamic Island (Theme Toggle) -->
+    <div class="dynamic-island" onclick="cycleTheme(event)">
+        <svg id="themeIcon" viewBox="0 0 24 24"></svg>
+        <span class="di-text" id="themeText">DARK</span>
     </div>
 
     <!-- Sidebar with Premium SVGs -->
@@ -385,24 +354,6 @@
                     <button class="btn" style="background: var(--accent); color: #000;" onclick="updateExpiryHours()">UPDATE EXPIRY</button>
                 </div>
                 <p style="margin-bottom: 0; font-size: 17px; font-weight: 700;">Current Expiry Time: <strong id="currentExpiryDisplay" style="color: var(--accent); font-size: 26px; margin: 0 10px;">...</strong> <strong style="color: var(--text-main);">Hours</strong></p>
-            </div>
-
-            <!-- NEW: AUTO REFRESH SECTION -->
-            <div class="section-box glass-panel float-anim" style="border-color: rgba(0, 150, 255, 0.4); box-shadow: inset 0 0 40px rgba(0, 150, 255, 0.05), 0 25px 60px var(--shadow-color);">
-                <h2 style="color: #0096ff;">
-                    <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                    Background Auto-Refresh
-                </h2>
-                <p>Internally sync database records automatically every X seconds. Helps maintain absolute stability without Google Chrome page reloads.</p>
-                <div class="input-group">
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color: var(--text-main); font-weight:800; font-size:15px; padding-right: 15px;">
-                        <input type="checkbox" id="autoSyncCheck" style="width:22px; height:22px; cursor:pointer; pointer-events:auto!important;">
-                        ENABLE
-                    </label>
-                    <input type="number" id="syncIntervalInput" placeholder="Refresh Gap (Sec)" min="1" value="5">
-                    <button class="btn" style="background: #0096ff; color: #fff;" onclick="saveAutoSync()">APPLY RULE</button>
-                </div>
-                <p style="margin-bottom: 0; font-size: 15px; font-weight: 700;">Status: <strong id="syncStatusUI" style="color: var(--error);">OFF</strong></p>
             </div>
 
             <div class="stats-grid">
@@ -576,22 +527,20 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // PREVENT ACCIDENTAL PULL-TO-REFRESH (ONLY TRIGGERS ON SINGLE TOUCH TO ALLOW MULTI-TOUCH ZOOM)
+    // PREVENT ACCIDENTAL PULL-TO-REFRESH
     let touchStartY = 0;
     document.addEventListener('touchstart', e => { 
-        if (e.touches.length === 1) touchStartY = e.touches[0].clientY; 
+        touchStartY = e.touches[0].clientY; 
     }, {passive: false});
     document.addEventListener('touchmove', e => {
-        if (e.touches.length === 1) {
-            const touchY = e.touches[0].clientY;
-            const touchDiff = touchY - touchStartY;
-            if (touchDiff > 0 && window.scrollY === 0) {
-                e.preventDefault();
-            }
+        const touchY = e.touches[0].clientY;
+        const touchDiff = touchY - touchStartY;
+        if (touchDiff > 0 && window.scrollY === 0) {
+            e.preventDefault();
         }
     }, {passive: false});
 
-    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS (NO VIEWPORT SWAP TO PREVENT SHRINKING) ---
+    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS (NO VIEWPORT SWAP) ---
     document.addEventListener('focusin', (e) => {
         if (e.target.matches('input[type="text"], input[type="number"]')) {
             const floatParent = e.target.closest('.float-anim');
@@ -625,7 +574,7 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    // SMOOTH THEME CYCLE (Light -> Dark -> MaxPro)
+    // FIXED: Theme order (Light -> Dark -> MaxPro)
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -655,7 +604,7 @@
         
         requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
 
-        // Smooth fade timing aligned with 0.8s CSS transition
+        // Smooth fade timing
         setTimeout(() => {
             currentThemeIndex = nextThemeIndex;
             applyTheme(themes[currentThemeIndex]);
@@ -692,83 +641,8 @@
         currentThemeIndex = themes.indexOf(savedTheme);
         if(currentThemeIndex === -1) currentThemeIndex = 0;
         applyTheme(savedTheme);
-        applyAutoSync(); // Load AutoSync settings
     }
 
-    // --- GLOBAL STATE FOR REFRESH MECHANISM ---
-    let globalBannedSnap = null;
-    let globalUsersSnap = null;
-
-    // --- SKELETON LOADER UI ---
-    const getSkeletonHTML = () => `
-        <div class="skeleton-box">
-            <div class="skeleton-line" style="width: 60%;"></div>
-            <div class="skeleton-line" style="width: 40%;"></div>
-        </div>
-        <div class="skeleton-box" style="animation-delay: 0.2s;">
-            <div class="skeleton-line" style="width: 50%;"></div>
-            <div class="skeleton-line" style="width: 30%;"></div>
-        </div>`;
-
-    // --- MANUAL / AUTO INTERNAL REFRESH LOGIC ---
-    window.forceInternalRefresh = function(isSilent = false) {
-        const icon = document.getElementById('refreshIcon');
-        
-        if(!isSilent && icon) {
-            icon.classList.remove('spin-anim');
-            void icon.offsetWidth; // Reflow
-            icon.classList.add('spin-anim');
-            
-            // Visual Loading Feedback
-            document.getElementById('masterKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
-            
-            // Re-render UI from active cache to complete the "refresh" feel smoothly
-            setTimeout(() => {
-                renderMasterKeys();
-                renderBannedKeysUI(globalBannedSnap);
-                renderUsersUI(globalUsersSnap);
-            }, 400);
-        } else {
-            // Background ping to ensure Firebase connection stays absolutely fresh
-            get(ref(db, '/')).catch(e => console.error(e));
-        }
-    }
-
-    // --- AUTO-SYNC LOGIC ---
-    let autoSyncTimer = null;
-    window.saveAutoSync = function() {
-        const isEnabled = document.getElementById('autoSyncCheck').checked;
-        const gap = parseInt(document.getElementById('syncIntervalInput').value) || 5;
-        localStorage.setItem('dgx_autosync_en', isEnabled);
-        localStorage.setItem('dgx_autosync_gap', gap);
-        applyAutoSync();
-        showConfirm("System Update", `Background Sync is now ${isEnabled ? 'ACTIVE ('+gap+'s)' : 'OFF'}.`, null);
-    }
-
-    function applyAutoSync() {
-        const isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
-        const gap = parseInt(localStorage.getItem('dgx_autosync_gap')) || 5;
-        
-        document.getElementById('autoSyncCheck').checked = isEnabled;
-        document.getElementById('syncIntervalInput').value = gap;
-        const statusUI = document.getElementById('syncStatusUI');
-
-        if(autoSyncTimer) clearInterval(autoSyncTimer);
-
-        if(isEnabled) {
-            statusUI.innerText = `ACTIVE (${gap} SECONDS)`;
-            statusUI.style.color = "var(--accent)";
-            autoSyncTimer = setInterval(() => forceInternalRefresh(true), gap * 1000);
-        } else {
-            statusUI.innerText = "OFF";
-            statusUI.style.color = "var(--error)";
-        }
-    }
-
-    // --- FIREBASE LOGIC & UI RENDERING ---
     onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
         const hrs = snap.exists() ? snap.val() : 24;
         document.getElementById('currentExpiryDisplay').innerText = hrs;
@@ -801,6 +675,16 @@
         if(snapshot.exists()) { masterKeysData = snapshot.val(); } else { masterKeysData = {}; }
         renderMasterKeys();
     });
+
+    const getSkeletonHTML = () => `
+        <div class="skeleton-box">
+            <div class="skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+        </div>
+        <div class="skeleton-box" style="animation-delay: 0.2s;">
+            <div class="skeleton-line" style="width: 50%;"></div>
+            <div class="skeleton-line" style="width: 30%;"></div>
+        </div>`;
 
     function renderMasterKeys() {
         const listDiv = document.getElementById('masterKeysList');
@@ -841,7 +725,6 @@
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
-    // STRICT MODAL CLOSE FIX
     window.closeModals = () => { 
         const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
         modals.forEach(id => {
@@ -872,14 +755,9 @@
     }
 
     onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
-        globalBannedSnap = snapshot;
-        renderBannedKeysUI(snapshot);
-    });
-
-    function renderBannedKeysUI(snapshot) {
         const listDiv = document.getElementById('bannedKeysList');
         listDiv.innerHTML = '';
-        if (snapshot && snapshot.exists()) {
+        if (snapshot.exists()) {
             const data = snapshot.val();
             const keys = Object.keys(data);
             document.getElementById('stat-banned-keys').innerText = keys.length;
@@ -895,9 +773,9 @@
             document.getElementById('stat-banned-keys').innerText = "0";
             listDiv.innerHTML = getSkeletonHTML();
         }
-    }
+    });
 
-    // ACCURATE KEY BAN VALIDATION FIX
+    // KEY VALIDATION ADDED HERE
     window.openKeyBanModal = function() {
         const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
         if (!key) return showConfirm("Error", "Enter a key first!", null);
@@ -941,16 +819,11 @@
     }
 
     onValue(ref(db, 'users'), (snapshot) => {
-        globalUsersSnap = snapshot;
-        renderUsersUI(snapshot);
-    });
-
-    function renderUsersUI(snapshot) {
         const activeListDiv = document.getElementById('activeUserList');
         const bannedListDiv = document.getElementById('bannedUserList');
         activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
 
-        if (!snapshot || !snapshot.exists()) {
+        if (!snapshot.exists()) {
             document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
             activeListDiv.innerHTML = getSkeletonHTML();
             bannedListDiv.innerHTML = getSkeletonHTML();
@@ -992,7 +865,7 @@
         document.getElementById('stat-total').innerText = users.length;
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
-    }
+    });
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
