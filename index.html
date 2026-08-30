@@ -517,11 +517,15 @@
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
                 viewportMeta.setAttribute('content', typingViewport);
+                const floatParent = e.target.closest('.float-anim');
+                if (floatParent) floatParent.style.animationPlayState = 'paused';
             }
         });
         document.addEventListener('focusout', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
                 viewportMeta.setAttribute('content', desktopViewport);
+                const floatParent = e.target.closest('.float-anim');
+                if (floatParent) floatParent.style.animationPlayState = 'running';
             }
         });
     })();
