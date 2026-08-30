@@ -34,7 +34,7 @@
             --float-amount: -5px;
         }
 
-        /* 2. Premium Light Mode */
+        /* Premium Light Mode */
         body.light-mode {
             --bg-color: #f2f2f7; 
             --accent: #00c76b; 
@@ -51,7 +51,7 @@
             --float-amount: -5px;
         }
 
-        /* 3. MAX PRO MODE 🔥 */
+        /* MAX PRO MODE 🔥 */
         body.max-mode {
             --bg-color: #01060e; 
             --accent: #00ffd5; 
@@ -89,10 +89,9 @@
             position: relative;
             transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out; 
             -webkit-font-smoothing: antialiased;
-            overscroll-behavior-y: none; /* Prevents accidental pull-to-refresh */
+            overscroll-behavior-y: none;
         }
 
-        /* HARDWARE ACCELERATION (Prevents 1-sec zoom glitching) */
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
             transform: translateZ(0);
             backface-visibility: hidden;
@@ -315,27 +314,27 @@
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
         <h1>DGXEN</h1>
-        <div class="nav-link active" onclick="switchTab('dashboard', this)">
+        <div class="nav-link active" onclick="switchTab('dashboard', this)" id="nav-dashboard">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Dashboard
         </div>
-        <div class="nav-link" onclick="switchTab('keys', this)">
+        <div class="nav-link" onclick="switchTab('keys', this)" id="nav-keys">
             <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
             Master Keys
         </div>
-        <div class="nav-link" onclick="switchTab('ban-keys', this)">
+        <div class="nav-link" onclick="switchTab('ban-keys', this)" id="nav-ban-keys">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Ban Keys
         </div>
-        <div class="nav-link" onclick="switchTab('active-users', this)">
+        <div class="nav-link" onclick="switchTab('active-users', this)" id="nav-active-users">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Active Users
         </div>
-        <div class="nav-link" onclick="switchTab('banned-users', this)">
+        <div class="nav-link" onclick="switchTab('banned-users', this)" id="nav-banned-users">
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
             Banned Users
         </div>
-        <div class="nav-link" onclick="switchTab('reset-device', this)">
+        <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             System Reset
         </div>
@@ -359,10 +358,10 @@
 
             <div class="stats-grid">
                 <div class="stat-card glass-panel float-anim"><h3>Total Devices</h3><div class="val" id="stat-total">0</div></div>
-                <div class="stat-card glass-panel float-anim"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
-                <div class="stat-card glass-panel float-anim"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
-                <div class="stat-card glass-panel float-anim"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
-                <div class="stat-card glass-panel float-anim"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-active-users').click()"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-banned-users').click()"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-keys').click()"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-ban-keys').click()"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
             </div>
         </div>
 
@@ -776,9 +775,15 @@
         }
     });
 
+    // KEY VALIDATION ADDED HERE
     window.openKeyBanModal = function() {
         const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
         if (!key) return showConfirm("Error", "Enter a key first!", null);
+        
+        if (!key.startsWith('DGXEN-') || key.length < 10) {
+            return showConfirm("Invalid Key", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
+        }
+
         pendingKeyToBan = key;
         document.getElementById('keyBanTarget').innerText = key;
         document.getElementById('keyBanReasonInput').value = '';
