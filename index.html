@@ -122,6 +122,24 @@
             transform-origin: center center; will-change: transform, opacity;
         }
 
+        /* --- LIQUID HOLD EFFECT --- */
+        .ripple-drop {
+            position: fixed; width: 120px; height: 120px; border-radius: 50%; pointer-events: none;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9997;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            mix-blend-mode: screen; filter: blur(15px);
+        }
+        body.light-mode .ripple-drop { mix-blend-mode: multiply; filter: blur(10px); background: radial-gradient(circle, var(--accent) 0%, transparent 50%); }
+        .ripple-drop.active { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+        
+        .ripple-ring {
+            position: fixed; border-radius: 50%; border: 3px solid var(--accent); pointer-events: none;
+            transform: translate(-50%, -50%) scale(0); animation: rippleExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 9996; opacity: 0.8;
+        }
+        @keyframes rippleExpand { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; border-width: 4px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
+
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
         .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island { position: relative; overflow: hidden; }
         .click-ripple {
@@ -194,8 +212,10 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
             -webkit-user-select: auto !important;
             -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
             user-select: auto !important;
             -webkit-touch-callout: default !important;
         }
@@ -237,6 +257,11 @@
         .bg-green { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.3); }
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
+        /* FADED SKELETON ILLUSION */
+        .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; animation: pulseSkeleton 1.8s infinite ease-in-out; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
+        @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
+
         /* --- Premium Apple-Style Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
@@ -272,7 +297,6 @@
 </head>
 <body>
 
-    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
@@ -282,7 +306,7 @@
     <!-- 3-State Dynamic Island (Theme Toggle) -->
     <div class="dynamic-island" onclick="cycleTheme(event)">
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
-        <span class="di-text" id="themeText">DARK</span>
+        <span class="di-text" id="themeText">LIGHT</span>
     </div>
 
     <!-- Sidebar with Premium SVGs -->
@@ -347,7 +371,7 @@
                     <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
                     <button class="btn" onclick="addMasterKey()">ADD KEY</button>
                 </div>
-                <div class="mk-list" id="masterKeysList">Loading keys...</div>
+                <div class="mk-list" id="masterKeysList"></div>
             </div>
         </div>
 
@@ -359,21 +383,21 @@
                     <input type="text" id="keyToBanInput" placeholder="e.g., DGXEN-AB12-CD34-EF56-GH78" style="font-family: monospace; text-transform: uppercase;">
                     <button class="btn" style="background: var(--error); color: white;" onclick="openKeyBanModal()">BAN KEY</button>
                 </div>
-                <div class="mk-list" id="bannedKeysList">Loading banned keys...</div>
+                <div class="mk-list" id="bannedKeysList"></div>
             </div>
         </div>
 
         <div id="active-users" class="tab-section">
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                 <h2 style="margin-bottom: 30px; font-size: 28px;">Active Registered Devices</h2>
-                <div class="user-grid" id="activeUserList">Loading users...</div>
+                <div class="user-grid" id="activeUserList"></div>
             </div>
         </div>
 
         <div id="banned-users" class="tab-section">
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                 <h2 style="color: var(--error); margin-bottom: 30px; font-size: 28px;">Banned Devices Database</h2>
-                <div class="user-grid" id="bannedUserList">Loading banned users...</div>
+                <div class="user-grid" id="bannedUserList"></div>
             </div>
         </div>
 
@@ -381,7 +405,7 @@
             <div class="section-box glass-panel float-anim">
                 <h2>
                     Manual Device Reset / Unbind
-                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap:round" stroke-linejoin:round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </h2>
                 <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
@@ -501,25 +525,28 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX (real root cause): only pause float animation while typing ---
-    // Viewport remains permanently width=1366 so layout never shrinks.
-    // Continuous .float-anim movement was cancelling the long-press paste menu.
+    // --- PASTE FIX: dynamic viewport adjustment logic ---
     (function() {
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        const desktopViewport = 'width=1366';
+        const typingViewport = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
+                viewportMeta.setAttribute('content', typingViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'paused';
             }
         });
         document.addEventListener('focusout', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
+                viewportMeta.setAttribute('content', desktopViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'running';
             }
         });
     })();
 
-    // --- BUTTON CLICK RIPPLE ANIMATION (buttons only) ---
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island');
         if (!target) return;
@@ -539,8 +566,8 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    // --- PERFECT WAVE TIMING THEME TOGGLE ---
-    const themes = ['dark', 'light', 'max'];
+    // FIXED: Theme order (light -> dark -> max)
+    const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
     const iconPaths = {
@@ -601,13 +628,12 @@
     }
 
     window.onload = function() {
-        const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'dark';
+        const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
         currentThemeIndex = themes.indexOf(savedTheme);
         if(currentThemeIndex === -1) currentThemeIndex = 0;
         applyTheme(savedTheme);
     }
 
-    // --- Key Expiry Control Logic ---
     onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
         const hrs = snap.exists() ? snap.val() : 24;
         document.getElementById('currentExpiryDisplay').innerText = hrs;
@@ -622,7 +648,6 @@
         } else { showConfirm("Error", "Please enter a valid number of hours.", null); }
     }
 
-    // --- UI Tabs Logic ---
     window.switchTab = function(tabId, el) {
         document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
         el.classList.add('active');
@@ -630,7 +655,6 @@
         document.getElementById(tabId).classList.add('active');
     }
 
-    // --- FIX 2: Async Master Key Bug & "Users" Text Fix ---
     let masterKeysData = {};
 
     onValue(ref(db, 'settings/mkUsage'), (snap) => { 
@@ -642,6 +666,17 @@
         if(snapshot.exists()) { masterKeysData = snapshot.val(); } else { masterKeysData = {}; }
         renderMasterKeys();
     });
+
+    // SKELETON LOADER HTML
+    const getSkeletonHTML = () => `
+        <div class="skeleton-box">
+            <div class="skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+        </div>
+        <div class="skeleton-box" style="animation-delay: 0.2s;">
+            <div class="skeleton-line" style="width: 50%;"></div>
+            <div class="skeleton-line" style="width: 30%;"></div>
+        </div>`;
 
     function renderMasterKeys() {
         const listDiv = document.getElementById('masterKeysList');
@@ -656,12 +691,12 @@
                 listDiv.innerHTML += `
                     <div class="mk-item">
                         <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('\( {pushId}', ' \){keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                     </div>`;
             });
         } else {
             document.getElementById('stat-keys').innerText = "0";
-            listDiv.innerHTML = '<p style="color: var(--text-dim); font-weight:600;">No Master Keys active.</p>';
+            listDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
         }
     }
 
@@ -672,7 +707,6 @@
         document.getElementById('masterKeyInput').value = '';
     }
 
-    // --- CUSTOM CONFIRMATION IMPLEMENTATION ---
     window.showConfirm = function(title, desc, callback) {
         document.getElementById('confirmActionTitle').innerText = title;
         document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
@@ -683,16 +717,28 @@
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
+    // ROBUST CLOSE MODALS FIX
+    window.closeModals = () => { 
+        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
+        modals.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+    }
+
+    // FIXED: Popup always closes immediately before action executes
     window.executeConfirm = async function() {
-        if(pendingConfirmAction) {
+        const action = pendingConfirmAction;
+        pendingConfirmAction = null;
+        closeModals(); // FORCE CLOSE FIRST
+
+        if(action) {
             try {
-                await pendingConfirmAction();
+                await action();
             } catch (err) {
                 console.error("Action error:", err);
             }
-            pendingConfirmAction = null;
         }
-        closeModals();
     }
 
     window.deleteMasterKey = function(pushId, keyStr) {
@@ -702,7 +748,6 @@
         });
     }
 
-    // --- Ban Normal Keys Logic ---
     onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
         const listDiv = document.getElementById('bannedKeysList');
         listDiv.innerHTML = '';
@@ -714,13 +759,13 @@
                 const info = data[keyStr] || {};
                 listDiv.innerHTML += `
                     <div class="mk-item">
-                        <div><span class="mk-text" style="color: var(--error);">\( {keyStr}</span> \){info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
+                        <div><span class="mk-text" style="color: var(--error);">${keyStr}</span>${info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
                         <button class="mk-del" style="color: var(--accent);" title="Unban Key" onclick="unbanKey('${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></button>
                     </div>`;
             });
         } else {
             document.getElementById('stat-banned-keys').innerText = "0";
-            listDiv.innerHTML = '<p style="color: var(--text-dim); font-weight:600;">No keys banned yet.</p>';
+            listDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
         }
     });
 
@@ -736,9 +781,10 @@
     window.confirmKeyBan = async function() {
         if (!pendingKeyToBan) return;
         const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
+        
+        closeModals(); // FIXED POPUP
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         
-        // SMART FIX: Delete this key from the user's database so they get a new one upon regenerating
         const usersRef = ref(db, 'users');
         const snap = await get(usersRef);
         if(snap.exists()){
@@ -752,7 +798,6 @@
 
         document.getElementById('keyToBanInput').value = '';
         pendingKeyToBan = null;
-        closeModals();
     }
 
     window.unbanKey = function(keyStr) {
@@ -761,7 +806,6 @@
         });
     }
 
-    // --- User Management Logic ---
     onValue(ref(db, 'users'), (snapshot) => {
         const activeListDiv = document.getElementById('activeUserList');
         const bannedListDiv = document.getElementById('bannedUserList');
@@ -769,8 +813,8 @@
 
         if (!snapshot.exists()) {
             document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
-            activeListDiv.innerHTML = '<p style="color: var(--text-dim); grid-column: 1/-1; font-weight:600;">No active users.</p>';
-            bannedListDiv.innerHTML = '<p style="color: var(--text-dim); grid-column: 1/-1; font-weight:600;">No banned users.</p>';
+            activeListDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
+            bannedListDiv.innerHTML = getSkeletonHTML();
             return;
         }
 
@@ -789,40 +833,37 @@
                 bannedListDiv.innerHTML += `
                     <div class="user-card glass-panel banned float-anim">
                         <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        <div class="user-date">\( {dateStr}</div><div class="user-name"> \){user.name}</div><div class="user-id">ID: ${user.id}</div>
-                        \( {user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: " \){user.banReason}"</p>` : ''}
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
             } else {
                 activeCount++;
                 activeListDiv.innerHTML += `
                     <div class="user-card glass-panel float-anim">
-                        <div class="user-date">\( {dateStr}</div><div class="user-name"> \){user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
         });
+        
+        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
+        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
 
         document.getElementById('stat-total').innerText = users.length;
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
     });
 
-    // --- Modals & Actions ---
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
-    window.closeModals = () => { 
-        document.getElementById('banModal').style.display = 'none'; 
-        document.getElementById('resetModal').style.display = 'none'; 
-        document.getElementById('keyBanModal').style.display = 'none'; 
-        document.getElementById('guideModal').style.display = 'none'; 
-        document.getElementById('confirmActionModal').style.display = 'none';
-        document.getElementById('unbindInfoModal').style.display = 'none';
+    window.confirmBan = async function() { 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        closeModals(); // FIXED POPUP
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
-    
-    window.confirmBan = async function() { const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); closeModals(); }
     window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
     
     window.deleteUser = function(userId) { 
@@ -842,7 +883,6 @@
         }
     }
 
-    // --- FACTORY RESET LOGIC ---
     window.startFactoryReset = function() {
         resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
     }
