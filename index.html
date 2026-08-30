@@ -141,7 +141,7 @@
         }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
-        .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island, .manual-refresh-btn { position: relative; overflow: hidden; }
+        .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island, .manual-refresh-btn, .auto-notch { position: relative; overflow: hidden; }
         .click-ripple {
             position: absolute; border-radius: 50%; transform: scale(0);
             animation: btn-ripple 0.5s linear; background: rgba(255, 255, 255, 0.4); pointer-events: none;
@@ -171,6 +171,22 @@
         .float-anim:nth-child(4) { animation-delay: -4.5s; }
         @keyframes floatBlocks { 0%, 100% { transform: translateY(0) rotateX(0deg); } 50% { transform: translateY(var(--float-amount)) rotateX(1.5deg); } }
 
+        /* --- AUTO-SYNC NOTCH --- */
+        .auto-notch {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 10000;
+            display: flex; align-items: center; gap: 8px; padding: 6px 20px;
+            border: 1px solid var(--glass-border); border-top: 0; border-radius: 0 0 16px 16px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            cursor: pointer; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        body.light-mode .auto-notch { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.1); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .auto-notch:active { transform: translateX(-50%) scale(0.95); }
+        .auto-notch span { font-size: 11px; font-weight: 800; color: var(--text-dim); letter-spacing: 0.8px; text-transform: uppercase; transition: color 0.3s; }
+        .notch-led { width: 8px; height: 8px; flex: none; border-radius: 50%; background: #444; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); transition: background 0.3s, box-shadow 0.3s; }
+        .auto-notch.active span { color: var(--accent); }
+        .auto-notch.active .notch-led { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow), inset 0 0 4px #fff; }
+
         /* --- Top Controls (Theme Island & Refresh Button) --- */
         .top-controls {
             position: fixed; top: 25px; right: 35px; z-index: 9999;
@@ -198,16 +214,6 @@
         
         .spin-anim { animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Modern Toggle Switch */
-        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(150,150,150,0.2); transition: .4s; border-radius: 34px; border: 1px solid var(--glass-border); }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 3px; background-color: var(--text-dim); transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: rgba(0, 255, 136, 0.15); border-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(20px); background-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-        body.max-mode input:checked + .slider { background-color: rgba(0, 255, 213, 0.15); border-color: #00ffd5; }
-        body.max-mode input:checked + .slider:before { background-color: #00ffd5; box-shadow: 0 0 10px rgba(0, 255, 213, 0.5); }
 
         /* --- Sidebar & Main Content Layout --- */
         .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
@@ -239,6 +245,7 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
+        /* ENABLE PASTE IN INPUTS ONLY */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
@@ -335,9 +342,15 @@
         <div class="water-wave"></div>
     </div>
 
+    <!-- NEW: AUTO SYNC NOTCH (Top Center) -->
+    <div class="auto-notch" id="autoSyncNotch" role="button">
+        <div class="notch-led" id="syncLed"></div>
+        <span id="syncNotchText">AUTO SYNC: OFF</span>
+    </div>
+
     <!-- TOP CONTROLS (Manual Refresh + Theme Island) -->
     <div class="top-controls">
-        <div class="manual-refresh-btn" id="manualRefreshBtn" title="Hold for Settings">
+        <div class="manual-refresh-btn" id="manualRefreshBtn" title="Force Sync">
             <svg id="refreshIcon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="dynamic-island" onclick="cycleTheme(event)">
@@ -487,37 +500,7 @@
         </div>
     </div>
 
-    <!-- AUTO SYNC CONFIG MODAL -->
-    <div class="modal-overlay" id="autoSyncModal">
-        <div class="modal">
-            <h2 style="color: #0096ff; margin-bottom: 10px;">
-                <svg style="width:24px; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                Background Sync
-            </h2>
-            <p style="margin-bottom: 20px;">Silently update database records every few seconds without page reload.</p>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 15px 20px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 20px;">
-                <span style="font-weight: 800; font-size: 16px;">Enable Auto-Sync</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="autoSyncCheck">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="input-group" style="margin-bottom: 25px;">
-                <input type="number" id="syncIntervalInput" placeholder="Interval (Seconds)" min="1" value="5" style="text-align: center;">
-            </div>
-
-            <div style="margin-bottom: 25px; font-weight: 700;">Status: <span id="syncStatusUI" style="padding: 4px 12px; border-radius: 12px; background: rgba(255, 59, 48, 0.1); color: var(--error); border: 1px solid rgba(255, 59, 48, 0.3); margin-left: 10px; font-size: 13px;">OFF</span></div>
-            
-            <div class="modal-btns">
-                <button class="btn-confirm" style="background: #0096ff; box-shadow: 0 10px 30px rgba(0, 150, 255, 0.3);" onclick="saveAutoSync()">APPLY RULE</button>
-                <button class="btn-cancel" onclick="closeModals()">CLOSE</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- UPDATED USER GUIDE MODAL WITH DOWNLOADS -->
+    <!-- USER GUIDE MODAL WITH DOWNLOADS -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
             <h2 style="margin-bottom: 25px; text-align: center; color: var(--accent);">DGXEN System Manual</h2>
@@ -540,7 +523,7 @@
             
             <div class="guide-section">
                 <h3 style="color: #0096ff;"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5"/></svg> 5. Secret Features & Core Mechanics</h3>
-                <p>• <strong>Auto-Sync Configuration:</strong> <u>Press and HOLD</u> the refresh button (top right) for 2 seconds to open the hidden Auto-Sync configuration menu.</p>
+                <p>• <strong>Auto-Sync Feature:</strong> The center top-notch updates the admin panel silently every 5 seconds without a page reload when enabled.</p>
                 <p>• <strong>Paste Bypass:</strong> Automatically pauses floating UI animations when you tap an input field to guarantee stable native paste functionality.</p>
                 <p>• <strong>Smooth Theme Engine:</strong> Cycles seamlessly through Light, Dark, and MaxPro using hardware-accelerated transitions.</p>
                 <p>• <strong>Clickable Analytics:</strong> Dashboard stat cards act as quick-jump links to their respective detailed sections.</p>
@@ -633,6 +616,7 @@
     let pendingConfirmAction = null; 
 
     // PREVENT ACCIDENTAL PULL-TO-REFRESH 
+    // Ignores multi-touch (zoom) to prevent freezes
     let touchStartY = 0;
     document.addEventListener('touchstart', e => { 
         if (e.touches.length === 1) {
@@ -665,7 +649,7 @@
 
     // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
-        const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island');
+        const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn');
         if (!target) return;
         const rect = target.getBoundingClientRect();
         const ripple = document.createElement('span');
@@ -744,6 +728,37 @@
         localStorage.setItem('dgxen_admin_theme', theme);
     }
 
+    // --- AUTO SYNC (NOTCH) LOGIC ---
+    const syncGap = 5; // Fixed 5 seconds
+    let autoSyncTimer = null;
+
+    window.toggleAutoSync = function() {
+        let isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
+        isEnabled = !isEnabled;
+        localStorage.setItem('dgx_autosync_en', isEnabled);
+        applyAutoSync();
+        if(navigator.vibrate) navigator.vibrate(20);
+    };
+
+    function applyAutoSync() {
+        const isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
+        const notch = document.getElementById('autoSyncNotch');
+        const text = document.getElementById('syncNotchText');
+        
+        if(autoSyncTimer) clearInterval(autoSyncTimer);
+
+        if(isEnabled) {
+            notch.classList.add('active');
+            text.innerText = `AUTO SYNC: ${syncGap}S`;
+            autoSyncTimer = setInterval(() => forceInternalRefresh(true), syncGap * 1000);
+        } else {
+            notch.classList.remove('active');
+            text.innerText = "AUTO SYNC: OFF";
+        }
+    }
+
+    document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
+
     window.onload = function() {
         const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
         currentThemeIndex = themes.indexOf(savedTheme);
@@ -767,7 +782,7 @@
             <div class="skeleton-line" style="width: 30%;"></div>
         </div>`;
 
-    // --- MANUAL / AUTO INTERNAL REFRESH LOGIC ---
+    // --- MANUAL REFRESH BUTTON LOGIC ---
     window.forceInternalRefresh = function(isSilent = false) {
         const icon = document.getElementById('refreshIcon');
         
@@ -796,67 +811,10 @@
         }
     }
 
-    // --- LONG PRESS REFRESH BUTTON LOGIC (2 SECONDS) ---
-    const refreshBtn = document.getElementById('manualRefreshBtn');
-    let refreshPressTimer = null;
-    let isLongPress = false;
-    
-    const handleRefreshStart = (e) => {
-        isLongPress = false;
-        refreshPressTimer = setTimeout(() => {
-            isLongPress = true;
-            if(navigator.vibrate) navigator.vibrate(50);
-            document.getElementById('autoSyncModal').style.display = 'flex';
-        }, 2000);
-    };
-    
-    const handleRefreshEnd = (e) => {
-        if(refreshPressTimer) clearTimeout(refreshPressTimer);
-        if(!isLongPress) forceInternalRefresh(false);
-    };
-
-    refreshBtn.addEventListener('mousedown', handleRefreshStart);
-    refreshBtn.addEventListener('mouseup', handleRefreshEnd);
-    refreshBtn.addEventListener('mouseleave', () => clearTimeout(refreshPressTimer));
-    refreshBtn.addEventListener('touchstart', handleRefreshStart, {passive: true});
-    refreshBtn.addEventListener('touchend', handleRefreshEnd);
-    refreshBtn.addEventListener('touchcancel', () => clearTimeout(refreshPressTimer));
-
-    // --- AUTO-SYNC LOGIC ---
-    let autoSyncTimer = null;
-    window.saveAutoSync = function() {
-        const isEnabled = document.getElementById('autoSyncCheck').checked;
-        const gap = parseInt(document.getElementById('syncIntervalInput').value) || 5;
-        localStorage.setItem('dgx_autosync_en', isEnabled);
-        localStorage.setItem('dgx_autosync_gap', gap);
-        applyAutoSync();
-        closeModals();
-        showConfirm("System Update", `Background Sync is now ${isEnabled ? 'ACTIVE ('+gap+'s)' : 'OFF'}.`, null);
-    }
-
-    function applyAutoSync() {
-        const isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
-        const gap = parseInt(localStorage.getItem('dgx_autosync_gap')) || 5;
-        
-        document.getElementById('autoSyncCheck').checked = isEnabled;
-        document.getElementById('syncIntervalInput').value = gap;
-        const statusUI = document.getElementById('syncStatusUI');
-
-        if(autoSyncTimer) clearInterval(autoSyncTimer);
-
-        if(isEnabled) {
-            statusUI.innerText = `ACTIVE (${gap} SECONDS)`;
-            statusUI.style.color = "var(--accent)";
-            statusUI.style.background = "rgba(0, 255, 136, 0.1)";
-            statusUI.style.borderColor = "rgba(0, 255, 136, 0.3)";
-            autoSyncTimer = setInterval(() => forceInternalRefresh(true), gap * 1000);
-        } else {
-            statusUI.innerText = "OFF";
-            statusUI.style.color = "var(--error)";
-            statusUI.style.background = "rgba(255, 59, 48, 0.1)";
-            statusUI.style.borderColor = "rgba(255, 59, 48, 0.3)";
-        }
-    }
+    document.getElementById('manualRefreshBtn').addEventListener('click', () => {
+        if(navigator.vibrate) navigator.vibrate(20);
+        forceInternalRefresh(false);
+    });
 
     // --- FIREBASE LOGIC & UI RENDERING ---
     onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
@@ -902,8 +860,7 @@
             keys.forEach(pushId => {
                 const keyStr = masterKeysData[pushId];
                 
-                // --- THE ULTIMATE MASTER KEY FIX ---
-                // Attempts multiple fallback matches to ensure count is caught
+                // THE BUG FIX: Base64 decode match for exact counting
                 const trimmedKey = String(keyStr).trim();
                 let safeKey = "";
                 try {
@@ -942,7 +899,7 @@
     }
 
     window.closeModals = () => { 
-        const modals = ['autoSyncModal', 'banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
+        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
         modals.forEach(id => {
             const el = document.getElementById(id);
             if(el) el.style.display = 'none';
