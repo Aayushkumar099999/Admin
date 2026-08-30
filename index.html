@@ -212,8 +212,9 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            -webkit-user-select: text !important;
-            user-select: text !important;
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            user-select: auto !important;
             -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
@@ -509,7 +510,7 @@
 <!-- Firebase SDK & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, remove, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, remove, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = { databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
@@ -785,8 +786,21 @@
 
     window.confirmKeyBan = async function() {
         if (!pendingKeyToBan) return;
-        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Banned by admin.";
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
+        
+        // SMART FIX: Delete this key from the user's database so they get a new one upon regenerating
+        const usersRef = ref(db, 'users');
+        const snap = await get(usersRef);
+        if(snap.exists()){
+            const allUsers = snap.val();
+            for(let uid in allUsers){
+                if(allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim().toUpperCase() === pendingKeyToBan.toUpperCase()){
+                    await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
+                }
+            }
+        }
+
         document.getElementById('keyToBanInput').value = '';
         pendingKeyToBan = null;
         closeModals();
