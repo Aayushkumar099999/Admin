@@ -194,11 +194,16 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            user-select: auto !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            user-select: text !important;
             -webkit-touch-callout: default !important;
+            touch-action: manipulation;
         }
+        .paste-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 18px 22px; cursor: pointer; background: rgba(150,150,150,0.08); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 18px; font-weight: 800; font-size: 13px; letter-spacing: 0.8px; white-space: nowrap; }
+        .paste-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .paste-btn:hover { background: rgba(150,150,150,0.18); border-color: rgba(150,150,150,0.35); transform: translateY(-3px); }
+        .paste-btn:active { transform: scale(0.96); }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
         .btn { 
@@ -345,6 +350,7 @@
                 <p>Generate high-level master keys that bypass standard normal key restrictions.</p>
                 <div class="input-group">
                     <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
+                    <button class="paste-btn" onclick="pasteInto('masterKeyInput')"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>PASTE</button>
                     <button class="btn" onclick="addMasterKey()">ADD KEY</button>
                 </div>
                 <div class="mk-list" id="masterKeysList">Loading keys...</div>
@@ -357,6 +363,7 @@
                 <p>Paste the exact key here to block it instantly. Normal keys are generated on user devices.</p>
                 <div class="input-group">
                     <input type="text" id="keyToBanInput" placeholder="e.g., DGXEN-AB12-CD34-EF56-GH78" style="font-family: monospace; text-transform: uppercase;">
+                    <button class="paste-btn" onclick="pasteInto('keyToBanInput')"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>PASTE</button>
                     <button class="btn" style="background: var(--error); color: white;" onclick="openKeyBanModal()">BAN KEY</button>
                 </div>
                 <div class="mk-list" id="bannedKeysList">Loading banned keys...</div>
@@ -386,6 +393,7 @@
                 <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
                     <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
+                    <button class="paste-btn" onclick="pasteInto('resetIdInput')"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>PASTE</button>
                     <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND DEVICE</button>
                 </div>
             </div>
@@ -499,7 +507,20 @@
     let pendingKeyToBan = null;
     let mkUsageData = {};
     let resetStep = 0;
-    let pendingConfirmAction = null; 
+    let pendingConfirmAction = null;
+
+    window.pasteInto = async function(inputId) {
+        const input = document.getElementById(inputId);
+        input.focus();
+        try {
+            const text = await navigator.clipboard.readText();
+            if(!text) return showConfirm("Clipboard Empty", "There is nothing to paste. Copy the key or Device ID first.", null);
+            input.value = text.trim();
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        } catch (err) {
+            showConfirm("Paste Blocked", "Your browser blocked clipboard access. Tap and hold the box, then choose Paste.", null);
+        }
+    } 
 
     // --- PASTE FIX: temporarily correct the viewport only while typing ---
     // This page uses a fixed desktop-width viewport (width=1366) so the
