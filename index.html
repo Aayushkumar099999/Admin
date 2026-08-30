@@ -34,7 +34,7 @@
             --float-amount: -5px;
         }
 
-        /* Premium Light Mode */
+        /* 2. Premium Light Mode */
         body.light-mode {
             --bg-color: #f2f2f7; 
             --accent: #00c76b; 
@@ -51,7 +51,7 @@
             --float-amount: -5px;
         }
 
-        /* MAX PRO MODE 🔥 */
+        /* 3. MAX PRO MODE 🔥 */
         body.max-mode {
             --bg-color: #01060e; 
             --accent: #00ffd5; 
@@ -68,18 +68,35 @@
             --float-amount: -12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         
         body { 
-            background-color: var(--bg-color); color: var(--text-main); 
-            display: flex; min-height: 100vh; overflow-x: hidden; position: relative;
-            /* SMOOTH THEME TRANSITION FIX */
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative;
             transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out; 
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none; /* Prevents accidental pull-to-refresh */
         }
 
+        /* HARDWARE ACCELERATION (Prevents 1-sec zoom glitching) */
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
-            /* SMOOTHER GLASS TRANSITIONS */
-            transition: background-color 0.8s ease-in-out, border-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         /* --- Ambient Background --- */
@@ -121,26 +138,8 @@
             position: fixed; width: 10px; height: 10px; border-radius: 50%;
             z-index: 9998; pointer-events: none; opacity: 1; transform: scale(1);
             transition: transform 0.6s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.6s ease;
-            transform-origin: center center; will-change: transform, opacity;
+            transform-origin: center center;
         }
-
-        /* --- LIQUID HOLD EFFECT --- */
-        .ripple-drop {
-            position: fixed; width: 120px; height: 120px; border-radius: 50%; pointer-events: none;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
-            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9997;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-            mix-blend-mode: screen; filter: blur(15px);
-        }
-        body.light-mode .ripple-drop { mix-blend-mode: multiply; filter: blur(10px); background: radial-gradient(circle, var(--accent) 0%, transparent 50%); }
-        .ripple-drop.active { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-        
-        .ripple-ring {
-            position: fixed; border-radius: 50%; border: 3px solid var(--accent); pointer-events: none;
-            transform: translate(-50%, -50%) scale(0); animation: rippleExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 9996; opacity: 0.8;
-        }
-        @keyframes rippleExpand { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; border-width: 4px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
         .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island { position: relative; overflow: hidden; }
@@ -210,10 +209,17 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
+        /* ENABLE PASTE IN INPUTS ONLY */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
+            -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -305,9 +311,6 @@
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         <span class="di-text" id="themeText">DARK</span>
     </div>
-
-    <!-- HOLD LIQUID RIPPLE EFFECT DIV -->
-    <div class="ripple-drop" id="rippleDrop"></div>
 
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
@@ -538,27 +541,19 @@
         }
     }, {passive: false});
 
-    // CLAUDE'S EXACT PASTE & VIEWPORT FIX (PAUSE FLOAT ANIMATION)
-    (function() {
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        const desktopViewport = 'width=1366';
-        const typingViewport = 'width=device-width, initial-scale=1';
-
-        document.addEventListener('focusin', (e) => {
-            if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', typingViewport);
-                const floatParent = e.target.closest('.float-anim');
-                if (floatParent) floatParent.style.animationPlayState = 'paused';
-            }
-        });
-        document.addEventListener('focusout', (e) => {
-            if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', desktopViewport);
-                const floatParent = e.target.closest('.float-anim');
-                if (floatParent) floatParent.style.animationPlayState = 'running';
-            }
-        });
-    })();
+    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS (NO VIEWPORT SWAP) ---
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'paused';
+        }
+    });
+    document.addEventListener('focusout', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'running';
+        }
+    });
 
     // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
@@ -610,7 +605,7 @@
         
         requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
 
-        // Made transition slightly slower to give smooth fade
+        // Smooth fade timing
         setTimeout(() => {
             currentThemeIndex = nextThemeIndex;
             applyTheme(themes[currentThemeIndex]);
@@ -739,7 +734,6 @@
         });
     }
 
-    // MODAL AUTO-CLOSE FIX: Closes immediately before processing Firebase calls
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
@@ -798,7 +792,6 @@
         closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         
-        // DELETES KEY HISTORY UPON BAN SO USER GETS A NEW ONE
         const usersRef = ref(db, 'users');
         const snap = await get(usersRef);
         if(snap.exists()){
