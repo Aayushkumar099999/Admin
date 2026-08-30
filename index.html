@@ -74,26 +74,36 @@
             background-color: var(--bg-color); color: var(--text-main); 
             display: flex; min-height: 100vh; overflow-x: hidden; position: relative;
             transition: background-color 0s; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HARDWARE ACCELERATION FOR BUTTERY SMOOTH ZOOMING */
+        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .water-bg, body::before, body::after {
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
 
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
             transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: transform, box-shadow;
         }
 
         /* --- Ambient Background --- */
         body::before, body::after {
             content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; opacity: 0.8; pointer-events: none;
             animation: orbFloat 10s infinite alternate ease-in-out; transition: background 1s ease;
+            will-change: transform;
         }
         body::before { width: 450px; height: 450px; background: var(--orb-1); top: -100px; left: -100px; }
         body::after { width: 550px; height: 550px; background: var(--orb-2); bottom: -150px; right: 5vw; animation-delay: -5s; }
-        @keyframes orbFloat { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(60px) scale(1.15); } }
+        @keyframes orbFloat { 0% { transform: translate3d(0, 0px, 0) scale(1); } 100% { transform: translate3d(0, 60px, 0) scale(1.15); } }
 
         /* --- MAX MODE WATER EFFECT --- */
         .water-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2; opacity: 0; pointer-events: none; overflow: hidden;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1.5s ease-in-out; will-change: opacity;
         }
         body.max-mode .water-bg { opacity: 1; }
         .water-wave {
@@ -101,6 +111,7 @@
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; 
             background: linear-gradient(180deg, rgba(0, 255, 213, 0.12) 0%, rgba(1, 6, 14, 0.95) 100%);
             left: -25vw; top: -20vh; animation: rotateWater 25s linear infinite;
+            will-change: transform;
         }
         .water-wave:nth-child(2) {
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
@@ -112,7 +123,7 @@
             background: linear-gradient(180deg, rgba(0, 150, 255, 0.08) 0%, rgba(1, 6, 14, 0.9) 100%);
             animation-duration: 28s; top: 0vh;
         }
-        @keyframes rotateWater { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes rotateWater { 0% { transform: rotate(0deg) translate3d(0,0,0); } 100% { transform: rotate(360deg) translate3d(0,0,0); } }
 
         /* --- THEME CHANGE WAVE EFFECT --- */
         .theme-wave {
@@ -121,24 +132,6 @@
             transition: transform 0.4s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.5s ease;
             transform-origin: center center; will-change: transform, opacity;
         }
-
-        /* --- LIQUID HOLD EFFECT --- */
-        .ripple-drop {
-            position: fixed; width: 120px; height: 120px; border-radius: 50%; pointer-events: none;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
-            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9997;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-            mix-blend-mode: screen; filter: blur(15px);
-        }
-        body.light-mode .ripple-drop { mix-blend-mode: multiply; filter: blur(10px); background: radial-gradient(circle, var(--accent) 0%, transparent 50%); }
-        .ripple-drop.active { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-        
-        .ripple-ring {
-            position: fixed; border-radius: 50%; border: 3px solid var(--accent); pointer-events: none;
-            transform: translate(-50%, -50%) scale(0); animation: rippleExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 9996; opacity: 0.8;
-        }
-        @keyframes rippleExpand { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; border-width: 4px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
         .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island { position: relative; overflow: hidden; }
@@ -212,12 +205,10 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            -webkit-user-select: text !important;
-            -moz-user-select: text !important;
-            -ms-user-select: text !important;
-            user-select: text !important;
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            user-select: auto !important;
             -webkit-touch-callout: default !important;
-            pointer-events: auto !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -265,7 +256,7 @@
         /* --- Premium Apple-Style Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-        .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; will-change: transform, opacity; }
         @keyframes scaleUp { to { transform: scale(1); opacity: 1; } }
         .modal h2 { margin-bottom: 15px; color: var(--text-main); font-size: 28px; font-weight: 900; }
         .modal p { color: var(--text-dim); font-size: 15px; margin-bottom: 35px; line-height: 1.6; font-weight: 500; }
@@ -297,7 +288,6 @@
 </head>
 <body>
 
-    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
@@ -309,9 +299,6 @@
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         <span class="di-text" id="themeText">LIGHT</span>
     </div>
-
-    <!-- HOLD LIQUID RIPPLE EFFECT DIV -->
-    <div class="ripple-drop" id="rippleDrop"></div>
 
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
@@ -529,22 +516,32 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX: Pause float animation on focus, resume on blur ---
+    // --- PASTE FIX & ZOOM LAG FIX: dynamic viewport adjustment with delay ---
     (function() {
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        const desktopViewport = 'width=1366';
+        const typingViewport = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
+
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
+                viewportMeta.setAttribute('content', typingViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'paused';
             }
         });
         document.addEventListener('focusout', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
+                // Micro delay prevents freezing during keyboard collapse / zoom out
+                setTimeout(() => {
+                    viewportMeta.setAttribute('content', desktopViewport);
+                }, 150);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'running';
             }
         });
     })();
 
+    // --- BUTTON CLICK RIPPLE ANIMATION ---
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island');
         if (!target) return;
@@ -564,53 +561,7 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    let holdTimer;
-    let isHolding = false;
-    const drop = document.getElementById('rippleDrop');
-
-    function startHold(e) {
-        if(e.target.closest('button, .nav-link, input, .dynamic-island, .info-btn, svg')) return; 
-        holdTimer = setTimeout(() => {
-            isHolding = true;
-            drop.classList.add('active');
-            moveDrop(e);
-            createRipple(e);
-        }, 300);
-    }
-
-    function endHold() {
-        clearTimeout(holdTimer);
-        isHolding = false;
-        drop.classList.remove('active');
-    }
-
-    function moveDrop(e) {
-        if(!isHolding) return;
-        let x = e.touches ? e.touches[0].clientX : e.clientX;
-        let y = e.touches ? e.touches[0].clientY : e.clientY;
-        drop.style.left = x + 'px';
-        drop.style.top = y + 'px';
-        if(Math.random() > 0.85) createRipple(e);
-    }
-
-    function createRipple(e) {
-        let x = e.touches ? e.touches[0].clientX : e.clientX;
-        let y = e.touches ? e.touches[0].clientY : e.clientY;
-        let ring = document.createElement('div');
-        ring.className = 'ripple-ring';
-        ring.style.left = x + 'px';
-        ring.style.top = y + 'px';
-        document.body.appendChild(ring);
-        setTimeout(() => ring.remove(), 1000);
-    }
-
-    document.addEventListener('mousedown', startHold);
-    document.addEventListener('mouseup', endHold);
-    document.addEventListener('mousemove', moveDrop);
-    document.addEventListener('touchstart', startHold);
-    document.addEventListener('touchend', endHold);
-    document.addEventListener('touchmove', moveDrop);
-
+    // FIXED: Theme order (light -> dark -> max)
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -771,7 +722,7 @@
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
-        closeModals();
+        closeModals(); // FORCE CLOSE IMMEDIATELY BEFORE ANY FIREBASE ACTION
 
         if(action) {
             try {
