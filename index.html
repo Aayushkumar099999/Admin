@@ -92,7 +92,7 @@
             overscroll-behavior-y: contain; 
         }
 
-        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .manual-refresh-btn {
+        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .manual-refresh-btn, .auto-notch {
             transform: translateZ(0); 
             backface-visibility: hidden;
             transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -342,7 +342,7 @@
         <div class="water-wave"></div>
     </div>
 
-    <!-- NEW: AUTO SYNC NOTCH (Top Center) -->
+    <!-- AUTO SYNC NOTCH (Top Center) -->
     <div class="auto-notch" id="autoSyncNotch" role="button">
         <div class="notch-led" id="syncLed"></div>
         <span id="syncNotchText">AUTO SYNC: OFF</span>
@@ -523,11 +523,11 @@
             
             <div class="guide-section">
                 <h3 style="color: #0096ff;"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5"/></svg> 5. Secret Features & Core Mechanics</h3>
-                <p>• <strong>Auto-Sync Feature:</strong> The center top-notch updates the admin panel silently every 5 seconds without a page reload when enabled.</p>
+                <p>• <strong>Auto-Sync System:</strong> Tap the top-center notch to enable silent background syncing. The delay is fixed at <strong>5 seconds</strong> to ensure optimal performance without browser lag.</p>
                 <p>• <strong>Paste Bypass:</strong> Automatically pauses floating UI animations when you tap an input field to guarantee stable native paste functionality.</p>
                 <p>• <strong>Smooth Theme Engine:</strong> Cycles seamlessly through Light, Dark, and MaxPro using hardware-accelerated transitions.</p>
                 <p>• <strong>Clickable Analytics:</strong> Dashboard stat cards act as quick-jump links to their respective detailed sections.</p>
-                <p>• <strong>Smart Master Key Tracker:</strong> Base64 Dual-Check mechanism ensures keys are precisely tracked and wiped correctly regardless of spaces.</p>
+                <p>• <strong>Smart Master Key Tracker:</strong> Base64 Dual-Check mechanism ensures keys are precisely tracked and aggressively wiped entirely upon deletion regardless of spaces.</p>
             </div>
 
             <div class="guide-section" style="border: none;">
@@ -920,16 +920,17 @@
         }
     }
 
+    // THE DEEP NUKE FIX: Uses set(null) to aggressively overwrite tracking nodes upon deletion
     window.deleteMasterKey = function(pushId, keyStr) {
         showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
             const trimmedKey = String(keyStr).trim();
             let safeKey = trimmedKey;
             try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
             
-            try { await remove(ref(db, 'settings/masterKeys/' + pushId)); } catch(e) {}
-            try { await remove(ref(db, 'settings/mkUsage/' + safeKey)); } catch(e) {}
-            try { await remove(ref(db, 'settings/mkUsage/' + trimmedKey)); } catch(e) {}
-            try { await remove(ref(db, 'settings/mkDeviceTrack/' + safeKey)); } catch(e) {} 
+            try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
         });
     }
 
@@ -1091,7 +1092,14 @@
         if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
         else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
     }
-    async function wipeEntireDatabase() { try { await remove(ref(db)); showConfirm("Success", "Database wiped!", () => location.reload()); } catch (error) { showConfirm("Error", "Error wiping database: " + error.message, null); } }
+    async function wipeEntireDatabase() { 
+        try { 
+            await set(ref(db, '/'), null); // NUKE ENTIRE DATABASE AGGRESSIVELY
+            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        } catch (error) { 
+            showConfirm("Error", "Error wiping database: " + error.message, null); 
+        } 
+    }
 </script>
 </body>
 </html>
