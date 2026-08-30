@@ -34,7 +34,7 @@
             --float-amount: -5px;
         }
 
-        /* 2. Premium Light Mode */
+        /* Premium Light Mode */
         body.light-mode {
             --bg-color: #f2f2f7; 
             --accent: #00c76b; 
@@ -51,7 +51,7 @@
             --float-amount: -5px;
         }
 
-        /* 3. MAX PRO MODE 🔥 */
+        /* MAX PRO MODE 🔥 */
         body.max-mode {
             --bg-color: #01060e; 
             --accent: #00ffd5; 
@@ -68,42 +68,51 @@
             --float-amount: -12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         
-        body { 
-            background-color: var(--bg-color); color: var(--text-main); 
-            display: flex; min-height: 100vh; overflow-x: hidden; position: relative;
-            transition: background-color 0s; 
+        html, body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative;
+            transition: background-color 0.3s; 
             -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none; /* Prevents accidental pull-to-refresh */
         }
 
-        /* HARDWARE ACCELERATION FOR BUTTERY SMOOTH ZOOMING */
-        .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .water-bg, body::before, body::after {
-            transform: translate3d(0, 0, 0);
-            backface-visibility: hidden;
-            perspective: 1000px;
-        }
-
+        /* Hardware Acceleration without heavy will-change to prevent 1-sec glitching */
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
+            transform: translateZ(0);
+            backface-visibility: hidden;
             transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            will-change: transform, box-shadow;
         }
 
         /* --- Ambient Background --- */
         body::before, body::after {
             content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; opacity: 0.8; pointer-events: none;
             animation: orbFloat 10s infinite alternate ease-in-out; transition: background 1s ease;
-            will-change: transform;
         }
         body::before { width: 450px; height: 450px; background: var(--orb-1); top: -100px; left: -100px; }
         body::after { width: 550px; height: 550px; background: var(--orb-2); bottom: -150px; right: 5vw; animation-delay: -5s; }
-        @keyframes orbFloat { 0% { transform: translate3d(0, 0px, 0) scale(1); } 100% { transform: translate3d(0, 60px, 0) scale(1.15); } }
+        @keyframes orbFloat { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(60px) scale(1.15); } }
 
         /* --- MAX MODE WATER EFFECT --- */
         .water-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2; opacity: 0; pointer-events: none; overflow: hidden;
-            transition: opacity 1.5s ease-in-out; will-change: opacity;
+            transition: opacity 1.5s ease-in-out;
         }
         body.max-mode .water-bg { opacity: 1; }
         .water-wave {
@@ -111,7 +120,6 @@
             border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; 
             background: linear-gradient(180deg, rgba(0, 255, 213, 0.12) 0%, rgba(1, 6, 14, 0.95) 100%);
             left: -25vw; top: -20vh; animation: rotateWater 25s linear infinite;
-            will-change: transform;
         }
         .water-wave:nth-child(2) {
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
@@ -123,14 +131,14 @@
             background: linear-gradient(180deg, rgba(0, 150, 255, 0.08) 0%, rgba(1, 6, 14, 0.9) 100%);
             animation-duration: 28s; top: 0vh;
         }
-        @keyframes rotateWater { 0% { transform: rotate(0deg) translate3d(0,0,0); } 100% { transform: rotate(360deg) translate3d(0,0,0); } }
+        @keyframes rotateWater { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- THEME CHANGE WAVE EFFECT --- */
         .theme-wave {
             position: fixed; width: 10px; height: 10px; border-radius: 50%;
             z-index: 9998; pointer-events: none; opacity: 1; transform: scale(1);
             transition: transform 0.4s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.5s ease;
-            transform-origin: center center; will-change: transform, opacity;
+            transform-origin: center center;
         }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
@@ -201,12 +209,15 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
+        /* ENABLE PASTE IN INPUTS ONLY */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
             -webkit-user-select: auto !important;
             -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
             user-select: auto !important;
             -webkit-touch-callout: default !important;
         }
@@ -249,14 +260,13 @@
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
         /* FADED SKELETON ILLUSION */
-        .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; animation: pulseSkeleton 1.8s infinite ease-in-out; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; opacity: 0.5; }
         .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
-        @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
         /* --- Premium Apple-Style Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
-        .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; will-change: transform, opacity; }
+        .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes scaleUp { to { transform: scale(1); opacity: 1; } }
         .modal h2 { margin-bottom: 15px; color: var(--text-main); font-size: 28px; font-weight: 900; }
         .modal p { color: var(--text-dim); font-size: 15px; margin-bottom: 35px; line-height: 1.6; font-weight: 500; }
@@ -516,30 +526,19 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX & ZOOM LAG FIX: dynamic viewport adjustment with delay ---
-    (function() {
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        const desktopViewport = 'width=1366';
-        const typingViewport = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
-
-        document.addEventListener('focusin', (e) => {
-            if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', typingViewport);
-                const floatParent = e.target.closest('.float-anim');
-                if (floatParent) floatParent.style.animationPlayState = 'paused';
-            }
-        });
-        document.addEventListener('focusout', (e) => {
-            if (e.target.matches('input[type="text"], input[type="number"]')) {
-                // Micro delay prevents freezing during keyboard collapse / zoom out
-                setTimeout(() => {
-                    viewportMeta.setAttribute('content', desktopViewport);
-                }, 150);
-                const floatParent = e.target.closest('.float-anim');
-                if (floatParent) floatParent.style.animationPlayState = 'running';
-            }
-        });
-    })();
+    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS ---
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'paused';
+        }
+    });
+    document.addEventListener('focusout', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'running';
+        }
+    });
 
     // --- BUTTON CLICK RIPPLE ANIMATION ---
     document.addEventListener('click', function(e) {
@@ -722,7 +721,7 @@
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
-        closeModals(); // FORCE CLOSE IMMEDIATELY BEFORE ANY FIREBASE ACTION
+        closeModals();
 
         if(action) {
             try {
