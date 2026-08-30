@@ -212,12 +212,12 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            pointer-events: auto !important;
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
             -webkit-touch-callout: default !important;
+            pointer-events: auto !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -297,6 +297,7 @@
 </head>
 <body>
 
+    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
@@ -308,6 +309,9 @@
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         <span class="di-text" id="themeText">LIGHT</span>
     </div>
+
+    <!-- HOLD LIQUID RIPPLE EFFECT DIV -->
+    <div class="ripple-drop" id="rippleDrop"></div>
 
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
@@ -525,22 +529,16 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX: dynamic viewport adjustment logic ---
+    // --- PASTE FIX: Pause float animation on focus, resume on blur ---
     (function() {
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        const desktopViewport = 'width=1366';
-        const typingViewport = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', typingViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'paused';
             }
         });
         document.addEventListener('focusout', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', desktopViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'running';
             }
@@ -566,7 +564,53 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    // FIXED: Theme order (light -> dark -> max)
+    let holdTimer;
+    let isHolding = false;
+    const drop = document.getElementById('rippleDrop');
+
+    function startHold(e) {
+        if(e.target.closest('button, .nav-link, input, .dynamic-island, .info-btn, svg')) return; 
+        holdTimer = setTimeout(() => {
+            isHolding = true;
+            drop.classList.add('active');
+            moveDrop(e);
+            createRipple(e);
+        }, 300);
+    }
+
+    function endHold() {
+        clearTimeout(holdTimer);
+        isHolding = false;
+        drop.classList.remove('active');
+    }
+
+    function moveDrop(e) {
+        if(!isHolding) return;
+        let x = e.touches ? e.touches[0].clientX : e.clientX;
+        let y = e.touches ? e.touches[0].clientY : e.clientY;
+        drop.style.left = x + 'px';
+        drop.style.top = y + 'px';
+        if(Math.random() > 0.85) createRipple(e);
+    }
+
+    function createRipple(e) {
+        let x = e.touches ? e.touches[0].clientX : e.clientX;
+        let y = e.touches ? e.touches[0].clientY : e.clientY;
+        let ring = document.createElement('div');
+        ring.className = 'ripple-ring';
+        ring.style.left = x + 'px';
+        ring.style.top = y + 'px';
+        document.body.appendChild(ring);
+        setTimeout(() => ring.remove(), 1000);
+    }
+
+    document.addEventListener('mousedown', startHold);
+    document.addEventListener('mouseup', endHold);
+    document.addEventListener('mousemove', moveDrop);
+    document.addEventListener('touchstart', startHold);
+    document.addEventListener('touchend', endHold);
+    document.addEventListener('touchmove', moveDrop);
+
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -667,7 +711,6 @@
         renderMasterKeys();
     });
 
-    // SKELETON LOADER HTML
     const getSkeletonHTML = () => `
         <div class="skeleton-box">
             <div class="skeleton-line" style="width: 60%;"></div>
@@ -696,7 +739,7 @@
             });
         } else {
             document.getElementById('stat-keys').innerText = "0";
-            listDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
+            listDiv.innerHTML = getSkeletonHTML();
         }
     }
 
@@ -717,7 +760,6 @@
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
-    // ROBUST CLOSE MODALS FIX
     window.closeModals = () => { 
         const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
         modals.forEach(id => {
@@ -726,11 +768,10 @@
         });
     }
 
-    // FIXED: Popup always closes immediately before action executes
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
-        closeModals(); // FORCE CLOSE FIRST
+        closeModals();
 
         if(action) {
             try {
@@ -765,7 +806,7 @@
             });
         } else {
             document.getElementById('stat-banned-keys').innerText = "0";
-            listDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
+            listDiv.innerHTML = getSkeletonHTML();
         }
     });
 
@@ -782,7 +823,7 @@
         if (!pendingKeyToBan) return;
         const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
         
-        closeModals(); // FIXED POPUP
+        closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         
         const usersRef = ref(db, 'users');
@@ -813,7 +854,7 @@
 
         if (!snapshot.exists()) {
             document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
-            activeListDiv.innerHTML = getSkeletonHTML(); // Empty Faded Illusion
+            activeListDiv.innerHTML = getSkeletonHTML();
             bannedListDiv.innerHTML = getSkeletonHTML();
             return;
         }
@@ -861,7 +902,7 @@
     
     window.confirmBan = async function() { 
         const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
-        closeModals(); // FIXED POPUP
+        closeModals();
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
     window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
