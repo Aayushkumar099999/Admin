@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1366">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DGXEN | Premium Admin OS</title>
+    
     <link rel="icon" type="image/png" href="./logo.png">
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
+    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -63,7 +65,13 @@
             --float-amount: -12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
+        * { 
+            box-sizing: border-box; margin: 0; padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            /* Global Anti-Copy */
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
         
         body { 
             background-color: var(--bg-color); color: var(--text-main); 
@@ -78,14 +86,15 @@
         body::before, body::after {
             content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; opacity: 0.8; pointer-events: none;
             animation: orbFloat 10s infinite alternate ease-in-out; transition: background 1s ease;
+            will-change: transform;
         }
         body::before { width: 450px; height: 450px; background: var(--orb-1); top: -100px; left: -100px; }
         body::after { width: 550px; height: 550px; background: var(--orb-2); bottom: -150px; right: 5vw; animation-delay: -5s; }
         @keyframes orbFloat { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(60px) scale(1.15); } }
 
-        .water-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; opacity: 0; pointer-events: none; overflow: hidden; transition: opacity 1.5s ease-in-out; }
+        .water-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; opacity: 0; pointer-events: none; overflow: hidden; transition: opacity 1.5s ease-in-out; will-change: opacity; }
         body.max-mode .water-bg { opacity: 1; }
-        .water-wave { position: absolute; width: 150vw; height: 150vw; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; background: linear-gradient(180deg, rgba(0, 255, 213, 0.12) 0%, rgba(1, 6, 14, 0.95) 100%); left: -25vw; top: -20vh; animation: rotateWater 25s linear infinite; }
+        .water-wave { position: absolute; width: 150vw; height: 150vw; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; background: linear-gradient(180deg, rgba(0, 255, 213, 0.12) 0%, rgba(1, 6, 14, 0.95) 100%); left: -25vw; top: -20vh; animation: rotateWater 25s linear infinite; will-change: transform; }
         .water-wave:nth-child(2) { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; background: linear-gradient(180deg, rgba(138, 43, 226, 0.08) 0%, rgba(1, 6, 14, 0.8) 100%); animation-duration: 35s; animation-direction: reverse; top: -10vh; }
         .water-wave:nth-child(3) { border-radius: 50% 50% 40% 60% / 50% 60% 40% 50%; background: linear-gradient(180deg, rgba(0, 150, 255, 0.08) 0%, rgba(1, 6, 14, 0.9) 100%); animation-duration: 28s; top: 0vh; }
         @keyframes rotateWater { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -103,7 +112,7 @@
         body.light-mode .click-ripple { background: rgba(0, 0, 0, 0.15); }
         @keyframes btn-ripple { to { transform: scale(4); opacity: 0; } }
 
-        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); box-shadow: 0 20px 50px var(--shadow-color), inset 0 1px 2px rgba(255,255,255,0.1); border-radius: 28px; }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); box-shadow: 0 20px 50px var(--shadow-color), inset 0 1px 2px rgba(255,255,255,0.1); border-radius: 28px; will-change: transform; }
         body.light-mode .glass-panel { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08), inset 0 10px 25px rgba(255, 255, 255, 0.8), inset 0 -2px 10px rgba(255,255,255,0.4); border: 1.5px solid rgba(255,255,255,0.8); border-top: 1.5px solid #ffffff; border-left: 1.5px solid #ffffff; }
         body.max-mode .glass-panel { box-shadow: 0 30px 60px var(--shadow-color), inset 0 2px 20px rgba(0, 255, 213, 0.08); }
 
@@ -147,12 +156,15 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
+        /* EXACT FIX FOR MOBILE PASTE & SELECTION ONLY IN INPUTS */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
             -webkit-user-select: auto !important;
             -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
             user-select: auto !important;
             -webkit-touch-callout: default !important;
         }
@@ -190,7 +202,7 @@
         .bg-green { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.3); }
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
-        /* FADED SKELETON ILLUSION (YouTube Style) */
+        /* FADED SKELETON ILLUSION */
         .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; animation: pulseSkeleton 1.8s infinite ease-in-out; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
         .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
         @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
@@ -223,6 +235,28 @@
         .guide-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
         .guide-section p { margin-bottom: 10px; font-size: 16px; color: var(--text-dim); line-height: 1.8; font-weight: 500; }
         .guide-section strong { color: var(--text-main); font-weight: 700; }
+
+        /* --- MOBILE RESPONSIVE UI --- */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 100%; height: auto; position: fixed; top: 0; left: 0; flex-direction: row; 
+                padding: 15px; border-radius: 0 0 25px 25px !important; z-index: 1000;
+                overflow-x: auto; border-right: none; border-bottom: 1px solid var(--glass-border);
+                align-items: center;
+            }
+            .sidebar::-webkit-scrollbar { display: none; }
+            .sidebar h1 { display: none; }
+            .nav-link { margin-bottom: 0; margin-right: 10px; padding: 10px 15px; font-size: 13px; white-space: nowrap; }
+            .main-content { margin-left: 0; padding: 100px 20px 30px; }
+            .dynamic-island { top: auto; bottom: 25px; right: 25px; z-index: 1001; }
+            .info-btn { bottom: 25px; left: 25px; right: auto; }
+            .input-group { flex-direction: column; }
+            .input-group input, .input-group button { width: 100%; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .user-grid { grid-template-columns: 1fr; }
+            .modal { width: 95%; padding: 30px 20px; }
+            .water-wave { width: 200vw; height: 200vw; }
+        }
     </style>
 </head>
 <body>
@@ -233,7 +267,6 @@
         <div class="water-wave"></div>
     </div>
 
-    <!-- 3-State Dynamic Island (Theme Toggle) -->
     <div class="dynamic-island" onclick="cycleTheme(event)">
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
         <span class="di-text" id="themeText">LIGHT</span>
@@ -241,7 +274,6 @@
 
     <div class="ripple-drop" id="rippleDrop"></div>
 
-    <!-- Sidebar -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
         <h1>DGXEN</h1>
         <div class="nav-link active" onclick="switchTab('dashboard', this)">
@@ -270,7 +302,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div id="dashboard" class="tab-section active">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(0, 255, 136, 0.4); box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.05), 0 25px 60px var(--shadow-color);">
@@ -357,10 +388,8 @@
         </div>
     </div>
 
-    <!-- FLOATING INFO BUTTON -->
     <button class="info-btn" onclick="openGuideModal()">i</button>
 
-    <!-- CUSTOM CONFIRMATION MODAL -->
     <div class="modal-overlay" id="confirmActionModal">
         <div class="modal">
             <h2 id="confirmActionTitle" style="color: var(--error);">Confirm Action</h2>
@@ -372,7 +401,6 @@
         </div>
     </div>
 
-    <!-- UNBIND INFO MODAL -->
     <div class="modal-overlay" id="unbindInfoModal">
         <div class="modal">
             <h2 style="color: var(--accent);">Device Unbind Info</h2>
@@ -382,7 +410,6 @@
         </div>
     </div>
 
-    <!-- USER GUIDE MODAL -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
             <h2 style="margin-bottom: 25px; text-align: center; color: var(--accent);">DGXEN System Manual</h2>
@@ -406,7 +433,6 @@
         </div>
     </div>
 
-    <!-- MODALS -->
     <div class="modal-overlay" id="banModal">
         <div class="modal">
             <h2>Ban User</h2>
@@ -442,7 +468,6 @@
         </div>
     </div>
 
-<!-- Firebase SDK & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, remove, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -674,6 +699,15 @@
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
+    // ROBUST CLOSE MODALS FIX
+    window.closeModals = () => { 
+        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
+        modals.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+    }
+
     // FIXED: Popup always closes immediately before action executes
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
@@ -806,15 +840,6 @@
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
-    
-    window.closeModals = () => { 
-        document.getElementById('banModal').style.display = 'none'; 
-        document.getElementById('resetModal').style.display = 'none'; 
-        document.getElementById('keyBanModal').style.display = 'none'; 
-        document.getElementById('guideModal').style.display = 'none'; 
-        document.getElementById('confirmActionModal').style.display = 'none';
-        document.getElementById('unbindInfoModal').style.display = 'none';
-    }
     
     window.confirmBan = async function() { 
         const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
