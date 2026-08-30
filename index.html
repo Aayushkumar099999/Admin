@@ -381,7 +381,7 @@
             <div class="section-box glass-panel float-anim">
                 <h2>
                     Manual Device Reset / Unbind
-                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap:round" stroke-linejoin:round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </h2>
                 <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
@@ -501,29 +501,18 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX: temporarily correct the viewport only while typing ---
-    // This page uses a fixed desktop-width viewport (width=1366) so the
-    // whole layout looks the same on every screen. But that fixed width
-    // makes mobile browsers scale/zoom the page out, and that scaling is
-    // what breaks the native long-press "Paste" menu inside inputs. This
-    // switches to a properly-scaled viewport ONLY while an input is
-    // focused (so paste works), then puts the original viewport back the
-    // instant you leave the field - the layout itself never changes.
+    // --- PASTE FIX (real root cause): only pause float animation while typing ---
+    // Viewport remains permanently width=1366 so layout never shrinks.
+    // Continuous .float-anim movement was cancelling the long-press paste menu.
     (function() {
-        const viewportMeta = document.querySelector('meta[name="viewport"]');
-        const desktopViewport = viewportMeta.getAttribute('content');
-        const typingViewport = 'width=device-width, initial-scale=1';
-
         document.addEventListener('focusin', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', typingViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'paused';
             }
         });
         document.addEventListener('focusout', (e) => {
             if (e.target.matches('input[type="text"], input[type="number"]')) {
-                viewportMeta.setAttribute('content', desktopViewport);
                 const floatParent = e.target.closest('.float-anim');
                 if (floatParent) floatParent.style.animationPlayState = 'running';
             }
@@ -667,7 +656,7 @@
                 listDiv.innerHTML += `
                     <div class="mk-item">
                         <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('\( {pushId}', ' \){keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                     </div>`;
             });
         } else {
@@ -725,7 +714,7 @@
                 const info = data[keyStr] || {};
                 listDiv.innerHTML += `
                     <div class="mk-item">
-                        <div><span class="mk-text" style="color: var(--error);">${keyStr}</span>${info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
+                        <div><span class="mk-text" style="color: var(--error);">\( {keyStr}</span> \){info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
                         <button class="mk-del" style="color: var(--accent);" title="Unban Key" onclick="unbanKey('${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></button>
                     </div>`;
             });
@@ -800,15 +789,15 @@
                 bannedListDiv.innerHTML += `
                     <div class="user-card glass-panel banned float-anim">
                         <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
-                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
+                        <div class="user-date">\( {dateStr}</div><div class="user-name"> \){user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        \( {user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: " \){user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
             } else {
                 activeCount++;
                 activeListDiv.innerHTML += `
                     <div class="user-card glass-panel float-anim">
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">\( {dateStr}</div><div class="user-name"> \){user.name}</div><div class="user-id">ID: ${user.id}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
