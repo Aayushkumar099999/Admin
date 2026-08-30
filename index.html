@@ -68,35 +68,18 @@
             --float-amount: -12px;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
-            -webkit-user-select: none; 
-            -moz-user-select: none; 
-            -ms-user-select: none; 
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
         
-        html, body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            display: flex; 
-            min-height: 100vh; 
-            overflow-x: hidden; 
-            position: relative;
-            transition: background-color 0.3s; 
-            -webkit-font-smoothing: antialiased;
-            overscroll-behavior-y: none; /* Prevents accidental pull-to-refresh */
+        body { 
+            background-color: var(--bg-color); color: var(--text-main); 
+            display: flex; min-height: 100vh; overflow-x: hidden; position: relative;
+            /* SMOOTH THEME TRANSITION FIX */
+            transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out; 
         }
 
-        /* Hardware Acceleration without heavy will-change to prevent 1-sec glitching */
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn {
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            /* SMOOTHER GLASS TRANSITIONS */
+            transition: background-color 0.8s ease-in-out, border-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         /* --- Ambient Background --- */
@@ -137,9 +120,27 @@
         .theme-wave {
             position: fixed; width: 10px; height: 10px; border-radius: 50%;
             z-index: 9998; pointer-events: none; opacity: 1; transform: scale(1);
-            transition: transform 0.4s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.5s ease;
-            transform-origin: center center;
+            transition: transform 0.6s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.6s ease;
+            transform-origin: center center; will-change: transform, opacity;
         }
+
+        /* --- LIQUID HOLD EFFECT --- */
+        .ripple-drop {
+            position: fixed; width: 120px; height: 120px; border-radius: 50%; pointer-events: none;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 60%);
+            transform: translate(-50%, -50%) scale(0); opacity: 0; z-index: 9997;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            mix-blend-mode: screen; filter: blur(15px);
+        }
+        body.light-mode .ripple-drop { mix-blend-mode: multiply; filter: blur(10px); background: radial-gradient(circle, var(--accent) 0%, transparent 50%); }
+        .ripple-drop.active { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+        
+        .ripple-ring {
+            position: fixed; border-radius: 50%; border: 3px solid var(--accent); pointer-events: none;
+            transform: translate(-50%, -50%) scale(0); animation: rippleExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 9996; opacity: 0.8;
+        }
+        @keyframes rippleExpand { 0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0.8; border-width: 4px; } 100% { transform: translate(-50%, -50%) scale(3); opacity: 0; border-width: 0px; } }
 
         /* --- BUTTON CLICK RIPPLE ANIMATION --- */
         .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island { position: relative; overflow: hidden; }
@@ -209,17 +210,10 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
-        /* ENABLE PASTE IN INPUTS ONLY */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            pointer-events: auto !important;
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
-            -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -260,8 +254,9 @@
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
         /* FADED SKELETON ILLUSION */
-        .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; opacity: 0.5; }
+        .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; animation: pulseSkeleton 1.8s infinite ease-in-out; }
         .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
+        @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
         /* --- Premium Apple-Style Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
@@ -298,6 +293,7 @@
 </head>
 <body>
 
+    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
@@ -307,8 +303,11 @@
     <!-- 3-State Dynamic Island (Theme Toggle) -->
     <div class="dynamic-island" onclick="cycleTheme(event)">
         <svg id="themeIcon" viewBox="0 0 24 24"></svg>
-        <span class="di-text" id="themeText">LIGHT</span>
+        <span class="di-text" id="themeText">DARK</span>
     </div>
+
+    <!-- HOLD LIQUID RIPPLE EFFECT DIV -->
+    <div class="ripple-drop" id="rippleDrop"></div>
 
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
@@ -526,21 +525,42 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS ---
-    document.addEventListener('focusin', (e) => {
-        if (e.target.matches('input[type="text"], input[type="number"]')) {
-            const floatParent = e.target.closest('.float-anim');
-            if (floatParent) floatParent.style.animationPlayState = 'paused';
+    // PREVENT ACCIDENTAL PULL-TO-REFRESH
+    let touchStartY = 0;
+    document.addEventListener('touchstart', e => { 
+        touchStartY = e.touches[0].clientY; 
+    }, {passive: false});
+    document.addEventListener('touchmove', e => {
+        const touchY = e.touches[0].clientY;
+        const touchDiff = touchY - touchStartY;
+        if (touchDiff > 0 && window.scrollY === 0) {
+            e.preventDefault();
         }
-    });
-    document.addEventListener('focusout', (e) => {
-        if (e.target.matches('input[type="text"], input[type="number"]')) {
-            const floatParent = e.target.closest('.float-anim');
-            if (floatParent) floatParent.style.animationPlayState = 'running';
-        }
-    });
+    }, {passive: false});
 
-    // --- BUTTON CLICK RIPPLE ANIMATION ---
+    // CLAUDE'S EXACT PASTE & VIEWPORT FIX (PAUSE FLOAT ANIMATION)
+    (function() {
+        const viewportMeta = document.querySelector('meta[name="viewport"]');
+        const desktopViewport = 'width=1366';
+        const typingViewport = 'width=device-width, initial-scale=1';
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.matches('input[type="text"], input[type="number"]')) {
+                viewportMeta.setAttribute('content', typingViewport);
+                const floatParent = e.target.closest('.float-anim');
+                if (floatParent) floatParent.style.animationPlayState = 'paused';
+            }
+        });
+        document.addEventListener('focusout', (e) => {
+            if (e.target.matches('input[type="text"], input[type="number"]')) {
+                viewportMeta.setAttribute('content', desktopViewport);
+                const floatParent = e.target.closest('.float-anim');
+                if (floatParent) floatParent.style.animationPlayState = 'running';
+            }
+        });
+    })();
+
+    // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island');
         if (!target) return;
@@ -560,7 +580,7 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    // FIXED: Theme order (light -> dark -> max)
+    // FIXED: Theme order (Light -> Dark -> MaxPro)
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -590,13 +610,14 @@
         
         requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
 
+        // Made transition slightly slower to give smooth fade
         setTimeout(() => {
             currentThemeIndex = nextThemeIndex;
             applyTheme(themes[currentThemeIndex]);
             wave.style.opacity = '0'; 
-        }, 400);
+        }, 500);
 
-        setTimeout(() => { wave.remove(); }, 900);
+        setTimeout(() => { wave.remove(); }, 1200);
     }
 
     function applyTheme(theme) {
@@ -718,10 +739,11 @@
         });
     }
 
+    // MODAL AUTO-CLOSE FIX: Closes immediately before processing Firebase calls
     window.executeConfirm = async function() {
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
-        closeModals();
+        closeModals(); 
 
         if(action) {
             try {
@@ -776,6 +798,7 @@
         closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         
+        // DELETES KEY HISTORY UPON BAN SO USER GETS A NEW ONE
         const usersRef = ref(db, 'users');
         const snap = await get(usersRef);
         if(snap.exists()){
@@ -852,7 +875,7 @@
     
     window.confirmBan = async function() { 
         const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
-        closeModals();
+        closeModals(); 
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
     window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
