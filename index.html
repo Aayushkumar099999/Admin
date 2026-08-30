@@ -89,11 +89,11 @@
             position: relative;
             transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out; 
             -webkit-font-smoothing: antialiased;
-            overscroll-behavior-y: contain; /* Prevents Chrome pull-to-refresh */
+            overscroll-behavior-y: contain; 
         }
 
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .manual-refresh-btn {
-            transform: translateZ(0); /* Hardware Acceleration for smooth zoom */
+            transform: translateZ(0); 
             backface-visibility: hidden;
             transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -239,7 +239,6 @@
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
         .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
         
-        /* ENABLE PASTE IN INPUTS ONLY */
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
@@ -336,7 +335,7 @@
         <div class="water-wave"></div>
     </div>
 
-    <!-- NEW: TOP CONTROLS (Manual Refresh + Theme Island) -->
+    <!-- TOP CONTROLS (Manual Refresh + Theme Island) -->
     <div class="top-controls">
         <div class="manual-refresh-btn" id="manualRefreshBtn" title="Hold for Settings">
             <svg id="refreshIcon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -518,7 +517,7 @@
         </div>
     </div>
 
-    <!-- UPDATED USER GUIDE MODAL -->
+    <!-- UPDATED USER GUIDE MODAL WITH DOWNLOADS -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
             <h2 style="margin-bottom: 25px; text-align: center; color: var(--accent);">DGXEN System Manual</h2>
@@ -545,23 +544,35 @@
                 <p>• <strong>Paste Bypass:</strong> Automatically pauses floating UI animations when you tap an input field to guarantee stable native paste functionality.</p>
                 <p>• <strong>Smooth Theme Engine:</strong> Cycles seamlessly through Light, Dark, and MaxPro using hardware-accelerated transitions.</p>
                 <p>• <strong>Clickable Analytics:</strong> Dashboard stat cards act as quick-jump links to their respective detailed sections.</p>
+                <p>• <strong>Smart Master Key Tracker:</strong> Base64 Dual-Check mechanism ensures keys are precisely tracked and wiped correctly regardless of spaces.</p>
             </div>
 
-            <div class="guide-section">
-                <h3 style="color: var(--accent);"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Code Downloads</h3>
-                <p>Export the current system files directly from here.</p>
+            <div class="guide-section" style="border: none;">
+                <h3 style="color: var(--accent);"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Code Downloads & Modules</h3>
+                <p>Export the current system files directly from here to update your hosting.</p>
                 <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border);">
-                        <span style="font-weight: 700; font-size: 14px; font-family: monospace;">Admin Panel (Index + Assets)</span>
-                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent);" onclick="alert('Download initiated...')">DOWNLOAD</button>
+                        <div>
+                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Admin Panel System</div>
+                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">index.html + manifest.json + logo.png</div>
+                        </div>
+                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent); width: auto;" onclick="alert('Preparing Admin Panel files...')">DOWNLOAD</button>
                     </div>
+                    
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border);">
-                        <span style="font-weight: 700; font-size: 14px; font-family: monospace;">Key Generator (steps.html)</span>
-                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent);" onclick="alert('Download initiated...')">DOWNLOAD</button>
+                        <div>
+                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Key Generator Logic</div>
+                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">steps.html + Generator Codes</div>
+                        </div>
+                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent); width: auto;" onclick="alert('Preparing Generator files...')">DOWNLOAD</button>
                     </div>
+
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border);">
-                        <span style="font-weight: 700; font-size: 14px; font-family: monospace;">Auth System (login.html)</span>
-                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent);" onclick="alert('Download initiated...')">DOWNLOAD</button>
+                        <div>
+                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Authentication Module</div>
+                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">login.html + Auth Hooks</div>
+                        </div>
+                        <button class="btn" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid var(--accent); width: auto;" onclick="alert('Preparing Auth files...')">DOWNLOAD</button>
                     </div>
                 </div>
             </div>
@@ -621,8 +632,7 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // PREVENT ACCIDENTAL PULL-TO-REFRESH
-    // Fixed: Only stops single touch scroll when at top. Multi-touch (zoom) is ignored so it won't freeze.
+    // PREVENT ACCIDENTAL PULL-TO-REFRESH 
     let touchStartY = 0;
     document.addEventListener('touchstart', e => { 
         if (e.touches.length === 1) {
@@ -762,7 +772,6 @@
         const icon = document.getElementById('refreshIcon');
         
         if(!isSilent && icon) {
-            // Fix single-rotation bug by forcing reflow with setTimeout
             icon.classList.remove('spin-anim');
             setTimeout(() => {
                 icon.classList.add('spin-anim');
@@ -892,13 +901,17 @@
         if(keys.length > 0) {
             keys.forEach(pushId => {
                 const keyStr = masterKeysData[pushId];
-                // THE BUG FIX: Base64 decode match for exact counting
+                
+                // --- THE ULTIMATE MASTER KEY FIX ---
+                // Attempts multiple fallback matches to ensure count is caught
+                const trimmedKey = String(keyStr).trim();
                 let safeKey = "";
                 try {
-                    safeKey = btoa(unescape(encodeURIComponent(keyStr))).replace(/[.#$\[\]/]/g, '_');
-                } catch(e) { safeKey = keyStr; }
+                    safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_');
+                } catch(e) { safeKey = trimmedKey; }
 
-                const usageCount = mkUsageData[safeKey] || 0; 
+                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
+                
                 listDiv.innerHTML += `
                     <div class="mk-item">
                         <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
@@ -952,11 +965,14 @@
 
     window.deleteMasterKey = function(pushId, keyStr) {
         showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
-            let safeKey = keyStr;
-            try { safeKey = btoa(unescape(encodeURIComponent(keyStr))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
+            const trimmedKey = String(keyStr).trim();
+            let safeKey = trimmedKey;
+            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
+            
             try { await remove(ref(db, 'settings/masterKeys/' + pushId)); } catch(e) {}
             try { await remove(ref(db, 'settings/mkUsage/' + safeKey)); } catch(e) {}
-            try { await remove(ref(db, 'settings/mkDeviceTrack/' + safeKey)); } catch(e) {} // Fixed: Deep cleanup
+            try { await remove(ref(db, 'settings/mkUsage/' + trimmedKey)); } catch(e) {}
+            try { await remove(ref(db, 'settings/mkDeviceTrack/' + safeKey)); } catch(e) {} 
         });
     }
 
