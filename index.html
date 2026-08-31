@@ -353,7 +353,7 @@
         .dl-file-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .dl-file-row:first-child { border-top: none; }
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
-        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid;}
+        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -601,12 +601,16 @@
                         </div>
                         <div class="dl-file-row">
                             <span class="dl-file-name">manifest.json</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('manifest.json', this)">DL</button>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('manifest', this)">DL</button>
+                        </div>
+                        <div class="dl-file-row">
+                            <span class="dl-file-name">logo.png</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('logo', this)">DL</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Category 2: Generator -->
+                <!-- Category 2: Generator Logic -->
                 <div class="acc-item" id="acc-gen">
                     <div class="acc-header" onclick="toggleAccordion('acc-gen')">
                         Key Generator Logic
@@ -615,12 +619,16 @@
                     <div class="acc-body">
                         <div class="dl-file-row">
                             <span class="dl-file-name">steps.html (Key Web)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps.html', this)">DL</button>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
+                        </div>
+                        <div class="dl-file-row">
+                            <span class="dl-file-name">login.html (Web Generator)</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_live', this)">DL</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Category 3: Auth System (Injected Files) -->
+                <!-- Category 3: Auth System (Injected/App Assets) -->
                 <div class="acc-item" id="acc-auth">
                     <div class="acc-header" onclick="toggleAccordion('acc-auth')">
                         Authentication Module
@@ -628,15 +636,15 @@
                     </div>
                     <div class="acc-body">
                         <div class="dl-file-row">
-                            <span class="dl-file-name">login.html (Offline/Assets)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login', this)">DL</button>
+                            <span class="dl-file-name">login.html (Offline/App Asset)</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_offline', this)">NA</button>
                         </div>
                         <div class="dl-file-row">
-                            <span class="dl-file-name">Auth.smali</span>
+                            <span class="dl-file-name">Auth.smali (Hook Core)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('auth_smali', this)">DL</button>
                         </div>
                         <div class="dl-file-row">
-                            <span class="dl-file-name">Hook.smali</span>
+                            <span class="dl-file-name">Hook.smali (Invoke Trigger)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('hook_smali', this)">DL</button>
                         </div>
                     </div>
@@ -713,20 +721,53 @@
         item.classList.toggle('active');
     };
 
-    // --- SAFE OFFLINE B64 DATA ---
-    const offlineFiles = {
-        'auth_smali': {
-            name: 'Auth.smali',
-            b64: 'LmNsYXNzIHB1YmxpYyBMY29tL2RneGVuL0F1dGg7Ci5zdXBlciBMamF2YS9sYW5nL09iamVjdDsKLnNvdXJjZSAiQXV0aC5qYXZhIgoKCiMgc3RhdGljIGZpZWxkcwouZmllbGQgcHVibGljIHN0YXRpYyBkaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCi5maWVsZCBwdWJsaWMgc3RhdGljIHVubG9ja2VkOloKCi5maWVsZCBwdWJsaWMgc3RhdGljIHdlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgoKIyBkaXJlY3QgbWV0aG9kcwoubWV0aG9kIHB1YmxpYyBjb25zdHJ1Y3RvciA8aW5pdD4oKVYKICAgIC5yZWdpc3RlcnMgMQoKICAgIGludm9rZS1kaXJlY3Qge3AwfSwgTGphdmEvbGFuZy9PYmplY3Q7LT48aW5pdD4oKVYKCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZAoKLm1ldGhvZCBwdWJsaWMgc3RhdGljIHNob3coTGFuZHJvaWQvYXBwL0FjdGl2aXR5OylWCiAgICAucmVnaXN0ZXJzIDUKCiAgICBzZ2V0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBpZi1lcXogdjAsIDpjb25kXzUKCiAgICByZXR1cm4tdm9pZAoKICAgIDpjb25kXzUKICAgIG5ldy1pbnN0YW5jZSB2MCwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgaW52b2tlLWRpcmVjdCB7djAsIHAwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT48aW5pdD4oTGFuZHJvaWQvY29udGV4dC9Db250ZXh0OylWCgogICAgc3B1dC1vYmplY3QgdjAsIExjb20vZGd4ZW4vQXV0aDstPndlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgY29uc3QgdjEsIC0weDEwMDAwMDAKCiAgICBpbnZva2UtdmlydHVhbCB7djAsIHYxfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5zZXRCYWNrZ3JvdW5kQ29sb3IoSSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0LzQgdjIsIDB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MSwgdjJ9LCBMYW5kcm9pZC93ZWJraXQvV2ViU2V0dGluZ3M7LT5zZXRKYXZhU2NyaXB0RW5hYmxlZChaKVYKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOy0+c2V0RG9tU3RvcmFnZUVuYWJsZWQoWilWCgogICAgbmV3LWluc3RhbmNlIHYxLCBMY29tL2RneGVuL0F1dGg7CgogICAgaW52b2tlLWRpcmVjdCB7djF9LCBMY29tL2RneGVuL0F1dGg7LT48aW5pdD4oKVYKCiAgICBjb25zdC1zdHJpbmcgdjIsICJBbmRyb2lkIgoKICAgIGludm9rZS12aXJ0dWFsIHt2MCwgdjEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5hZGRKYXZhc2NyaXB0SW50ZXJmYWNlKExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL2xhbmcvU3RyaW5nOylWCgogICAgY29uc3Qtc3RyaW5nIHYyLCAiZmlsZTovLy9hbmRyb2lkX2Fzc2V0L2xvZ2luLmh0bWwiCgogICAgaW52b2tlLXZpcnR1YWwge3YwLCB2Mn0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+bG9hZFVybChMamF2YS9sYW5nL1N0cmluZzspVgoKICAgIGludm9rZS12aXJ0dWFsIHt2MH0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+cmVxdWVzdEZvY3VzKCpaCgogICAgbmV3LWluc3RhbmNlIHYxLCBMYW5kcm9pZC9hcHAvRGlhbG9nOwoKICAgIGNvbnN0IHYyLCAweDEwMzAwMDYKCiAgICBpbnZva2UtZGlyZWN0IHt2MSwgcDAsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPjxpbml0PihMYW5kcm9pZC9jb250ZXh0L0NvbnRleHQ7SSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YxLCB2MH0sIExhbmRyb2lkL2FwcC9EaWFsb2c7LT5zZXRDb250ZW50VmlldyhMYW5kcm9pZC92aWV3L1ZpZXc7KVYKCiAgICBjb25zdC80IHYyLCAweDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPnNldENhbmNlbGFibGUoWilWCgogICAgaW52b2tlLXZpcnR1YWwge3YxfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmdldFdpbmRvdygpTGFuZHJvaWQvdmlldy9XaW5kb3c7CgogICAgbW92ZS1yZXN1bHQtb2JqZWN0IHYyCgogICAgY29uc3QgcDAsIDB4MjAwMDgKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5jbGVhckZsYWdzKEkpVgoKICAgIGNvbnN0LzE2IHAwLCAweDIwCgogICAgaW52b2tlLXZpcnR1YWwge3YyLCBwMH0sIExhbmRyb2lkL3ZpZXcvV2luZG93Oy0+c2V0U29mdElucHV0TW9kZShJKVYKCiAgICBjb25zdCBwMCwgLTB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MiwgcDAsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRMYXlvdXQoSUkpVgoKICAgIGNvbnN0IHYzLCAweDEwMzAwMzAKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHYzfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRXaW5kb3dBbmltYXRpb25zKEkpVgoKICAgIHNwdXQtb2JqZWN0IHYxLCBMY29tL2RneGVuL0F1dGg7LT5kaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCiAgICBpbnZva2UtdmlydHVhbCB7djF9LCBMYW5kcm9pZC9hcHAvRGlhbG9nOy0+c2hvdygpVgoKICAgIHJldHVybi12b2lkCi5lbmQgbWV0aG9kCgoKIyB2aXJ0dWFsIG1ldGhvZHMKLm1ldGhvZCBwdWJsaWMgdW5sb2NrKClWCiAgICAucmVnaXN0ZXJzIDIKICAgIC5hbm5vdGF0aW9uIHJ1bnRpbWUgTGFuZHJvaWQvd2Via2l0L0phdmFzY3JpcHRJbnRlcmZhY2U7CiAgICAuZW5kIGFubm90YXRpb24KCiAgICBjb25zdC80IHYwLCAweDEKCiAgICBzcHV0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBzZ2V0LW9iamVjdCB2MCwgLGNvbS9kZ3hlbi9BdXRoOy0+ZGlhbG9nOkxhbmRyb2lkL2FwcC9EaWFsb2c7CgogICAgaWYtZXF6IHYwLCA6Y29uZF9hCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmRpc21pc3MoKVYKCiAgICA6Y29uZF9hCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZA=='
-        },
-        'hook_smali': {
-            name: 'Hook.smali',
-            b64: 'aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo='
-        }
-    };
+    // --- PURE SAFE DOWNLOAD SYSTEM (NO DOM INJECTIONS) ---
+    function triggerDownload(blob, fileName, btnElement, originalText) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        
+        setTimeout(() => {
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            btnElement.innerText = "DONE!";
+            btnElement.style.background = "rgba(0,255,136,0.2)";
+            btnElement.style.color = "var(--accent)";
+            btnElement.style.borderColor = "var(--accent)";
+            
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                btnElement.style.opacity = "1";
+                btnElement.style.pointerEvents = "auto";
+                btnElement.style.background = "rgba(0, 255, 136, 0.12)";
+                btnElement.style.color = "var(--accent)";
+                btnElement.style.borderColor = "var(--accent)";
+            }, 2000);
+        }, 100);
+    }
 
-    // --- SAFE FETCH DOWNLOAD SYSTEM ---
     window.downloadSpecificFile = async function(fileId, btnElement) {
+        // Special condition for offline login (no download per request)
+        if(fileId === 'login_offline') {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = "APP ASSET";
+            btnElement.style.background = "rgba(255,159,10,0.15)";
+            btnElement.style.color = "var(--warn)";
+            btnElement.style.borderColor = "var(--warn)";
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                btnElement.style.background = "rgba(0, 255, 136, 0.12)";
+                btnElement.style.color = "var(--accent)";
+                btnElement.style.borderColor = "var(--accent)";
+            }, 2000);
+            return;
+        }
+
         const originalText = btnElement.innerText;
         btnElement.innerText = "WAIT...";
         btnElement.style.opacity = "0.7";
@@ -739,50 +780,34 @@
             if (fileId === 'index') {
                 content = document.documentElement.outerHTML; 
                 finalName = "index.html";
-            } else if (fileId === 'login') {
-                // Safely escaped string to prevent DOM parsing crashes
-                content = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">\n<meta name="theme-color" content="#050706">\n<title>DGXEN | App Login</title>\n<style>\n:root{\n  --bg:#030504;\n  --text:#fff;\n  --muted:#9ca5a0;\n  --accent:#00ff88;\n  --accent2:#00c96d;\n  --accent-soft:rgba(0,255,136,.18);\n  --error:#ff5252;\n  --card-radius:34px;\n}\n*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}\nhtml,body{min-height:100%;margin:0}\nbody{\n  min-height:100svh;\n  overflow:hidden;\n  display:grid;\n  place-items:center;\n  padding:28px 20px;\n  color:var(--text);\n  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;\n  -webkit-font-smoothing:antialiased;\n  background:\n    radial-gradient(circle at 14% 13%,rgba(255,255,255,.075),transparent 26%),\n    radial-gradient(circle at 88% 82%,rgba(0,255,136,.10),transparent 32%),\n    linear-gradient(145deg,#020302 0%,#070a08 48%,#020403 100%);\n}\nbody::before{\n  content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;\n  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");\n  mix-blend-mode:soft-light;\n}\n.scene{width:min(360px,100%);perspective:1500px;position:relative;isolation:isolate;will-change:transform;transition:transform .55s cubic-bezier(.22,1,.36,1)}\n.scene::before{content:"";position:absolute;inset:20px -18px -26px;z-index:-2;background:radial-gradient(ellipse at 50% 74%,rgba(0,0,0,.62),transparent 69%)}\n.scene::after{display:none}\n.card-shell{\n  position:relative;width:100%;transform-origin:0 0;transform-style:preserve-3d;touch-action:none;cursor:grab;\n  will-change:transform;backface-visibility:hidden;contain:layout style;\n  animation:unrollCorner4D 1.85s cubic-bezier(.16,.84,.18,1) both;\n}\n@keyframes unrollCorner4D{\n  0%{transform:translate3d(-38px,-34px,-180px) rotateX(-88deg) rotateY(64deg) rotateZ(-10deg) scale3d(.12,.08,.12)}\n  18%{transform:translate3d(-34px,-29px,-130px) rotateX(-76deg) rotateY(56deg) rotateZ(-8deg) scale3d(.24,.18,.24)}\n  43%{transform:translate3d(-18px,-15px,-48px) rotateX(-43deg) rotateY(31deg) rotateZ(-4.2deg) scale3d(.58,.52,.58)}\n  70%{transform:translate3d(5px,5px,18px) rotateX(9deg) rotateY(-7deg) rotateZ(1.15deg) scale3d(1.025,1.018,1.025)}\n  84%{transform:translate3d(-1px,-2px,-3px) rotateX(-3.2deg) rotateY(2.4deg) rotateZ(-.4deg) scale3d(.994,.996,.994)}\n  93%{transform:translate3d(0,1px,2px) rotateX(1.1deg) rotateY(-.8deg) rotateZ(.12deg) scale3d(1.003,1.002,1.003)}\n  100%{transform:translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale3d(1,1,1)}\n}\n.roll-fold{position:absolute;inset:-2px;overflow:hidden;border-radius:var(--card-radius);pointer-events:none;z-index:8;transform:translateZ(52px);animation:foldDepthFade 1.85s cubic-bezier(.16,.84,.18,1) both}\n.roll-fold::before{\n  content:"";position:absolute;left:-30%;top:-31%;width:92%;height:78%;\n  background:conic-gradient(from 220deg,transparent 0 21%,rgba(255,255,255,.55) 30%,rgba(255,255,255,.10) 39%,rgba(0,0,0,.45) 52%,transparent 64%);\n  filter:blur(9px);transform-origin:0 0;animation:foldRelease4D 1.85s cubic-bezier(.16,.84,.18,1) both;\n}\n.roll-fold::after{\n  content:"";position:absolute;inset:-20% -55%;\n  background:linear-gradient(108deg,transparent 35%,rgba(0,0,0,.5) 47%,rgba(255,255,255,.22) 52%,transparent 64%);\n  animation:rollShadow4D 1.85s cubic-bezier(.16,.84,.18,1) both;\n}\n@keyframes foldDepthFade{0%,35%{opacity:1}82%{opacity:.32}100%{opacity:0}}\n@keyframes foldRelease4D{\n  0%{opacity:1;transform:translate(-22%,-24%) rotate(-18deg) skew(-8deg,-5deg) scale(1.48)}\n  28%{opacity:.98;transform:translate(-5%,-7%) rotate(-10deg) skew(-4deg,-2deg) scale(1.2)}\n  62%{opacity:.68;transform:translate(43%,38%) rotate(6deg) skew(2deg,1deg) scale(.88)}\n  84%{opacity:.2;transform:translate(88%,78%) rotate(13deg) scale(.52)}\n  100%{opacity:0;transform:translate(122%,110%) rotate(16deg) scale(.2)}\n}\n@keyframes rollShadow4D{\n  0%{opacity:.96;transform:translate3d(-72%,-7%,0) skewX(-18deg) scaleX(1.3)}\n  38%{opacity:.82;transform:translate3d(-25%,0,0) skewX(-14deg) scaleX(1.12)}\n  72%{opacity:.35;transform:translate3d(45%,5%,0) skewX(-9deg) scaleX(.8)}\n  100%{opacity:0;transform:translate3d(92%,8%,0) skewX(-6deg) scaleX(.45)}\n}\n.hang{\n  position:absolute;top:-51px;right:22px;width:78px;height:54px;\n  display:flex;flex-direction:column;align-items:center;z-index:12;\n  transform-origin:50% 100%;animation:sway 5.2s ease-in-out 1.55s infinite;\n}\n@keyframes sway{0%,100%{transform:rotate(-1.15deg)}50%{transform:rotate(1.15deg)}}\n.join-badge{\n  order:1;display:inline-flex;align-items:center;justify-content:center;\n  width:auto;height:auto;padding:7px 15px;border-radius:999px;\n  color:#03150b;text-decoration:none;font-size:10.5px;font-weight:900;letter-spacing:.6px;\n  background:linear-gradient(135deg,#26f5a1,#00d978);\n  box-shadow:0 6px 15px rgba(0,255,136,.24),inset 0 1px rgba(255,255,255,.48);\n  transform-origin:50% 85%;\n  animation:joinMiniGesture 3.8s cubic-bezier(.22,1,.36,1) 2.1s infinite;\n  will-change:transform,box-shadow;\n}\n.join-badge:hover{animation-play-state:paused;transform:translateY(-2px) scale(1.045);box-shadow:0 9px 20px rgba(0,255,136,.34),inset 0 1px rgba(255,255,255,.55)}\n.join-badge:active{transform:translateY(0) scale(.95)}\n@keyframes joinMiniGesture{\n  0%,76%,100%{transform:translate3d(0,0,0) rotate(0) scale(1)}\n  80%{transform:translate3d(0,-2px,0) rotate(-4deg) scale(1.035)}\n  84%{transform:translate3d(0,0,0) rotate(3.2deg) scale(1.02)}\n  88%{transform:translate3d(0,-1px,0) rotate(-2deg) scale(1.025)}\n  92%{transform:translate3d(0,0,0) rotate(0) scale(1)}\n}\n.hang-string{\n  order:2;width:1px;height:18px;flex:none;\n  background:linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.3));\n}\n.hang-pin{\n  order:3;width:6px;height:6px;flex:none;border-radius:50%;\n  background:#f7f7f7;box-shadow:0 0 7px rgba(255,255,255,.65);margin-top:-1px;\n}\n.glass{\n  position:relative;overflow:hidden;border-radius:var(--card-radius);padding:43px 29px 34px;text-align:center;\n  background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.034) 52%,rgba(255,255,255,.018));\n  border:1px solid rgba(255,255,255,.13);\n  box-shadow:0 38px 100px rgba(0,0,0,.72),0 0 70px rgba(255,255,255,.045),inset 0 1.5px rgba(255,255,255,.28),inset 0 -1px rgba(0,0,0,.45);\n  backdrop-filter:blur(30px) saturate(175%) contrast(108%);-webkit-backdrop-filter:blur(30px) saturate(175%) contrast(108%);\n  transform-style:preserve-3d;transition:transform .2s ease-out;\n}\n.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;background:linear-gradient(135deg,rgba(255,105,105,.72),rgba(255,255,255,.78) 17%,transparent 42%,rgba(90,160,255,.55) 75%,rgba(255,255,255,.85));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;z-index:6}\n.glass::after{display:none}\n.glass-shadow-runner{\n  position:absolute!important;z-index:1!important;\n  top:-10%;bottom:-10%;left:0;width:50%;\n  pointer-events:none;opacity:.48}\n@keyframes shadowRunner{\n  from{transform:translate3d(-70%,7%,0) skewX(-11deg)}\n  to{transform:translate3d(170%,-7%,0) skewX(-11deg)}\n}\n.grain{position:absolute!important;z-index:5!important;inset:-35%;width:170%;height:170%;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");transform:translateZ(3px)}\n.light-cap{position:absolute!important;z-index:0!important;top:-25%;left:-20%;width:78%;height:59%;background:radial-gradient(closest-side,rgba(255,255,255,.33),transparent 73%)}\n.light-cap.two{top:auto;left:auto;right:-23%;bottom:-27%;width:67%;height:51%;background:radial-gradient(closest-side,rgba(255,255,255,.08),transparent 72%)}\n.iridescent{position:absolute!important;z-index:0!important;inset:0;pointer-events:none;opacity:.18;mix-blend-mode:soft-light;background:linear-gradient(118deg,rgba(255,80,160,.24),rgba(255,210,110,.11) 24%,rgba(90,255,185,.15) 48%,rgba(90,155,255,.22) 72%,rgba(205,100,255,.18))}\n.content{position:relative;z-index:2;transform:translateZ(24px)}\n.logo{width:70px;height:70px;object-fit:cover;border-radius:50%;margin-bottom:14px;border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 35px rgba(0,0,0,.35),0 0 24px rgba(0,255,136,.12)}\nh2{color:var(--accent);margin:0 0 6px;font-size:22px;letter-spacing:.3px;text-shadow:0 0 22px rgba(0,255,136,.3)}\n.tagline{color:var(--muted);font-size:13px;margin:0 0 25px}\n.key-wrap{position:relative;margin-bottom:16px}\ninput[type=text]{width:100%;padding:15px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.13);color:#fff;border-radius:14px;text-align:center;font-size:15px;font-weight:750;letter-spacing:.8px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,.3);transition:.22s;-webkit-user-select:text!important;-moz-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}\ninput[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),inset 0 2px 8px rgba(0,0,0,.3)}\n.checkbox-container{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 21px;padding:5px;color:var(--muted);font-size:13px;cursor:pointer}\n.checkbox-container>input{position:absolute;opacity:0;width:0;height:0}\n.checkbox-box{position:relative;width:21px;height:21px;flex:none;border-radius:7px;border:1.5px solid rgba(255,255,255,.22);background:rgba(0,0,0,.42);display:grid;place-items:center;overflow:visible;transition:background .3s ease,border-color .3s ease,transform .35s cubic-bezier(.34,1.56,.64,1)}\n.checkbox-check{width:13px;height:13px;fill:none;stroke:#03150b;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:20;transition:stroke-dashoffset .35s cubic-bezier(.34,1.56,.64,1) .08s}\n@keyframes checkPulse{0%{box-shadow:0 0 0 0 rgba(0,255,136,.55)}70%{box-shadow:0 0 0 11px rgba(0,255,136,0)}100%{box-shadow:0 0 0 0 rgba(0,255,136,0)}}\n.spark{position:absolute;top:50%;left:50%;width:3px;height:3px;border-radius:50%;background:var(--accent);opacity:0;pointer-events:none}\n@keyframes sparkOut{0%{opacity:1;transform:translate(-50%,-50%) translate(0,0) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) translate(var(--sx),var(--sy)) scale(0)}}\n.spark:nth-of-type(1){--sx:-16px;--sy:-12px}.spark:nth-of-type(2){--sx:16px;--sy:-12px}.spark:nth-of-type(3){--sx:-16px;--sy:12px}.spark:nth-of-type(4){--sx:16px;--sy:12px}.spark:nth-of-type(5){--sx:0;--sy:-18px}.spark:nth-of-type(6){--sx:0;--sy:18px}\n.checkbox-container input:checked+.checkbox-box{background:var(--accent);border-color:var(--accent);transform:scale(1.12);animation:checkPulse .55s ease}\n.checkbox-container input:checked+.checkbox-box .checkbox-check{stroke-dashoffset:0}\n.checkbox-container input:checked+.checkbox-box .spark{animation:sparkOut .55s ease-out forwards}\n.recall-hint{position:fixed;left:50%;bottom:28px;z-index:100;max-width:calc(100vw - 36px);padding:10px 15px;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(12,15,13,.82);color:#d8dedb;font-size:12px;font-weight:700;letter-spacing:.15px;text-align:center;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,.35);opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .25s,transform .25s}\n.recall-hint.show{opacity:1;transform:translate(-50%,0)}\nbody.recall-ready{cursor:crosshair}\n.auto-notch{position:absolute!important;top:0;left:50%;transform:translateX(-50%);z-index:20!important;display:flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(255,255,255,.15);border-top:0;border-radius:0 0 14px 14px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);cursor:pointer;transition:transform .3s cubic-bezier(.25,.8,.25,1)}\n.auto-notch:active{transform:translateX(-50%) scale(.95)}\n.auto-notch span{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;transition:color .3s}\n.notch-led{width:8px;height:8px;flex:none;border-radius:50%;background:#444;box-shadow:inset 0 1px 3px rgba(0,0,0,.5);transition:background .3s,box-shadow .3s}\n.auto-notch.active span{color:var(--accent)}\n.auto-notch.active .notch-led{background:var(--accent);box-shadow:0 0 10px rgba(0,255,136,.6),inset 0 0 4px #fff}\n.btn{width:100%;padding:16px;border:0;border-radius:14px;background:linear-gradient(135deg,#fff,#dfe5e1);color:#020302;font-size:15px;font-weight:900;letter-spacing:.35px;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.38),inset 0 1px #fff;transition:transform .15s,box-shadow .25s,background .25s}.btn:active{transform:scale(.975)}.btn:disabled{opacity:.64;cursor:wait}.btn.success{background:linear-gradient(135deg,#60ffb5,#00cf73);box-shadow:0 10px 30px rgba(0,255,136,.32)}\n.status{min-height:20px;margin-top:14px;font-size:12.5px;font-weight:750;line-height:1.45}.get-key{display:block;margin-top:17px;padding:7px;color:var(--muted);font-size:12px;text-decoration:none}.get-key:hover{color:#fff}\nbody.is-dragging .hang,\nbody.is-dragging .join-badge,\nbody.is-dragging .glass-shadow-runner{animation-play-state:paused!important}\nbody.is-dragging .glass{backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%)}\nbody.is-dragging .grain{opacity:.035}\n@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}.glass{transform:none!important}}\n@media (max-height:650px){body{overflow:auto;padding-top:62px;padding-bottom:25px}.glass{padding-top:34px;padding-bottom:27px}.logo{width:58px;height:58px}.tagline{margin-bottom:18px}}\n</style>\n</head>\n<body>\n<main class="scene" id="scene">\n  <section class="card-shell" id="cardShell" aria-label="DGXEN login">\n    <div class="hang">\n      <span class="hang-pin"></span><span class="hang-string"></span>\n      <a class="join-badge" href="https://t.me/DGXEN" target="_blank" rel="noopener noreferrer">JOIN</a>\n    </div>\n    <div class="glass" id="glass">\n      <div class="auto-notch" id="autoNotch" role="button" tabindex="0" aria-pressed="false"><div class="notch-led"></div><span>AUTO-LOGIN</span></div>\n      <div class="light-cap"></div><div class="light-cap two"></div><div class="iridescent"></div><div class="glass-shadow-runner"></div><div class="grain"></div><div class="roll-fold"></div>\n      <div class="content">\n        <img src="./assets/logo.png" alt="DGXEN" class="logo" onerror="this.style.display='none'">\n        <h2>DGXEN VIP</h2>\n        <p class="tagline">Enter your access key to unlock.</p>\n        <div class="key-wrap">\n          <input type="text" id="keyInput" placeholder="Enter Access Key..." autocomplete="off" autocapitalize="none" spellcheck="false">\n        </div>\n        <label class="checkbox-container" for="saveKeyCheck">\n          <input type="checkbox" id="saveKeyCheck">\n          <span class="checkbox-box"><svg class="checkbox-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg><span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span></span>\n          <span>Save Key for next time</span>\n        </label>\n        <button class="btn" id="unlockBtn" type="button">UNLOCK APP</button>\n        <div id="statusText" class="status" role="status" aria-live="polite"></div>\n        <a href="https://aayushkumar099999.github.io/DGXEN-KEY/steps.html" class="get-key" target="_blank" rel="noopener noreferrer">Don't have a key? Get one here.</a>\n      </div>\n    </div>\n  </section>\n</main>\n<div class="recall-hint" id="recallHint" role="status" aria-live="polite">Hold anywhere to call the block back</div>\n<script>\nconst scene=document.getElementById('scene');\nconst glass=document.getElementById('glass');\nconst reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;\nif(!reduceMotion && matchMedia('(pointer:fine)').matches){\n  scene.addEventListener('pointermove',e=>{\n    const r=scene.getBoundingClientRect();\n    const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;\n    glass.style.transform=\`rotateX(\${-y*4.5}deg) rotateY(\${x*5}deg) translateZ(0)\`;\n  });\n  scene.addEventListener('pointerleave',()=>glass.style.transform='rotateX(0) rotateY(0)');\n}\nconst cardShell=document.getElementById('cardShell');\nconst recallHint=document.getElementById('recallHint');\nconst HOLD_MS=600;\nconst CARD_POSITION_KEY='dgxen_card_position_v1';\nlet dragX=0,dragY=0,startX=0,startY=0,baseX=0,baseY=0;\nlet pressTimer=0,pressing=false,dragging=false,moved=false,activePointer=null,hintTimer=0;\nlet dragFrame=0,pendingX=0,pendingY=0;\nconst placeCard=(smooth=false)=>{\n  scene.style.transition=smooth?'transform .55s cubic-bezier(.22,1,.36,1)':'none';\n  scene.style.transform=\`translate3d(\${dragX}px,\${dragY}px,0)\`;\n};\nconst queueCardPosition=(x,y)=>{\n  pendingX=x;pendingY=y;\n  if(dragFrame)return;\n  dragFrame=requestAnimationFrame(()=>{\n    dragFrame=0;dragX=pendingX;dragY=pendingY;placeCard(false);\n  });\n};\nconst saveCardPosition=()=>{\n  try{localStorage.setItem(CARD_POSITION_KEY,JSON.stringify({x:dragX,y:dragY}))}catch(error){console.warn('Card position could not be saved:',error)}\n};\nconst restoreCardPosition=()=>{\n  try{\n    const saved=JSON.parse(localStorage.getItem(CARD_POSITION_KEY)||'null');\n    if(!saved||!Number.isFinite(Number(saved.x))||!Number.isFinite(Number(saved.y)))return;\n    dragX=Number(saved.x);dragY=Number(saved.y);\n    placeCard(false);\n  }catch(error){\n    localStorage.removeItem(CARD_POSITION_KEY);\n    console.warn('Invalid saved card position was cleared:',error);\n  }\n};\nrestoreCardPosition();\nconst showRecallHint=()=>{\n  clearTimeout(hintTimer);recallHint.classList.add('show');\n  hintTimer=setTimeout(()=>recallHint.classList.remove('show'),3200);\n};\nconst cancelHold=()=>{clearTimeout(pressTimer);pressTimer=0;pressing=false;document.body.classList.remove('recall-ready')};\nconst cardMostlyOutside=()=>{\n  const r=scene.getBoundingClientRect();\n  const visibleW=Math.max(0,Math.min(innerWidth,r.right)-Math.max(0,r.left));\n  const visibleH=Math.max(0,Math.min(innerHeight,r.bottom)-Math.max(0,r.top));\n  return visibleW*visibleH<r.width*r.height*.32;\n};\ncardShell.addEventListener('pointerdown',e=>{\n  if(e.button!==undefined&&e.button!==0)return;\n  activePointer=e.pointerId;pressing=true;dragging=false;moved=false;\n  startX=e.clientX;startY=e.clientY;baseX=dragX;baseY=dragY;\n  pressTimer=setTimeout(()=>{\n    if(!pressing||activePointer!==e.pointerId)return;\n    dragging=true;scene.style.transition='none';cardShell.setPointerCapture(e.pointerId);cardShell.style.cursor='grabbing';document.body.classList.add('is-dragging');\n    if(navigator.vibrate)navigator.vibrate(18);\n  },HOLD_MS);\n});\ncardShell.addEventListener('pointermove',e=>{\n  if(activePointer!==e.pointerId)return;\n  const dx=e.clientX-startX,dy=e.clientY-startY;\n  if(!dragging){if(Math.hypot(dx,dy)>12)cancelHold();return}\n  e.preventDefault();moved=true;queueCardPosition(baseX+dx,baseY+dy);\n});\nfunction finishDrag(e){\n  if(activePointer!==e.pointerId)return;\n  cancelHold();\n  if(dragging&&cardShell.hasPointerCapture(e.pointerId))cardShell.releasePointerCapture(e.pointerId);\n  const wasDragging=dragging;dragging=false;activePointer=null;cardShell.style.cursor='grab';document.body.classList.remove('is-dragging');\n  if(dragFrame){cancelAnimationFrame(dragFrame);dragFrame=0;dragX=pendingX;dragY=pendingY;placeCard(false)}\n  if(wasDragging)saveCardPosition();\n  if(wasDragging&&cardMostlyOutside())showRecallHint();\n}\ncardShell.addEventListener('pointerup',finishDrag);\ncardShell.addEventListener('pointercancel',finishDrag);\ncardShell.addEventListener('click',e=>{if(moved){e.preventDefault();e.stopPropagation();moved=false}},true);\nlet recallTimer=0,recallPointer=null,recallStartX=0,recallStartY=0;\ndocument.addEventListener('pointerdown',e=>{\n  if(cardShell.contains(e.target)||(e.button!==undefined&&e.button!==0))return;\n  recallPointer=e.pointerId;recallStartX=e.clientX;recallStartY=e.clientY;\n  document.body.classList.add('recall-ready');\n  recallTimer=setTimeout(()=>{\n    if(recallPointer!==e.pointerId)return;\n    const r=scene.getBoundingClientRect();\n    dragX+=e.clientX-(r.left+r.width/2);dragY+=e.clientY-(r.top+r.height/2);\n    placeCard(true);saveCardPosition();recallHint.classList.remove('show');document.body.classList.remove('recall-ready');\n    if(navigator.vibrate)navigator.vibrate(18);\n    recallPointer=null;\n  },HOLD_MS);\n});\ndocument.addEventListener('pointermove',e=>{\n  if(recallPointer!==e.pointerId)return;\n  if(Math.hypot(e.clientX-recallStartX,e.clientY-recallStartY)>12){clearTimeout(recallTimer);recallPointer=null;document.body.classList.remove('recall-ready')}\n});\nfunction cancelRecall(e){if(recallPointer!==e.pointerId)return;clearTimeout(recallTimer);recallPointer=null;document.body.classList.remove('recall-ready')}\ndocument.addEventListener('pointerup',cancelRecall);\ndocument.addEventListener('pointercancel',cancelRecall);\nwindow.addEventListener('pagehide',saveCardPosition);\ndocument.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveCardPosition()});\n<\\/script>\n<script type="module">\nimport { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";\nimport { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";\nconst firebaseConfig={databaseURL:"https://login-pass-1a196-default-rtdb.firebaseio.com/"};\nconst app=initializeApp(firebaseConfig),db=getDatabase(app);\nconst input=document.getElementById('keyInput'),save=document.getElementById('saveKeyCheck'),status=document.getElementById('statusText'),btn=document.getElementById('unlockBtn');\nconst autoNotch=document.getElementById('autoNotch');\nlet isAutoLoginEnabled=localStorage.getItem('dgxen_auto_login')==='true';\nfunction getDeviceFingerprint() {\n    const str = navigator.userAgent + screen.width + 'x' + screen.height + (navigator.hardwareConcurrency || '');\n    let hash = 0;\n    for (let i = 0; i < str.length; i++) {\n        hash = ((hash << 5) - hash) + str.charCodeAt(i);\n        hash |= 0;\n    }\n    return "dev_" + Math.abs(hash).toString(16);\n}\nfunction updateNotchUI(){autoNotch.classList.toggle('active',isAutoLoginEnabled);autoNotch.setAttribute('aria-pressed',String(isAutoLoginEnabled))}\nfunction toggleAutoLogin(){isAutoLoginEnabled=!isAutoLoginEnabled;localStorage.setItem('dgxen_auto_login',String(isAutoLoginEnabled));updateNotchUI()}\nautoNotch.addEventListener('click',toggleAutoLogin);\nautoNotch.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleAutoLogin()}});\nconst show=(message,color='white')=>{status.textContent=message;status.style.color=color};\nwindow.addEventListener('load',()=>{updateNotchUI();const p=new URLSearchParams(location.search);const urlKey=p.get('key')||p.get('token');const saved=urlKey||localStorage.getItem('dgxen_saved_key');if(saved){input.value=saved.trim();save.checked=true;if(isAutoLoginEnabled&&!urlKey)setTimeout(()=>{if(!btn.disabled)verifyKey()},1000)}});\nbtn.addEventListener('click',verifyKey);\ninput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!btn.disabled)verifyKey()});\nasync function verifyKey(){\n  const userInput=input.value.trim();\n  if(!userInput){show('Key khali nahi ho sakti!','var(--error)');input.focus();return}\n  show('Strict Security Check...');btn.disabled=true;btn.classList.remove('success');\n  try{\n    let isValid=false;\n    let timeLeftText="";\n    try{\n      const snap=await get(ref(db,'settings/masterKeys'));\n      if(snap.exists()&&Object.values(snap.val()).map(k=>String(k).trim()).includes(userInput)){\n        const safeKey=btoa(unescape(encodeURIComponent(userInput))).replace(/[.#$\\[\\]\\/]/g,'_');\n        const deviceId = getDeviceFingerprint();\n        const trackRef = ref(db, \`settings/mkDeviceTrack/\${safeKey}/\${deviceId}\`);\n        const trackSnap = await get(trackRef);\n        if(!trackSnap.exists()){\n          try{\n            await set(trackRef, true);\n            const usageRef=ref(db,'settings/mkUsage/'+safeKey),usage=await get(usageRef);\n            await set(usageRef,(usage.exists()?Number(usage.val()):0)+1);\n          }catch(e){console.error('Usage count update failed:',e)}\n        }\n        isValid=true;\n        timeLeftText = " (Unlimited)";\n        show('Master Key Accepted! Unlocking...' + timeLeftText,'var(--accent)');\n      }\n    }catch(e){console.error('Master key fetch error:',e)}\n    if(!isValid&&userInput.startsWith('DGXEN-')){\n      let banned=false,reason='';\n      try{const bannedSnap=await get(ref(db,'settings/bannedKeys/'+userInput));if(bannedSnap.exists()){banned=true;reason=(bannedSnap.val()&&bannedSnap.val().reason)||'This key has been banned by the administrator.'}}catch(e){console.error('Key ban check failed:',e)}\n      if(banned){show('Banned: '+reason,'var(--error)');localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}\n      const usersSnap=await get(ref(db,'users'));let found=false;\n      if(usersSnap.exists())for(const uid in usersSnap.val()){\n        const user=usersSnap.val()[uid];\n        if(user.lastGeneratedKey&&String(user.lastGeneratedKey).trim()===userInput){\n          found=true;\n          if(user.status==='banned'){show('Account Banned: '+(user.banReason||'Your device is permanently banned.'),'var(--error)');localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}\n          if(user.keyExpiresAt&&Date.now()>user.keyExpiresAt){show('This key has expired! Get a new one.','var(--error)');localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}\n          if (user.keyExpiresAt) {\n            let remainingMs = user.keyExpiresAt - Date.now();\n            if (remainingMs > 0) {\n                let hrs = Math.floor(remainingMs / (1000 * 60 * 60));\n                let mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));\n                timeLeftText = hrs > 0 ? \` (Valid for \${hrs}h \${mins}m)\` : \` (Valid for \${mins} mins)\`;\n            }\n          }\n          isValid=true;show('Live Key Verified! Access Granted.' + timeLeftText,'var(--accent)');break;\n        }\n      }\n      if(!found){show('Unregistered or Fake Key!','var(--error)');localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}\n    }else if(!isValid){show('Invalid Key Format!','var(--error)');localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}\n    if(isValid){\n      btn.classList.add('success');btn.textContent='ACCESS GRANTED';\n      save.checked?localStorage.setItem('dgxen_saved_key',userInput):localStorage.removeItem('dgxen_saved_key');\n      setTimeout(()=>{try{if(window.Android&&typeof window.Android.unlock==='function')window.Android.unlock();else show('Unlocked! (Browser Mode)','var(--accent)')}catch(e){console.error('Android bridge error:',e);show('Unlocked! (Fallback Mode)','var(--accent)')}},900);\n    }\n  }catch(e){console.error(e);show('Network Error!','var(--error)');btn.disabled=false}\n}\n<\\/script>\n</body>\n</html>`;
-                finalName = "login.html";
+            } else if (fileId === 'auth_smali') {
+                content = atob('LmNsYXNzIHB1YmxpYyBMY29tL2RneGVuL0F1dGg7Ci5zdXBlciBMamF2YS9sYW5nL09iamVjdDsKLnNvdXJjZSAiQXV0aC5qYXZhIgoKCiMgc3RhdGljIGZpZWxkcwouZmllbGQgcHVibGljIHN0YXRpYyBkaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCi5maWVsZCBwdWJsaWMgc3RhdGljIHVubG9ja2VkOloKCi5maWVsZCBwdWJsaWMgc3RhdGljIHdlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgoKIyBkaXJlY3QgbWV0aG9kcwoubWV0aG9kIHB1YmxpYyBjb25zdHJ1Y3RvciA8aW5pdD4oKVYKICAgIC5yZWdpc3RlcnMgMQoKICAgIGludm9rZS1kaXJlY3Qge3AwfSwgTGphdmEvbGFuZy9PYmplY3Q7LT48aW5pdD4oKVYKCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZAoKLm1ldGhvZCBwdWJsaWMgc3RhdGljIHNob3coTGFuZHJvaWQvYXBwL0FjdGl2aXR5OylWCiAgICAucmVnaXN0ZXJzIDUKCiAgICBzZ2V0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBpZi1lcXogdjAsIDpjb25kXzUKCiAgICByZXR1cm4tdm9pZAoKICAgIDpjb25kXzUKICAgIG5ldy1pbnN0YW5jZSB2MCwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgaW52b2tlLWRpcmVjdCB7djAsIHAwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT48aW5pdD4oTGFuZHJvaWQvY29udGV4dC9Db250ZXh0OylWCgogICAgc3B1dC1vYmplY3QgdjAsIExjb20vZGd4ZW4vQXV0aDstPndlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgY29uc3QgdjEsIC0weDEwMDAwMDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5zZXRCYWNrZ3JvdW5kQ29sb3IoSSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0LzQgdjIsIDB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MSwgdjJ9LCBMYW5kcm9pZC93ZWJraXQvV2ViU2V0dGluZ3M7LT5zZXRKYXZhU2NyaXB0RW5hYmxlZChaKVYKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOy0+c2V0RG9tU3RvcmFnZUVuYWJsZWQoWilWCgogICAgbmV3LWluc3RhbmNlIHYxLCBMY29tL2RneGVuL0F1dGg7CgogICAgaW52b2tlLWRpcmVjdCB7djF9LCBMY29tL2RneGVuL0F1dGg7LT48aW5pdD4oKVYKCiAgICBjb25zdC1zdHJpbmcgdjIsICJBbmRyb2lkIgoKICAgIGludm9rZS12aXJ0dWFsIHt2MCwgdjEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5hZGRKYXZhc2NyaXB0SW50ZXJmYWNlKExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL2xhbmcvU3RyaW5nOylWCgogICAgY29uc3Qtc3RyaW5nIHYyLCAiZmlsZTovLy9hbmRyb2lkX2Fzc2V0L2xvZ2luLmh0bWwiCgogICAgaW52b2tlLXZpcnR1YWwge3YwLCB2Mn0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+bG9hZFVybChMamF2YS9sYW5nL1N0cmluZzspVgoKICAgIGludm9rZS12aXJ0dWFsIHt2MH0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+cmVxdWVzdEZvY3VzKCpaCgogICAgbmV3LWluc3RhbmNlIHYxLCBMYW5kcm9pZC9hcHAvRGlhbG9nOwoKICAgIGNvbnN0IHYyLCAweDEwMzAwMDYKCiAgICBpbnZva2UtZGlyZWN0IHt2MSwgcDAsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPjxpbml0PihMYW5kcm9pZC9jb250ZXh0L0NvbnRleHQ7SSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YxLCB2MH0sIExhbmRyb2lkL2FwcC9EaWFsb2c7LT5zZXRDb250ZW50VmlldyhMYW5kcm9pZC92aWV3L1ZpZXc7KVYKCiAgICBjb25zdC80IHYyLCAweDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPnNldENhbmNlbGFibGUoWilWCgogICAgaW52b2tlLXZpcnR1YWwge3YxfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmdldFdpbmRvdygpTGFuZHJvaWQvdmlldy9XaW5kb3c7CgogICAgbW92ZS1yZXN1bHQtb2JqZWN0IHYyCgogICAgY29uc3QgcDAsIDB4MjAwMDgKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5jbGVhckZsYWdzKEkpVgoKICAgIGNvbnN0LzE2IHAwLCAweDIwCgogICAgaW52b2tlLXZpcnR1YWwge3YyLCBwMH0sIExhbmRyb2lkL3ZpZXcvV2luZG93Oy0+c2V0U29mdElucHV0TW9kZShJKVYKCiAgICBjb25zdCBwMCwgLTB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MiwgcDAsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRMYXlvdXQoSUkpVgoKICAgIGNvbnN0IHYzLCAweDEwMzAwMzAKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHYzfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRXaW5kb3dBbmltYXRpb25zKEkpVgoKICAgIHNwdXQtb2JqZWN0IHYxLCBMY29tL2RneGVuL0F1dGg7LT5kaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCiAgICBpbnZva2UtdmlydHVhbCB7djF9LCBMYW5kcm9pZC9hcHAvRGlhbG9nOy0+c2hvdygpVgoKICAgIHJldHVybi12b2lkCi5lbmQgbWV0aG9kCgoKIyB2aXJ0dWFsIG1ldGhvZHMKLm1ldGhvZCBwdWJsaWMgdW5sb2NrKClWCiAgICAucmVnaXN0ZXJzIDIKICAgIC5hbm5vdGF0aW9uIHJ1bnRpbWUgTGFuZHJvaWQvd2Via2l0L0phdmFzY3JpcHRJbnRlcmZhY2U7CiAgICAuZW5kIGFubm90YXRpb24KCiAgICBjb25zdC80IHYwLCAweDEKCiAgICBzcHV0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBzZ2V0LW9iamVjdCB2MCwgLGNvbS9kZ3hlbi9BdXRoOy0+ZGlhbG9nOkxhbmRyb2lkL2FwcC9EaWFsb2c7CgogICAgaWYtZXF6IHYwLCA6Y29uZF9hCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmRpc21pc3MoKVYKCiAgICA6Y29uZF9hCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZA==');
+                finalName = "Auth.smali";
+            } else if (fileId === 'hook_smali') {
+                content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
+                finalName = "Hook.smali";
             } else {
-                const fileObj = offlineFiles[fileId];
-                if (fileObj) {
-                    content = atob(fileObj.b64);
-                    finalName = fileObj.name;
+                let fetchName = "";
+                if (fileId === 'steps') fetchName = "steps.html";
+                else if (fileId === 'manifest') fetchName = "manifest.json";
+                else if (fileId === 'logo') fetchName = "logo.png";
+                else if (fileId === 'login_live') fetchName = "login.html"; 
+                
+                const response = await fetch('./' + fetchName);
+                if (!response.ok) throw new Error("File missing on server");
+                
+                if (fileId === 'logo') {
+                   const blob = await response.blob();
+                   triggerDownload(blob, fetchName, btnElement, originalText);
+                   return;
                 } else {
-                    const response = await fetch('./' + (fileId === 'steps' ? 'steps.html' : 'manifest.json'));
-                    if (!response.ok) throw new Error("File missing on server");
-                    content = await response.text();
-                    finalName = fileId === 'steps' ? 'steps.html' : 'manifest.json';
+                   content = await response.text();
+                   finalName = fetchName;
                 }
             }
 
             const blob = new Blob([content], { type: finalName.endsWith('.smali') ? 'text/plain;charset=utf-8' : 'text/html;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = finalName;
-            document.body.appendChild(a);
-            
-            setTimeout(() => {
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                btnElement.innerText = "DONE!";
-                btnElement.style.background = "rgba(0,255,136,0.2)";
-                btnElement.style.color = "var(--accent)";
-                btnElement.style.borderColor = "var(--accent)";
-                
-                setTimeout(() => {
-                    btnElement.innerText = originalText;
-                    btnElement.style.opacity = "1";
-                    btnElement.style.pointerEvents = "auto";
-                    btnElement.style.background = "rgba(0, 255, 136, 0.12)";
-                    btnElement.style.color = "var(--accent)";
-                    btnElement.style.borderColor = "var(--accent)";
-                }, 2000);
-            }, 100);
+            triggerDownload(blob, finalName, btnElement, originalText);
 
         } catch (error) {
             console.error(error);
@@ -801,6 +826,449 @@
             }, 3000);
         }
     };
+
+    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS ---
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'paused';
+        }
+    });
+    document.addEventListener('focusout', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'running';
+        }
+    });
+
+    // BUTTON RIPPLE EFFECT
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
+        if (!target) return;
+        const rect = target.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const diameter = Math.max(rect.width, rect.height);
+        const radius = diameter / 2;
+        ripple.style.width = ripple.style.height = `${diameter}px`;
+        ripple.style.left = `${e.clientX - rect.left - radius}px`;
+        ripple.style.top = `${e.clientY - rect.top - radius}px`;
+        ripple.classList.add('click-ripple');
+        
+        const existing = target.querySelector('.click-ripple');
+        if(existing) existing.remove();
+        
+        target.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600); 
+    });
+
+    // SMOOTH THEME CYCLE
+    const themes = ['light', 'dark', 'max'];
+    let currentThemeIndex = 0;
+
+    const iconPaths = {
+        'dark': '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+        'light': '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>',
+        'max': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
+    };
+
+    window.cycleTheme = function(e) {
+        if(document.querySelector('.theme-wave')) return; 
+
+        const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
+        const nextTheme = themes[nextThemeIndex];
+        
+        const waveColor = nextTheme === 'light' ? '#f2f2f7' : (nextTheme === 'max' ? '#01060e' : '#050507');
+
+        let wave = document.createElement('div');
+        wave.className = 'theme-wave';
+        wave.style.background = waveColor;
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        wave.style.top = (rect.top + rect.height / 2 - 5) + 'px';
+        wave.style.left = (rect.left + rect.width / 2 - 5) + 'px';
+
+        document.body.appendChild(wave);
+        
+        requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
+
+        setTimeout(() => {
+            currentThemeIndex = nextThemeIndex;
+            applyTheme(themes[currentThemeIndex]);
+            wave.style.opacity = '0'; 
+        }, 500);
+
+        setTimeout(() => { wave.remove(); }, 1200);
+    }
+
+    function applyTheme(theme) {
+        const body = document.body;
+        const themeText = document.getElementById('themeText');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        body.classList.remove('light-mode', 'max-mode');
+        
+        if (theme === 'light') {
+            body.classList.add('light-mode');
+            themeText.innerText = 'LIGHT';
+            themeIcon.innerHTML = iconPaths['light'];
+        } else if (theme === 'max') {
+            body.classList.add('max-mode');
+            themeText.innerText = 'MAX PRO';
+            themeIcon.innerHTML = iconPaths['max'];
+        } else {
+            themeText.innerText = 'DARK';
+            themeIcon.innerHTML = iconPaths['dark'];
+        }
+        localStorage.setItem('dgxen_admin_theme', theme);
+    }
+
+    // --- AUTO SYNC (NOTCH) LOGIC ---
+    const syncGap = 5; 
+    let autoSyncTimer = null;
+
+    window.toggleAutoSync = function() {
+        let isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
+        isEnabled = !isEnabled;
+        localStorage.setItem('dgx_autosync_en', isEnabled);
+        applyAutoSync();
+        if(navigator.vibrate) navigator.vibrate(20);
+    };
+
+    function applyAutoSync() {
+        const isEnabled = localStorage.getItem('dgx_autosync_en') === 'true';
+        const notch = document.getElementById('autoSyncNotch');
+        const text = document.getElementById('syncNotchText');
+        
+        if(autoSyncTimer) clearInterval(autoSyncTimer);
+
+        if(isEnabled) {
+            notch.classList.add('active');
+            text.innerText = `AUTO SYNC: ${syncGap}S`;
+            autoSyncTimer = setInterval(() => forceInternalRefresh(true), syncGap * 1000);
+        } else {
+            notch.classList.remove('active');
+            text.innerText = "AUTO SYNC: OFF";
+        }
+    }
+
+    document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
+
+    window.onload = function() {
+        const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
+        currentThemeIndex = themes.indexOf(savedTheme);
+        if(currentThemeIndex === -1) currentThemeIndex = 0;
+        applyTheme(savedTheme);
+        applyAutoSync();
+    }
+
+    // --- GLOBAL STATE FOR REFRESH MECHANISM ---
+    let globalBannedSnap = null;
+    let globalUsersSnap = null;
+
+    const getSkeletonHTML = () => `
+        <div class="skeleton-box">
+            <div class="skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+        </div>
+        <div class="skeleton-box" style="animation-delay: 0.2s;">
+            <div class="skeleton-line" style="width: 50%;"></div>
+            <div class="skeleton-line" style="width: 30%;"></div>
+        </div>`;
+
+    // --- MANUAL REFRESH BUTTON LOGIC ---
+    window.forceInternalRefresh = function(isSilent = false) {
+        const icon = document.getElementById('refreshIcon');
+        
+        if(!isSilent && icon) {
+            icon.classList.remove('spin-anim');
+            setTimeout(() => {
+                icon.classList.add('spin-anim');
+                setTimeout(() => icon.classList.remove('spin-anim'), 800);
+            }, 10);
+            
+            document.getElementById('masterKeysList').innerHTML = getSkeletonHTML();
+            document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
+            document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
+            document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
+            
+            setTimeout(() => {
+                renderMasterKeys();
+                renderBannedKeysUI(globalBannedSnap);
+                renderUsersUI(globalUsersSnap);
+            }, 400);
+        } else {
+            get(ref(db, '/')).catch(e => console.error(e));
+        }
+    }
+
+    document.getElementById('manualRefreshBtn').addEventListener('click', () => {
+        if(navigator.vibrate) navigator.vibrate(20);
+        forceInternalRefresh(false);
+    });
+
+    // --- FIREBASE LOGIC & UI RENDERING ---
+    onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
+        const hrs = snap.exists() ? snap.val() : 24;
+        document.getElementById('currentExpiryDisplay').innerText = hrs;
+        document.getElementById('expiryHoursInput').value = hrs;
+    });
+
+    window.updateExpiryHours = async function() {
+        const hrs = parseFloat(document.getElementById('expiryHoursInput').value);
+        if(hrs > 0) {
+            await set(ref(db, 'settings/keyExpiryHours'), hrs);
+            showConfirm("Update Successful", "✅ Key Expiry Time updated to " + hrs + " hours for all new keys!", null);
+        } else { showConfirm("Error", "Please enter a valid number of hours.", null); }
+    }
+
+    window.switchTab = function(tabId, el) {
+        document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    let masterKeysData = {};
+
+    onValue(ref(db, 'settings/mkUsage'), (snap) => { 
+        if(snap.exists()) { mkUsageData = snap.val(); } else { mkUsageData = {}; }
+        renderMasterKeys(); 
+    });
+
+    onValue(ref(db, 'settings/masterKeys'), (snapshot) => {
+        if(snapshot.exists()) { masterKeysData = snapshot.val(); } else { masterKeysData = {}; }
+        renderMasterKeys();
+    });
+
+    function renderMasterKeys() {
+        const listDiv = document.getElementById('masterKeysList');
+        listDiv.innerHTML = '';
+        const keys = Object.keys(masterKeysData);
+        document.getElementById('stat-keys').innerText = keys.length;
+        
+        if(keys.length > 0) {
+            keys.forEach(pushId => {
+                const keyStr = masterKeysData[pushId];
+                const trimmedKey = String(keyStr).trim();
+                let safeKey = "";
+                try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
+                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
+                
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    </div>`;
+            });
+        } else {
+            document.getElementById('stat-keys').innerText = "0";
+            listDiv.innerHTML = getSkeletonHTML();
+        }
+    }
+
+    window.addMasterKey = async function() {
+        const newKey = document.getElementById('masterKeyInput').value.trim();
+        if(!newKey) return showConfirm("Error", "Key cannot be empty!", null);
+        await push(ref(db, 'settings/masterKeys'), newKey);
+        document.getElementById('masterKeyInput').value = '';
+    }
+
+    window.showConfirm = function(title, desc, callback) {
+        document.getElementById('confirmActionTitle').innerText = title;
+        document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
+        document.getElementById('confirmActionDesc').innerText = desc;
+        pendingConfirmAction = callback;
+        document.querySelector('#confirmActionModal .btn-cancel').style.display = callback ? "block" : "none";
+        document.querySelector('#confirmActionModal .btn-confirm').innerText = callback ? "CONFIRM" : "OK";
+        document.getElementById('confirmActionModal').style.display = 'flex';
+    }
+
+    window.closeModals = () => { 
+        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
+        modals.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+    }
+
+    window.executeConfirm = async function() {
+        const action = pendingConfirmAction;
+        pendingConfirmAction = null;
+        closeModals(); 
+        if(action) { try { await action(); } catch (err) { console.error(err); } }
+    }
+
+    window.deleteMasterKey = function(pushId, keyStr) {
+        showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
+            const trimmedKey = String(keyStr).trim();
+            let safeKey = trimmedKey;
+            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
+            
+            try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
+        });
+    }
+
+    onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
+        globalBannedSnap = snapshot;
+        renderBannedKeysUI(snapshot);
+    });
+
+    function renderBannedKeysUI(snapshot) {
+        const listDiv = document.getElementById('bannedKeysList');
+        listDiv.innerHTML = '';
+        if (snapshot && snapshot.exists()) {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            document.getElementById('stat-banned-keys').innerText = keys.length;
+            keys.forEach(keyStr => {
+                const info = data[keyStr] || {};
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <div><span class="mk-text" style="color: var(--error);">${keyStr}</span>${info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
+                        <button class="mk-del" style="color: var(--accent);" title="Unban Key" onclick="unbanKey('${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></button>
+                    </div>`;
+            });
+        } else {
+            document.getElementById('stat-banned-keys').innerText = "0";
+            listDiv.innerHTML = getSkeletonHTML();
+        }
+    }
+
+    window.openKeyBanModal = function() {
+        const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
+        if (!key) return showConfirm("Error", "Enter a key first!", null);
+        if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
+        pendingKeyToBan = key;
+        document.getElementById('keyBanTarget').innerText = key;
+        document.getElementById('keyBanReasonInput').value = '';
+        document.getElementById('keyBanModal').style.display = 'flex';
+    }
+
+    window.confirmKeyBan = async function() {
+        if (!pendingKeyToBan) return;
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
+        closeModals();
+        await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
+        const usersRef = ref(db, 'users');
+        const snap = await get(usersRef);
+        if(snap.exists()){
+            const allUsers = snap.val();
+            for(let uid in allUsers){
+                if(allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim().toUpperCase() === pendingKeyToBan.toUpperCase()){
+                    await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
+                }
+            }
+        }
+        document.getElementById('keyToBanInput').value = '';
+        pendingKeyToBan = null;
+    }
+
+    window.unbanKey = function(keyStr) {
+        showConfirm("Unban Key?", "Are you sure you want to remove the ban from this key?", async () => {
+            await remove(ref(db, 'settings/bannedKeys/' + keyStr));
+        });
+    }
+
+    onValue(ref(db, 'users'), (snapshot) => {
+        globalUsersSnap = snapshot;
+        renderUsersUI(snapshot);
+    });
+
+    function renderUsersUI(snapshot) {
+        const activeListDiv = document.getElementById('activeUserList');
+        const bannedListDiv = document.getElementById('bannedUserList');
+        activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
+
+        if (!snapshot || !snapshot.exists()) {
+            document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
+            activeListDiv.innerHTML = getSkeletonHTML();
+            bannedListDiv.innerHTML = getSkeletonHTML();
+            return;
+        }
+
+        const data = snapshot.val();
+        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
+
+        let activeCount = 0; let bannedCount = 0;
+        
+        users.forEach(user => {
+            const isBanned = user.status === 'banned';
+            const dateStr = new Date(user.joined).toLocaleDateString();
+
+            if(isBanned) {
+                bannedCount++;
+                bannedListDiv.innerHTML += `
+                    <div class="user-card glass-panel banned float-anim">
+                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
+                        <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
+                    </div>`;
+            } else {
+                activeCount++;
+                activeListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim">
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>`;
+            }
+        });
+        
+        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
+        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
+
+        document.getElementById('stat-total').innerText = users.length;
+        document.getElementById('stat-active').innerText = activeCount;
+        document.getElementById('stat-banned').innerText = bannedCount;
+    }
+
+    window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
+    window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
+    window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
+    
+    window.confirmBan = async function() { 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        closeModals(); 
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
+    }
+    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
+    
+    window.deleteUser = function(userId) { 
+        showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
+            await remove(ref(db, 'users/' + userId));
+        });
+    }
+    
+    window.resetDevice = async function() {
+        const id = document.getElementById('resetIdInput').value.trim();
+        if(id) { 
+            await remove(ref(db, 'users/' + id)); 
+            showConfirm("Success", "Device unbound successfully!", null);
+            document.getElementById('resetIdInput').value = ''; 
+        } else { 
+            showConfirm("Error", "Please enter a valid Device ID.", null); 
+        }
+    }
+
+    window.startFactoryReset = function() {
+        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    }
+    function executeResetStep() {
+        if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
+        else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
+    }
+    async function wipeEntireDatabase() { 
+        try { 
+            await set(ref(db, '/'), null); 
+            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        } catch (error) { 
+            showConfirm("Error", "Error wiping database: " + error.message, null); 
+        } 
+    }
 </script>
 </body>
 </html>
