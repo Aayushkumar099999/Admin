@@ -87,13 +87,15 @@
             min-height: 100vh; 
             overflow-x: hidden; 
             position: relative;
-            transition: background-color 0.8s ease, color 0.8s ease; 
+            transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out; 
             -webkit-font-smoothing: antialiased;
             overscroll-behavior-y: contain; 
         }
 
         .glass-panel, .stat-card, .btn, input, .user-card, .nav-link, .dynamic-island, .mk-item, .info-btn, .manual-refresh-btn, .auto-notch {
-            transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: translateZ(0); 
+            backface-visibility: hidden;
+            transition: background-color 0.6s ease, border-color 0.6s ease, color 0.6s ease, box-shadow 0.6s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         /* --- Ambient Background --- */
@@ -185,7 +187,7 @@
         .auto-notch.active span { color: var(--accent); }
         .auto-notch.active .notch-led { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow), inset 0 0 4px #fff; }
 
-        /* --- Top Controls (Theme Island & Refresh Button) --- */
+        /* --- Top Controls --- */
         .top-controls {
             position: fixed; top: 25px; right: 35px; z-index: 9999;
             display: flex; gap: 15px; align-items: center;
@@ -213,7 +215,7 @@
         .spin-anim { animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Sidebar & Main Content Layout --- */
+        /* --- Sidebar & Main Content --- */
         .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
@@ -237,7 +239,7 @@
         .stat-card .val.green { color: var(--accent); text-shadow: 0 0 25px var(--accent-glow); }
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
-        /* --- Sections, Cards & Premium Inputs --- */
+        /* --- Sections, Cards & Inputs --- */
         .section-box { padding: 40px; margin-bottom: 40px; }
         .section-box h2 { font-size: 24px; margin-bottom: 15px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; justify-content: space-between; position: relative;}
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
@@ -246,13 +248,8 @@
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            pointer-events: auto !important;
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
-            -webkit-touch-callout: default !important;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); pointer-events: auto !important;
+            -webkit-user-select: auto !important; -moz-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -263,7 +260,6 @@
         .btn:hover { background: var(--accent); color: #000; box-shadow: 0 15px 35px var(--accent-glow); transform: translateY(-4px) scale(1.02); }
         .btn:active { transform: translateY(1px) scale(0.97); }
 
-        /* Lists & Grids */
         .mk-list { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
         .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; }
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
@@ -292,12 +288,11 @@
         .bg-green { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.3); }
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
-        /* FADED SKELETON ILLUSION */
         .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; animation: pulseSkeleton 1.8s infinite ease-in-out; }
         .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
         @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
-        /* --- Premium Apple-Style Modals --- */
+        /* --- Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
         .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -310,7 +305,7 @@
         .btn-cancel { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; background: rgba(150,150,150,0.1); color: var(--text-main); transition: 0.3s; }
         .btn-cancel:hover { background: rgba(150,150,150,0.25); transform: translateY(-3px); }
 
-        /* --- Floating Info Button --- */
+        /* --- Info Button --- */
         .info-btn { position: fixed; bottom: 35px; right: 35px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); color: var(--accent); font-size: 28px; font-weight: bold; font-family: "SF Pro Display", sans-serif; font-style: italic; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2); transition: 0.3s; }
         body.max-mode .info-btn { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: 0 10px 30px rgba(0, 255, 213, 0.2); }
         .info-btn:hover { transform: scale(1.15) rotate(10deg); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--accent-glow); }
@@ -656,8 +651,44 @@
         </div>
     </div>
 
-<!-- SAFELY INJECTED OFFLINE CONTENT (100% BUG FREE) -->
-<script type="text/plain" id="raw-login-html">
+    <!-- MODALS -->
+    <div class="modal-overlay" id="banModal">
+        <div class="modal">
+            <h2>Ban User</h2>
+            <p>Enter a custom reason for this ban (User will see this).</p>
+            <input type="text" id="banReasonInput" placeholder="e.g., Suspicious activity detected." style="width: 100%; margin-bottom: 0;">
+            <div class="modal-btns">
+                <button class="btn-confirm" onclick="confirmBan()">CONFIRM BAN</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="keyBanModal">
+        <div class="modal">
+            <h2 style="color: var(--error);">Ban Key</h2>
+            <p style="margin-bottom: 10px;">Key: <br><span id="keyBanTarget" style="color: var(--accent); font-family: monospace; font-size: 19px; font-weight: 800; display: inline-block; margin-top: 10px;"></span></p>
+            <input type="text" id="keyBanReasonInput" placeholder="e.g., Key was shared publicly." style="width: 100%; margin-top: 15px;">
+            <div class="modal-btns">
+                <button class="btn-confirm" onclick="confirmKeyBan()">CONFIRM BAN</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal">
+            <h2 id="resetModalTitle" style="color: var(--error);">⚠️ Factory Reset</h2>
+            <p id="resetModalDesc">Are you sure you want to wipe everything?</p>
+            <div class="modal-btns">
+                <button class="btn-confirm" id="resetConfirmBtn">CONFIRM</button>
+                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+<!-- SAFELY INJECTED OFFLINE CONTENT (Using Textarea to Prevent DOM Breakout) -->
+<textarea id="raw-login-html" style="display:none;">
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -969,7 +1000,7 @@ document.addEventListener('pointerup',cancelRecall);
 document.addEventListener('pointercancel',cancelRecall);
 window.addEventListener('pagehide',saveCardPosition);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveCardPosition()});
-</script>
+<\/script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -1005,9 +1036,9 @@ async function verifyKey(){
     try{
       const snap=await get(ref(db,'settings/masterKeys'));
       if(snap.exists()&&Object.values(snap.val()).map(k=>String(k).trim()).includes(userInput)){
-        const safeKey=btoa(unescape(encodeURIComponent(userInput))).replace(/[.#$\[\]/]/g,'_');
+        const safeKey=btoa(unescape(encodeURIComponent(userInput))).replace(/[.#$\\[\\]/]/g,'_');
         const deviceId = getDeviceFingerprint();
-        const trackRef = ref(db, `settings/mkDeviceTrack/${safeKey}/${deviceId}`);
+        const trackRef = ref(db, \`settings/mkDeviceTrack/\${safeKey}/\${deviceId}\`);
         const trackSnap = await get(trackRef);
         if(!trackSnap.exists()){
           try{
@@ -1037,7 +1068,7 @@ async function verifyKey(){
             if (remainingMs > 0) {
                 let hrs = Math.floor(remainingMs / (1000 * 60 * 60));
                 let mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-                timeLeftText = hrs > 0 ? ` (Valid for ${hrs}h ${mins}m)` : ` (Valid for ${mins} mins)`;
+                timeLeftText = hrs > 0 ? \` (Valid for \${hrs}h \${mins}m)\` : \` (Valid for \${mins} mins)\`;
             }
           }
           isValid=true;show('Live Key Verified! Access Granted.' + timeLeftText,'var(--accent)');break;
@@ -1052,12 +1083,12 @@ async function verifyKey(){
     }
   }catch(e){console.error(e);show('Network Error!','var(--error)');btn.disabled=false}
 }
-</script>
+<\/script>
 </body>
 </html>
-</script>
+</textarea>
 
-<script type="text/plain" id="raw-auth-smali">
+<textarea id="raw-auth-smali" style="display:none;">
 .class public Lcom/dgxen/Auth;
 .super Ljava/lang/Object;
 .source "Auth.java"
@@ -1131,11 +1162,11 @@ async function verifyKey(){
     :cond_a
     return-void
 .end method
-</script>
+</textarea>
 
-<script type="text/plain" id="raw-hook-smali">
+<textarea id="raw-hook-smali" style="display:none;">
 invoke-static {p0}, Lcom/dgxen/Auth;->show(Landroid/app/Activity;)V
-</script>
+</textarea>
 
 <script type="module">
     // --- SAFE OFFLINE DOWNLOAD SYSTEM ---
@@ -1153,13 +1184,13 @@ invoke-static {p0}, Lcom/dgxen/Auth;->show(Landroid/app/Activity;)V
                 content = document.documentElement.outerHTML; 
                 finalName = "index.html";
             } else if (fileId === 'login') {
-                content = document.getElementById('raw-login-html').textContent.trim();
+                content = document.getElementById('raw-login-html').value.trim();
                 finalName = "login.html";
             } else if (fileId === 'auth_smali') {
-                content = document.getElementById('raw-auth-smali').textContent.trim();
+                content = document.getElementById('raw-auth-smali').value.trim();
                 finalName = "Auth.smali";
             } else if (fileId === 'hook_smali') {
-                content = document.getElementById('raw-hook-smali').textContent.trim();
+                content = document.getElementById('raw-hook-smali').value.trim();
                 finalName = "Hook.smali";
             } else {
                 // Fetch dynamic files from server
@@ -1191,7 +1222,7 @@ invoke-static {p0}, Lcom/dgxen/Auth;->show(Landroid/app/Activity;)V
                     btnElement.innerText = originalText;
                     btnElement.style.opacity = "1";
                     btnElement.style.pointerEvents = "auto";
-                    btnElement.style.background = "rgba(0, 255, 136, 0.1)";
+                    btnElement.style.background = "rgba(0, 255, 136, 0.12)";
                     btnElement.style.color = "var(--accent)";
                     btnElement.style.borderColor = "var(--accent)";
                 }, 2000);
@@ -1208,7 +1239,7 @@ invoke-static {p0}, Lcom/dgxen/Auth;->show(Landroid/app/Activity;)V
                 btnElement.innerText = originalText;
                 btnElement.style.opacity = "1";
                 btnElement.style.pointerEvents = "auto";
-                btnElement.style.background = "rgba(0, 255, 136, 0.1)";
+                btnElement.style.background = "rgba(0, 255, 136, 0.12)";
                 btnElement.style.color = "var(--accent)";
                 btnElement.style.borderColor = "var(--accent)";
             }, 3000);
