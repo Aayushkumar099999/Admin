@@ -405,10 +405,6 @@
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
             Banned Users
         </div>
-        <div class="nav-link" onclick="switchTab('security-logs', this)" id="nav-security">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
-            Security Logs
-        </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             System Reset
@@ -475,17 +471,6 @@
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                 <h2 style="color: var(--error); margin-bottom: 30px; font-size: 28px;">Banned Devices Database</h2>
                 <div class="user-grid" id="bannedUserList"></div>
-            </div>
-        </div>
-
-        <!-- NEW: Security Logs Tab -->
-        <div id="security-logs" class="tab-section">
-            <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
-                <h2 style="margin-bottom: 30px; font-size: 28px; display: flex; align-items: center;">
-                    <svg style="width:28px; margin-right:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-                    Security Logs (Key Sharing Attempts)
-                </h2>
-                <div id="securityLogsList" class="mk-list"></div>
             </div>
         </div>
 
@@ -801,7 +786,6 @@
             let finalName = "";
 
             if (fileId === 'index') {
-                // Download the admin's own index.html (the current page)
                 content = document.documentElement.outerHTML; 
                 finalName = "index.html";
             } else if (fileId === 'auth_smali') {
@@ -811,7 +795,6 @@
                 content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
                 finalName = "Hook.smali";
             } else if (fileId === 'gen_index') {
-                // HARDCODE absolute URL to avoid path conflict (trap 3)
                 const response = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/index.html');
                 if (!response.ok) throw new Error("Generator index missing");
                 content = await response.text();
@@ -877,7 +860,7 @@
         }
     });
 
-    // BUTTON RIPPLE EFFECT – does NOT prevent default or stop propagation (trap 4)
+    // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
         if (!target) return;
@@ -1026,13 +1009,11 @@
             document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
             document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
             document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
-            document.getElementById('securityLogsList').innerHTML = getSkeletonHTML(); // added
             
             setTimeout(() => {
                 renderMasterKeys();
                 renderBannedKeysUI(globalBannedSnap);
                 renderUsersUI(globalUsersSnap);
-                // security logs are fetched via its own listener
             }, 400);
         } else {
             get(ref(db, '/')).catch(e => console.error(e));
@@ -1263,89 +1244,6 @@
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
     }
-
-    // --- SECURITY LOGS LISTENER (NEW) ---
-    onValue(ref(db, 'settings/securityLogs'), async (snapshot) => {
-        const logsList = document.getElementById('securityLogsList');
-        logsList.innerHTML = '';
-
-        if (!snapshot.exists()) {
-            logsList.innerHTML = '<div class="skeleton-box"><div class="skeleton-line" style="width: 60%;"></div></div>';
-            return;
-        }
-
-        try {
-            // Fetch all users to resolve names
-            const usersSnap = await get(ref(db, 'users'));
-            const users = usersSnap.val() || {};
-
-            const logsData = snapshot.val();
-            const logKeys = Object.keys(logsData).reverse(); // newest first
-
-            if (logKeys.length === 0) {
-                logsList.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-dim);">No security logs found.</div>';
-                return;
-            }
-
-            logKeys.forEach(pushId => {
-                const log = logsData[pushId];
-                const { generatorId, usedById, key, timestamp } = log;
-
-                const genUser = users[generatorId];
-                const usedUser = users[usedById];
-
-                const genName = genUser ? genUser.name : `Unknown Device (${generatorId.slice(0,8)}…)`;
-                const usedName = usedUser ? usedUser.name : `Unknown Device (${usedById.slice(0,8)}…)`;
-
-                const date = new Date(timestamp).toLocaleString();
-
-                logsList.innerHTML += `
-                    <div class="mk-item" style="border-color: rgba(255,59,48,0.2);">
-                        <div style="flex:1;">
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px;">
-                                <span style="font-weight:800; color:var(--text-main);">${date}</span>
-                                <span style="color:var(--error); font-family:monospace;">🔑 ${key}</span>
-                                <span>👤 Generated by: <strong style="color:var(--accent);">${genName}</strong></span>
-                                <span>❌ Used by: <strong style="color:var(--error);">${usedName}</strong></span>
-                            </div>
-                        </div>
-                        <button class="btn" style="background: var(--error); color: white; padding: 10px 20px; border-radius: 12px; font-size:13px; white-space:nowrap;" onclick="banKeyFromLog('${key}')">
-                            🚫 FAST BAN
-                        </button>
-                    </div>
-                `;
-            });
-        } catch (error) {
-            console.error("Error loading security logs:", error);
-            logsList.innerHTML = '<div style="padding:30px; color:var(--error);">Error loading logs. Check console.</div>';
-        }
-    });
-
-    // --- FAST BAN FROM SECURITY LOG ---
-    window.banKeyFromLog = async function(key) {
-        if (!key) return;
-        showConfirm("Ban Key", `Are you sure you want to ban the key: ${key}?`, async () => {
-            try {
-                await set(ref(db, `settings/bannedKeys/${key}`), {
-                    reason: "Banned from Security Log (shared with wrong device)",
-                    bannedAt: new Date().toISOString()
-                });
-                // Also remove the key from any user's lastGeneratedKey
-                const usersSnap = await get(ref(db, 'users'));
-                if (usersSnap.exists()) {
-                    const users = usersSnap.val();
-                    for (let uid in users) {
-                        if (users[uid].lastGeneratedKey === key) {
-                            await update(ref(db, `users/${uid}`), { lastGeneratedKey: null, keyExpiresAt: null });
-                        }
-                    }
-                }
-                showConfirm("Done", "Key banned successfully!", null);
-            } catch (e) {
-                showConfirm("Error", "Failed to ban key: " + e.message, null);
-            }
-        });
-    };
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
