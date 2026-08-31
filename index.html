@@ -318,19 +318,40 @@
         body.max-mode .info-btn { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: 0 10px 30px rgba(0, 255, 213, 0.2); }
         .info-btn:hover { transform: scale(1.15) rotate(10deg); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--accent-glow); }
         
-        .header-info-icon { position: absolute; right: 0; width: 28px; height: 28px; color: var(--text-dim); cursor: pointer; transition: 0.3s; }
-        .header-info-icon:hover { color: var(--accent); transform: scale(1.15) rotate(10deg); filter: drop-shadow(0 0 10px var(--accent-glow)); }
-
-        /* --- Custom Guide Modal --- */
-        .guide-modal { max-width: 750px !important; max-height: 85vh; overflow-y: auto; text-align: left; padding: 50px !important; }
-        .guide-modal::-webkit-scrollbar { width: 8px; }
+        /* --- Modern Guide Modal & Tabs --- */
+        .guide-modal { max-width: 650px !important; max-height: 85vh; overflow-y: auto; text-align: left; padding: 40px !important; }
+        .guide-modal::-webkit-scrollbar { width: 6px; }
         .guide-modal::-webkit-scrollbar-track { background: transparent; }
         .guide-modal::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
-        .guide-section { margin-bottom: 35px; padding-bottom: 25px; border-bottom: 1px solid var(--glass-border); }
-        .guide-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .guide-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 12px; }
-        .guide-section p { margin-bottom: 10px; font-size: 16px; color: var(--text-dim); line-height: 1.8; font-weight: 500; }
-        .guide-section strong { color: var(--text-main); font-weight: 700; }
+        
+        .modal-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 16px; border: 1px solid var(--glass-border); }
+        .m-tab { flex: 1; text-align: center; padding: 14px 10px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--text-dim); transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .m-tab svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+        .m-tab.active { background: rgba(0, 255, 136, 0.15); color: var(--accent); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.1); }
+        body.max-mode .m-tab.active { background: rgba(0, 255, 213, 0.15); color: #00ffd5; box-shadow: 0 5px 15px rgba(0, 255, 213, 0.1); }
+
+        .m-content { display: none; animation: slideUpFade 0.4s ease; }
+        .m-content.active { display: block; }
+
+        .g-card { background: rgba(150,150,150,0.05); padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; position: relative; overflow: hidden; }
+        .g-card h3 { color: var(--accent); font-size: 18px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .g-card p { color: var(--text-dim); font-size: 14px; margin-bottom: 15px; line-height: 1.6; }
+        
+        .g-inner { background: rgba(0,0,0,0.2); padding: 15px 20px; border-radius: 14px; margin-top: 15px; }
+        .g-inner-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
+        .g-inner-title svg { width: 16px; height: 16px; opacity: 0.7; }
+        .check-list { list-style: none; padding: 0; margin: 0; }
+        .check-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.5; }
+        .check-list svg { width: 16px; height: 16px; stroke: var(--accent); stroke-width: 3; fill: none; flex-shrink: 0; margin-top: 2px; }
+        
+        .g-important { border: 1px solid rgba(0, 255, 136, 0.3); background: rgba(0, 255, 136, 0.05); }
+        body.max-mode .g-important { border-color: rgba(0, 255, 213, 0.3); background: rgba(0, 255, 213, 0.05); }
+
+        .dl-row { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 16px 20px; border-radius: 16px; border: 1px solid var(--glass-border); margin-bottom: 12px; transition: 0.3s; }
+        .dl-row:hover { border-color: rgba(150,150,150,0.3); background: rgba(150,150,150,0.1); }
+        .dl-title { font-weight: 800; font-size: 15px; color: var(--text-main); margin-bottom: 4px; }
+        .dl-sub { font-size: 12px; color: var(--text-dim); font-family: monospace; }
+        .dl-btn { padding: 10px 18px; border-radius: 12px; font-size: 12px; background: rgba(0, 255, 136, 0.12); color: var(--accent); border: 1px solid var(--accent); width: auto; box-shadow: none; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -500,106 +521,119 @@
         </div>
     </div>
 
-    <!-- USER GUIDE MODAL WITH MODERN DOWNLOAD STYLING -->
+    <!-- MODERN DESIGNED GUIDE / DOWNLOAD MODAL -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
-            <h2 style="margin-bottom: 25px; text-align: center; color: var(--accent);">DGXEN System Manual</h2>
-            <div class="guide-section">
-                <h3><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 1. Global Key Expiry</h3>
-                <p>Controls the lifespan of every new key generated via the website. Input values in hours.</p>
-            </div>
-            <div class="guide-section">
-                <h3><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> 2. Master Keys</h3>
-                <p>Special bypass strings. Master Keys never expire and cannot be banned via normal ban tool. <strong>Smart Tracker:</strong> Usage is counted per unique device.</p>
-            </div>
-            <div class="guide-section">
-                <h3><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> 3. Ban Normal Keys</h3>
-                <p>Use this to blacklist a specific auto-generated key instantly.</p>
-            </div>
-            <div class="guide-section">
-                <h3><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 4. Device Tracking & User Bans</h3>
-                <p>Every phone accessing the generator is assigned a hidden unique Device ID. Ban or Unbind them directly here.</p>
-            </div>
             
-            <div class="guide-section">
-                <h3 style="color: #0096ff;"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5"/></svg> 5. Secret Features & Core Mechanics</h3>
-                <p>• <strong>Auto-Sync System:</strong> Tap the top-center notch to enable silent background syncing. The delay is fixed at <strong>5 seconds</strong> to ensure optimal performance without browser lag.</p>
-                <p>• <strong>Paste Bypass:</strong> Automatically pauses floating UI animations when you tap an input field to guarantee stable native paste functionality.</p>
-                <p>• <strong>Smooth Theme Engine:</strong> Cycles seamlessly through Light, Dark, and MaxPro using hardware-accelerated transitions.</p>
-                <p>• <strong>Clickable Analytics:</strong> Dashboard stat cards act as quick-jump links to their respective detailed sections.</p>
-                <p>• <strong>Smart Master Key Tracker:</strong> Base64 Dual-Check mechanism ensures keys are precisely tracked and aggressively wiped entirely upon deletion regardless of spaces.</p>
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color: var(--accent); margin-bottom: 5px; font-size: 26px; letter-spacing: 1px;">DGXEN</h2>
+                <div style="color: var(--text-dim); font-size: 14px;">System Control Panel</div>
             </div>
 
-            <!-- MODERN DESIGNED DOWNLOAD SECTION (Matching Image Reference & Functional Blob Download) -->
-            <div class="guide-section" style="border: none;">
-                <h3 style="color: var(--accent);"><svg style="width:22px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Code Downloads & Modules</h3>
-                <p>Export the current system files directly from here to update your hosting.</p>
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 16px 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
-                        <div>
-                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Admin Panel System</div>
-                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">index.html + manifest.json + logo.png</div>
-                        </div>
-                        <button class="btn" style="padding: 10px 20px; border-radius: 12px; font-size: 13px; background: rgba(0, 255, 136, 0.12); color: var(--accent); border: 1px solid var(--accent); width: auto; box-shadow: none;" onclick="downloadModule('admin')">DOWNLOAD</button>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 16px 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
-                        <div>
-                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Key Generator Logic</div>
-                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">steps.html + Generator Codes</div>
-                        </div>
-                        <button class="btn" style="padding: 10px 20px; border-radius: 12px; font-size: 13px; background: rgba(0, 255, 136, 0.12); color: var(--accent); border: 1px solid var(--accent); width: auto; box-shadow: none;" onclick="downloadModule('generator')">DOWNLOAD</button>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); padding: 16px 20px; border-radius: 16px; border: 1px solid var(--glass-border);">
-                        <div>
-                            <div style="font-weight: 800; font-size: 15px; color: var(--text-main); text-align: left;">Authentication Module</div>
-                            <div style="font-size: 12px; color: var(--text-dim); margin-top: 4px; font-family: monospace; text-align: left;">login.html + Auth Hooks</div>
-                        </div>
-                        <button class="btn" style="padding: 10px 20px; border-radius: 12px; font-size: 13px; background: rgba(0, 255, 136, 0.12); color: var(--accent); border: 1px solid var(--accent); width: auto; box-shadow: none;" onclick="downloadModule('auth')">DOWNLOAD</button>
-                    </div>
-
+            <!-- TABS -->
+            <div class="modal-tabs">
+                <div class="m-tab active" onclick="switchGuideTab('manual', this)">
+                    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> 
+                    System Manual
+                </div>
+                <div class="m-tab" onclick="switchGuideTab('downloads', this)">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
+                    Download Modules
                 </div>
             </div>
 
-            <button class="btn-full bg-green" style="margin-top: 15px;" onclick="closeModals()">CLOSE MANUAL</button>
-        </div>
-    </div>
+            <!-- TAB CONTENT: MANUAL -->
+            <div id="tab-manual" class="m-content active">
+                
+                <div class="g-card" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="color: var(--accent); margin-bottom: 5px;">Welcome to DGXEN</h3>
+                        <p style="margin-bottom: 0;">DGXEN is a powerful system optimization and management tool built for advanced users. Explore the manual to unlock full potential.</p>
+                    </div>
+                    <svg style="width: 50px; height: 50px; stroke: var(--accent); fill: none; stroke-width: 1.5; opacity: 0.8; margin-left: 15px; flex-shrink: 0;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                </div>
 
-    <!-- MODALS -->
-    <div class="modal-overlay" id="banModal">
-        <div class="modal">
-            <h2>Ban User</h2>
-            <p>Enter a custom reason for this ban (User will see this).</p>
-            <input type="text" id="banReasonInput" placeholder="e.g., Suspicious activity detected." style="width: 100%; margin-bottom: 0;">
-            <div class="modal-btns">
-                <button class="btn-confirm" onclick="confirmBan()">CONFIRM BAN</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
-            </div>
-        </div>
-    </div>
+                <div class="g-card">
+                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 1. Global Key Explain</h3>
+                    <p>The Global Key controls the primary access lifespan for all standard users. Set in hours.</p>
+                    
+                    <div class="g-inner">
+                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Key Functions</div>
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access system core features.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Authenticate secure sessions globally.</li>
+                        </ul>
+                    </div>
 
-    <div class="modal-overlay" id="keyBanModal">
-        <div class="modal">
-            <h2 style="color: var(--error);">Ban Key</h2>
-            <p style="margin-bottom: 10px;">Key: <br><span id="keyBanTarget" style="color: var(--accent); font-family: monospace; font-size: 19px; font-weight: 800; display: inline-block; margin-top: 10px;"></span></p>
-            <input type="text" id="keyBanReasonInput" placeholder="e.g., Key was shared publicly." style="width: 100%; margin-top: 15px;">
-            <div class="modal-btns">
-                <button class="btn-confirm" onclick="confirmKeyBan()">CONFIRM BAN</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
-            </div>
-        </div>
-    </div>
+                    <div class="g-inner g-important">
+                        <div class="g-inner-title" style="color: var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Important</div>
+                        <ul class="check-list">
+                            <li><span style="font-size: 13px; color: var(--text-dim);">Changes applied here affect all new standard generated keys immediately.</span></li>
+                        </ul>
+                    </div>
+                </div>
 
-    <div class="modal-overlay" id="resetModal">
-        <div class="modal">
-            <h2 id="resetModalTitle" style="color: var(--error);">⚠️ Factory Reset</h2>
-            <p id="resetModalDesc">Are you sure you want to wipe everything?</p>
-            <div class="modal-btns">
-                <button class="btn-confirm" id="resetConfirmBtn">CONFIRM</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
+                <div class="g-card">
+                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> 2. Master Keys</h3>
+                    <p>Master Keys provide elevated access to advanced modules and bypass certain restrictions.</p>
+                    
+                    <div class="g-inner">
+                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Master Key Benefits</div>
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlock advanced configurations.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Never expire automatically.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Real-time unique device tracking.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="g-card">
+                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> 3. Additional Mechanics</h3>
+                    <p>Understand the background architecture and hidden tools.</p>
+                    
+                    <div class="g-inner">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Auto-Sync:</b> Tap the top notch to sync DB silently every 5 seconds.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Deep Nuke:</b> Master key deletion securely wipes device fingerprints.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Paste Bypass:</b> Native Android paste enabled dynamically.</li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- TAB CONTENT: DOWNLOADS -->
+            <div id="tab-downloads" class="m-content">
+                <div class="g-card" style="border: none; background: transparent; padding: 0;">
+                    <p style="margin-bottom: 20px;">Export the core system code directly. Changes made to UI/Features are preserved.</p>
+                    
+                    <div class="dl-row">
+                        <div>
+                            <div class="dl-title">Admin Panel System</div>
+                            <div class="dl-sub">index.html + manifest.json</div>
+                        </div>
+                        <button class="btn dl-btn" onclick="downloadModule('admin', this)">DOWNLOAD</button>
+                    </div>
+                    
+                    <div class="dl-row">
+                        <div>
+                            <div class="dl-title">Key Generator Logic</div>
+                            <div class="dl-sub">steps.html</div>
+                        </div>
+                        <button class="btn dl-btn" onclick="downloadModule('generator', this)">DOWNLOAD</button>
+                    </div>
+
+                    <div class="dl-row">
+                        <div>
+                            <div class="dl-title">Authentication Module</div>
+                            <div class="dl-sub">login.html</div>
+                        </div>
+                        <button class="btn dl-btn" onclick="downloadModule('auth', this)">DOWNLOAD</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-full bg-green" style="margin-top: 10px;" onclick="closeModals()">CLOSE PANEL</button>
         </div>
     </div>
 
@@ -618,30 +652,62 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // REAL FILE DOWNLOAD HELPER (Replaces ugly browser alert dialogs)
-    window.downloadModule = function(type) {
+    // --- TAB SWITCHER FOR GUIDE MODAL ---
+    window.switchGuideTab = function(tabName, el) {
+        document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.m-content').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+    };
+
+    // --- SILENT FILE DOWNLOAD HELPER (NO ALERTS) ---
+    window.downloadModule = function(type, btnElement) {
+        const originalText = btnElement.innerText;
+        btnElement.innerText = "WAIT...";
+        btnElement.style.opacity = "0.7";
+        btnElement.style.pointerEvents = "none";
+        
         let content = "";
         let filename = "";
         if(type === 'admin') {
             filename = "index.html";
-            content = document.documentElement.outerHTML;
+            content = document.documentElement.outerHTML; 
         } else if(type === 'generator') {
             filename = "steps.html";
-            content = "<!DOCTYPE html>\n<html>\n<head><title>DGXEN Key Generator</title></head>\n<body><h1>DGXEN Key Generator Module</h1></body>\n</html>";
+            content = "<!DOCTYPE html>\n<html>\n<head><title>DGXEN Generator</title></head>\n<body><h1>Generator Logic Core</h1></body>\n</html>";
         } else if(type === 'auth') {
             filename = "login.html";
-            content = "<!DOCTYPE html>\n<html>\n<head><title>DGXEN Auth Module</title></head>\n<body><h1>DGXEN Authentication Module</h1></body>\n</html>";
+            content = "<!DOCTYPE html>\n<html>\n<head><title>DGXEN Auth</title></head>\n<body><h1>Auth Hook Core</h1></body>\n</html>";
         }
         
-        const blob = new Blob([content], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        try {
+            const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            
+            setTimeout(() => {
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                btnElement.innerText = "DONE!";
+                btnElement.style.background = "rgba(0,255,136,0.2)";
+                
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.style.opacity = "1";
+                    btnElement.style.pointerEvents = "auto";
+                    btnElement.style.background = "rgba(0, 255, 136, 0.12)";
+                }, 2000);
+            }, 100);
+        } catch (error) {
+            console.error(error);
+            btnElement.innerText = "ERROR";
+        }
     };
 
     // PREVENT ACCIDENTAL PULL-TO-REFRESH 
@@ -677,7 +743,7 @@
 
     // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
-        const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn');
+        const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab');
         if (!target) return;
         const rect = target.getBoundingClientRect();
         const ripple = document.createElement('span');
@@ -757,7 +823,7 @@
     }
 
     // --- AUTO SYNC (NOTCH) LOGIC ---
-    const syncGap = 5; // Fixed 5 seconds
+    const syncGap = 5; 
     let autoSyncTimer = null;
 
     window.toggleAutoSync = function() {
@@ -821,20 +887,17 @@
                 setTimeout(() => icon.classList.remove('spin-anim'), 800);
             }, 10);
             
-            // Visual Loading Feedback
             document.getElementById('masterKeysList').innerHTML = getSkeletonHTML();
             document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
             document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
             document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
             
-            // Re-render UI from active cache
             setTimeout(() => {
                 renderMasterKeys();
                 renderBannedKeysUI(globalBannedSnap);
                 renderUsersUI(globalUsersSnap);
             }, 400);
         } else {
-            // Background ping
             get(ref(db, '/')).catch(e => console.error(e));
         }
     }
@@ -887,13 +950,9 @@
         if(keys.length > 0) {
             keys.forEach(pushId => {
                 const keyStr = masterKeysData[pushId];
-                
                 const trimmedKey = String(keyStr).trim();
                 let safeKey = "";
-                try {
-                    safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_');
-                } catch(e) { safeKey = trimmedKey; }
-
+                try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
                 const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
                 
                 listDiv.innerHTML += `
@@ -937,14 +996,7 @@
         const action = pendingConfirmAction;
         pendingConfirmAction = null;
         closeModals(); 
-
-        if(action) {
-            try {
-                await action();
-            } catch (err) {
-                console.error("Action error:", err);
-            }
-        }
+        if(action) { try { await action(); } catch (err) { console.error(err); } }
     }
 
     window.deleteMasterKey = function(pushId, keyStr) {
@@ -989,11 +1041,7 @@
     window.openKeyBanModal = function() {
         const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
         if (!key) return showConfirm("Error", "Enter a key first!", null);
-        
-        if (!key.startsWith('DGXEN-') || key.length < 10) {
-            return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
-        }
-
+        if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
         pendingKeyToBan = key;
         document.getElementById('keyBanTarget').innerText = key;
         document.getElementById('keyBanReasonInput').value = '';
@@ -1003,10 +1051,8 @@
     window.confirmKeyBan = async function() {
         if (!pendingKeyToBan) return;
         const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
-        
         closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
-        
         const usersRef = ref(db, 'users');
         const snap = await get(usersRef);
         if(snap.exists()){
@@ -1017,7 +1063,6 @@
                 }
             }
         }
-
         document.getElementById('keyToBanInput').value = '';
         pendingKeyToBan = null;
     }
@@ -1114,7 +1159,7 @@
         resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
     }
     function executeResetStep() {
-        if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; `} 
+        if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
         else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
     }
     async function wipeEntireDatabase() { 
