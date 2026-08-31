@@ -481,9 +481,12 @@
         <!-- NEW SECURITY LOGS SECTION -->
         <div id="security-logs" class="tab-section">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 159, 10, 0.4);">
-                <h2 style="color: var(--warn);">
-                    <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Key Sharing Logs
+                <h2 style="color: var(--warn); display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Key Sharing Logs
+                    </span>
+                    <button class="btn dl-btn-small" style="background: var(--error); color: white; border-color: var(--error);" onclick="clearAllLogs()">CLEAR LOGS</button>
                 </h2>
                 <p>Monitor unauthorized key sharing between devices. Displays the Generator and the Unauthorized User. Names resolve automatically.</p>
                 <div class="mk-list" id="securityLogsList"></div>
@@ -496,7 +499,7 @@
                     <span>Manual Device Reset / Unbind</span>
                     <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </h2>
-                <p>Paste a specific Device ID here to completely wipe it from the database.</p>
+                <p>Paste a specific Device ID here to completely wipe it from the database and remove its claimed keys.</p>
                 <div class="input-group">
                     <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
                     <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND DEVICE</button>
@@ -1172,8 +1175,14 @@
             await remove(ref(db, 'settings/bannedKeys/' + keyStr));
         });
     }
-    
+
     // --- SECURITY LOGS RENDERER ---
+    window.clearAllLogs = function() {
+        showConfirm("Clear Logs?", "Are you sure you want to delete all security logs?", async () => {
+            await set(ref(db, 'settings/securityLogs'), null);
+        });
+    };
+
     onValue(ref(db, 'settings/securityLogs'), (snapshot) => {
         if (snapshot.exists()) {
             securityLogsData = snapshot.val();
@@ -1218,7 +1227,7 @@
                         <div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-family: monospace;">Key: ${log.key || 'N/A'}</div>
                     </div>
                     <button class="mk-del" style="color: var(--error);" title="Ban This Key" onclick="fastBanKey('${log.key}')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
                     </button>
                 </div>`;
         });
@@ -1301,6 +1310,13 @@
     window.deleteUser = function(userId) { 
         showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
             await remove(ref(db, 'users/' + userId));
+            // Power Wipe: Unbind from claimed keys too
+            const claimsSnap = await get(ref(db, 'settings/claimedKeys'));
+            if(claimsSnap.exists()) {
+                for(let [key, claimant] of Object.entries(claimsSnap.val())) {
+                    if(claimant === userId) await remove(ref(db, 'settings/claimedKeys/' + key));
+                }
+            }
         });
     }
     
@@ -1308,7 +1324,14 @@
         const id = document.getElementById('resetIdInput').value.trim();
         if(id) { 
             await remove(ref(db, 'users/' + id)); 
-            showConfirm("Success", "Device unbound successfully!", null);
+            // Power Wipe: Unbind from claimed keys too
+            const claimsSnap = await get(ref(db, 'settings/claimedKeys'));
+            if(claimsSnap.exists()) {
+                for(let [key, claimant] of Object.entries(claimsSnap.val())) {
+                    if(claimant === id) await remove(ref(db, 'settings/claimedKeys/' + key));
+                }
+            }
+            showConfirm("Success", "Device unbound and all claimed keys cleared successfully!", null);
             document.getElementById('resetIdInput').value = ''; 
         } else { 
             showConfirm("Error", "Please enter a valid Device ID.", null); 
