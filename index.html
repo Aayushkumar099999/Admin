@@ -89,6 +89,7 @@
             position: relative;
             transition: background-color 0.8s ease, color 0.8s ease; 
             -webkit-font-smoothing: antialiased;
+            /* ULTIMATE FIX FOR ZOOM/SCROLL LAG & PULL-TO-REFRESH */
             overscroll-behavior-y: contain; 
         }
 
@@ -185,7 +186,7 @@
         .auto-notch.active span { color: var(--accent); }
         .auto-notch.active .notch-led { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow), inset 0 0 4px #fff; }
 
-        /* --- Top Controls (Theme Island & Refresh Button) --- */
+        /* --- Top Controls --- */
         .top-controls {
             position: fixed; top: 25px; right: 35px; z-index: 9999;
             display: flex; gap: 15px; align-items: center;
@@ -213,7 +214,7 @@
         .spin-anim { animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Sidebar & Main Content Layout --- */
+        /* --- Sidebar & Main Content --- */
         .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
@@ -237,7 +238,7 @@
         .stat-card .val.green { color: var(--accent); text-shadow: 0 0 25px var(--accent-glow); }
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
-        /* --- Sections, Cards & Premium Inputs --- */
+        /* --- Sections, Cards & Inputs --- */
         .section-box { padding: 40px; margin-bottom: 40px; }
         .section-box h2 { font-size: 24px; margin-bottom: 15px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; justify-content: space-between; position: relative;}
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
@@ -246,13 +247,8 @@
         input[type="text"], input[type="number"] { 
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-            pointer-events: auto !important;
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
-            -webkit-touch-callout: default !important;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); pointer-events: auto !important;
+            -webkit-user-select: auto !important; -moz-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -263,7 +259,6 @@
         .btn:hover { background: var(--accent); color: #000; box-shadow: 0 15px 35px var(--accent-glow); transform: translateY(-4px) scale(1.02); }
         .btn:active { transform: translateY(1px) scale(0.97); }
 
-        /* Lists & Grids */
         .mk-list { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
         .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; }
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
@@ -292,12 +287,11 @@
         .bg-green { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.3); }
         .bg-green:hover { background: var(--accent); color: #000; box-shadow: 0 10px 30px var(--accent-glow); transform: translateY(-3px); }
 
-        /* FADED SKELETON ILLUSION */
         .skeleton-box { background: rgba(150, 150, 150, 0.05); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.03); padding: 25px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; animation: pulseSkeleton 1.8s infinite ease-in-out; }
         .skeleton-line { height: 12px; background: rgba(150, 150, 150, 0.15); border-radius: 8px; }
         @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
-        /* --- Premium Apple-Style Modals --- */
+        /* --- Modals --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
         .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -310,10 +304,14 @@
         .btn-cancel { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; background: rgba(150,150,150,0.1); color: var(--text-main); transition: 0.3s; }
         .btn-cancel:hover { background: rgba(150,150,150,0.25); transform: translateY(-3px); }
 
-        /* --- Floating Info Button --- */
+        /* --- Info Button --- */
         .info-btn { position: fixed; bottom: 35px; right: 35px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); color: var(--accent); font-size: 28px; font-weight: bold; font-family: "SF Pro Display", sans-serif; font-style: italic; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2); transition: 0.3s; }
         body.max-mode .info-btn { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: 0 10px 30px rgba(0, 255, 213, 0.2); }
         .info-btn:hover { transform: scale(1.15) rotate(10deg); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--accent-glow); }
+
+        /* THE INFO BUG FIX (Forced 24px) */
+        .header-info-icon { position: absolute; right: 0; width: 24px !important; height: 24px !important; min-width: 24px !important; color: var(--text-dim); cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        .header-info-icon:hover { color: var(--accent); transform: scale(1.15) rotate(10deg); filter: drop-shadow(0 0 10px var(--accent-glow)); }
 
         /* --- Modern Guide Modal & Tabs (ACCORDION STYLE) --- */
         .guide-modal { max-width: 650px !important; max-height: 85vh; overflow-y: auto; text-align: left; padding: 40px !important; }
@@ -357,7 +355,7 @@
         .dl-file-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .dl-file-row:first-child { border-top: none; }
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
-        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid;}
     </style>
 </head>
 <body>
@@ -482,7 +480,7 @@
             <div class="section-box glass-panel float-anim">
                 <h2 style="display: flex; align-items: center;">
                     <span>Manual Device Reset / Unbind</span>
-                    <svg onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px; min-width: 24px; margin-left: auto; cursor: pointer; color: var(--text-dim); flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </h2>
                 <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
@@ -540,7 +538,7 @@
             <div class="modal-tabs">
                 <div class="m-tab active" onclick="switchGuideTab('manual', this)">
                     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> 
-                    DGXEN System Manual
+                    System Manual
                 </div>
                 <div class="m-tab" onclick="switchGuideTab('downloads', this)">
                     <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> 
@@ -571,13 +569,6 @@
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Manage user sessions securely.</li>
                         </ul>
                     </div>
-
-                    <div class="g-inner g-important">
-                        <div class="g-inner-title" style="color: var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Important</div>
-                        <ul class="check-list">
-                            <li><span style="font-size: 13px; color: var(--text-dim);">Keep your Global Key secure and never share it with unauthorized users.</span></li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div class="g-card">
@@ -597,7 +588,7 @@
 
             <!-- TAB CONTENT: DOWNLOADS (ACCORDION STYLE) -->
             <div id="tab-downloads" class="m-content">
-                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Export the core system code directly from the live server. Changes made to UI/Features are preserved.</p>
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Download core module components for local integration. Offline bundles are fully updated.</p>
                 
                 <!-- Category 1: Admin Panel -->
                 <div class="acc-item" id="acc-admin">
@@ -607,16 +598,12 @@
                     </div>
                     <div class="acc-body">
                         <div class="dl-file-row">
-                            <span class="dl-file-name">index.html</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('index.html', this)">DL</button>
+                            <span class="dl-file-name">index.html (Current Web)</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('index', this)">DL</button>
                         </div>
                         <div class="dl-file-row">
                             <span class="dl-file-name">manifest.json</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('manifest.json', this)">DL</button>
-                        </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">logo.png</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('logo.png', this)">DL</button>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('manifest', this)">DL</button>
                         </div>
                     </div>
                 </div>
@@ -629,8 +616,8 @@
                     </div>
                     <div class="acc-body">
                         <div class="dl-file-row">
-                            <span class="dl-file-name">steps.html</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps.html', this)">DL</button>
+                            <span class="dl-file-name">steps.html (Key Web)</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
                         </div>
                     </div>
                 </div>
@@ -644,7 +631,7 @@
                     <div class="acc-body">
                         <div class="dl-file-row">
                             <span class="dl-file-name">login.html</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login.html', this)">DL</button>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login', this)">DL</button>
                         </div>
                     </div>
                 </div>
@@ -720,42 +707,63 @@
         item.classList.toggle('active');
     };
 
-    // --- SILENT SERVER FETCH & DOWNLOAD HELPER ---
-    window.downloadSpecificFile = async function(fileName, btnElement) {
+    // --- SAFE FETCH DOWNLOAD SYSTEM ---
+    window.downloadSpecificFile = async function(fileId, btnElement) {
         const originalText = btnElement.innerText;
         btnElement.innerText = "WAIT...";
         btnElement.style.opacity = "0.7";
         btnElement.style.pointerEvents = "none";
         
         try {
-            // Fetch live file from server
-            const response = await fetch('./' + fileName);
-            if (!response.ok) throw new Error("File missing");
-            
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-            btnElement.innerText = "DONE!";
-            btnElement.style.background = "rgba(0,255,136,0.2)";
-            btnElement.style.color = "var(--accent)";
-            btnElement.style.borderColor = "var(--accent)";
-            
-            setTimeout(() => {
-                btnElement.innerText = originalText;
-                btnElement.style.opacity = "1";
-                btnElement.style.pointerEvents = "auto";
-                btnElement.style.background = "rgba(0, 255, 136, 0.1)";
-            }, 2000);
+            let content = "";
+            let finalName = "";
+
+            if (fileId === 'index') {
+                content = document.documentElement.outerHTML; 
+                finalName = "index.html";
+            } else {
+                let fetchName = "";
+                if (fileId === 'manifest') fetchName = "manifest.json";
+                else if (fileId === 'steps') fetchName = "steps.html";
+                else if (fileId === 'login') fetchName = "login.html";
+                
+                if(fetchName) {
+                    const response = await fetch('./' + fetchName);
+                    if (!response.ok) throw new Error("File missing on server");
+                    content = await response.text();
+                    finalName = fetchName;
+                }
+            }
+
+            if(content) {
+                const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = finalName;
+                document.body.appendChild(a);
+                
+                setTimeout(() => {
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    btnElement.innerText = "DONE!";
+                    btnElement.style.background = "rgba(0,255,136,0.2)";
+                    btnElement.style.color = "var(--accent)";
+                    btnElement.style.borderColor = "var(--accent)";
+                    
+                    setTimeout(() => {
+                        btnElement.innerText = originalText;
+                        btnElement.style.opacity = "1";
+                        btnElement.style.pointerEvents = "auto";
+                        btnElement.style.background = "rgba(0, 255, 136, 0.1)";
+                        btnElement.style.color = "var(--accent)";
+                        btnElement.style.borderColor = "var(--accent)";
+                    }, 2000);
+                }, 100);
+            }
 
         } catch (error) {
             console.error(error);
