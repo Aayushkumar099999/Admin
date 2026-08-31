@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1366">
     <title>DGXEN | Premium Admin OS</title>
-    <!-- APP LOGO ICONS -->
     <link rel="icon" type="image/png" href="./logo.png">
     <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" href="manifest.json">
     
-    <!-- NATIVE APP FEEL -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -358,20 +356,17 @@
 </head>
 <body>
 
-    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
         <div class="water-wave"></div>
     </div>
 
-    <!-- AUTO SYNC NOTCH (Top Center) -->
     <div class="auto-notch" id="autoSyncNotch" role="button">
         <div class="notch-led" id="syncLed"></div>
         <span id="syncNotchText">AUTO SYNC: OFF</span>
     </div>
 
-    <!-- TOP CONTROLS (Manual Refresh + Theme Island) -->
     <div class="top-controls">
         <div class="manual-refresh-btn" id="manualRefreshBtn" title="Force Sync">
             <svg id="refreshIcon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -382,7 +377,6 @@
         </div>
     </div>
 
-    <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
         <h1>DGXEN</h1>
         <div class="nav-link active" onclick="switchTab('dashboard', this)" id="nav-dashboard">
@@ -415,7 +409,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <div id="dashboard" class="tab-section active">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(0, 255, 136, 0.4); box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.05), 0 25px 60px var(--shadow-color);">
@@ -478,7 +471,6 @@
             </div>
         </div>
 
-        <!-- NEW SECURITY LOGS SECTION -->
         <div id="security-logs" class="tab-section">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 159, 10, 0.4);">
                 <h2 style="color: var(--warn); display: flex; align-items: center; justify-content: space-between;">
@@ -486,7 +478,6 @@
                         <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         Key Sharing Logs
                     </span>
-                    <button class="btn dl-btn-small" style="background: var(--error); color: white; border-color: var(--error);" onclick="clearAllLogs()">CLEAR LOGS</button>
                 </h2>
                 <p>Monitor unauthorized key sharing between devices. Displays the Generator and the Unauthorized User. Names resolve automatically.</p>
                 <div class="mk-list" id="securityLogsList"></div>
@@ -499,7 +490,7 @@
                     <span>Manual Device Reset / Unbind</span>
                     <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </h2>
-                <p>Paste a specific Device ID here to completely wipe it from the database and remove its claimed keys.</p>
+                <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
                     <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
                     <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND DEVICE</button>
@@ -517,10 +508,8 @@
         </div>
     </div>
 
-    <!-- FLOATING INFO BUTTON -->
     <button class="info-btn" onclick="openGuideModal()">i</button>
 
-    <!-- CUSTOM CONFIRMATION MODAL -->
     <div class="modal-overlay" id="confirmActionModal">
         <div class="modal">
             <h2 id="confirmActionTitle" style="color: var(--error);">Confirm Action</h2>
@@ -532,7 +521,6 @@
         </div>
     </div>
 
-    <!-- UNBIND INFO MODAL -->
     <div class="modal-overlay" id="unbindInfoModal">
         <div class="modal">
             <h2 style="color: var(--accent);">Device Unbind Info</h2>
@@ -542,7 +530,6 @@
         </div>
     </div>
 
-    <!-- MODERN DESIGNED GUIDE / DOWNLOAD MODAL -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
             
@@ -551,7 +538,6 @@
                 <div style="color: var(--text-dim); font-size: 14px;">System Control Panel</div>
             </div>
 
-            <!-- TABS -->
             <div class="modal-tabs">
                 <div class="m-tab active" onclick="switchGuideTab('manual', this)">
                     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> 
@@ -563,7 +549,6 @@
                 </div>
             </div>
 
-            <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
                 
                 <div class="g-card" style="display: flex; justify-content: space-between; align-items: center;">
@@ -627,11 +612,9 @@
                 </div>
             </div>
 
-            <!-- TAB CONTENT: DOWNLOADS (ACCORDION STYLE) -->
             <div id="tab-downloads" class="m-content">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Download core module components for local integration. Offline bundles are fully updated.</p>
                 
-                <!-- Category 1: Admin Panel -->
                 <div class="acc-item" id="acc-admin">
                     <div class="acc-header" onclick="toggleAccordion('acc-admin')">
                         Admin Panel System
@@ -649,7 +632,6 @@
                     </div>
                 </div>
 
-                <!-- Category 2: Generator Logic -->
                 <div class="acc-item" id="acc-gen">
                     <div class="acc-header" onclick="toggleAccordion('acc-gen')">
                         Key Generator Logic
@@ -671,7 +653,6 @@
                     </div>
                 </div>
 
-                <!-- Category 3: Auth System (Injected/App Assets) -->
                 <div class="acc-item" id="acc-auth">
                     <div class="acc-header" onclick="toggleAccordion('acc-auth')">
                         Authentication Module
@@ -699,7 +680,6 @@
         </div>
     </div>
 
-<!-- Firebase SDK & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, remove, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -1177,12 +1157,6 @@
     }
 
     // --- SECURITY LOGS RENDERER ---
-    window.clearAllLogs = function() {
-        showConfirm("Clear Logs?", "Are you sure you want to delete all security logs?", async () => {
-            await set(ref(db, 'settings/securityLogs'), null);
-        });
-    };
-
     onValue(ref(db, 'settings/securityLogs'), (snapshot) => {
         if (snapshot.exists()) {
             securityLogsData = snapshot.val();
@@ -1226,17 +1200,32 @@
                         </span>
                         <div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-family: monospace;">Key: ${log.key || 'N/A'}</div>
                     </div>
-                    <button class="mk-del" style="color: var(--error);" title="Ban This Key" onclick="fastBanKey('${log.key}')">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                    </button>
                 </div>`;
         });
     }
 
-    window.fastBanKey = function(key) {
-        document.getElementById('keyToBanInput').value = key;
-        switchTab('ban-keys', document.getElementById('nav-ban-keys'));
-        openKeyBanModal();
+    window.confirmBan = async function() { 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        closeModals(); 
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
+    }
+    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
+    
+    window.deleteUser = function(userId) { 
+        showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
+            await remove(ref(db, 'users/' + userId));
+        });
+    }
+    
+    window.resetDevice = async function() {
+        const id = document.getElementById('resetIdInput').value.trim();
+        if(id) { 
+            await remove(ref(db, 'users/' + id)); 
+            showConfirm("Success", "Device unbound successfully!", null);
+            document.getElementById('resetIdInput').value = ''; 
+        } else { 
+            showConfirm("Error", "Please enter a valid Device ID.", null); 
+        }
     }
 
     onValue(ref(db, 'users'), (snapshot) => {
@@ -1253,7 +1242,7 @@
             document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
             activeListDiv.innerHTML = getSkeletonHTML();
             bannedListDiv.innerHTML = getSkeletonHTML();
-            renderSecurityLogs(); // Ensure logs UI updates even if no users
+            renderSecurityLogs(); 
             return;
         }
 
@@ -1293,50 +1282,12 @@
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
         
-        renderSecurityLogs(); // Refresh logs to map new names automatically
+        renderSecurityLogs(); 
     }
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
-    
-    window.confirmBan = async function() { 
-        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
-        closeModals(); 
-        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
-    }
-    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
-    
-    window.deleteUser = function(userId) { 
-        showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
-            await remove(ref(db, 'users/' + userId));
-            // Power Wipe: Unbind from claimed keys too
-            const claimsSnap = await get(ref(db, 'settings/claimedKeys'));
-            if(claimsSnap.exists()) {
-                for(let [key, claimant] of Object.entries(claimsSnap.val())) {
-                    if(claimant === userId) await remove(ref(db, 'settings/claimedKeys/' + key));
-                }
-            }
-        });
-    }
-    
-    window.resetDevice = async function() {
-        const id = document.getElementById('resetIdInput').value.trim();
-        if(id) { 
-            await remove(ref(db, 'users/' + id)); 
-            // Power Wipe: Unbind from claimed keys too
-            const claimsSnap = await get(ref(db, 'settings/claimedKeys'));
-            if(claimsSnap.exists()) {
-                for(let [key, claimant] of Object.entries(claimsSnap.val())) {
-                    if(claimant === id) await remove(ref(db, 'settings/claimedKeys/' + key));
-                }
-            }
-            showConfirm("Success", "Device unbound and all claimed keys cleared successfully!", null);
-            document.getElementById('resetIdInput').value = ''; 
-        } else { 
-            showConfirm("Error", "Please enter a valid Device ID.", null); 
-        }
-    }
 
     window.startFactoryReset = function() {
         resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
