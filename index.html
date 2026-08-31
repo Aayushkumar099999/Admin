@@ -405,6 +405,10 @@
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
             Banned Users
         </div>
+        <div class="nav-link" onclick="switchTab('security-logs', this)" id="nav-logs">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Security Logs
+        </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             System Reset
@@ -474,11 +478,23 @@
             </div>
         </div>
 
+        <!-- NEW SECURITY LOGS SECTION -->
+        <div id="security-logs" class="tab-section">
+            <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 159, 10, 0.4);">
+                <h2 style="color: var(--warn);">
+                    <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Key Sharing Logs
+                </h2>
+                <p>Monitor unauthorized key sharing between devices. Displays the Generator and the Unauthorized User. Names resolve automatically.</p>
+                <div class="mk-list" id="securityLogsList"></div>
+            </div>
+        </div>
+
         <div id="reset-device" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="display: flex; align-items: center;">
                     <span>Manual Device Reset / Unbind</span>
-                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </h2>
                 <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
@@ -680,42 +696,6 @@
         </div>
     </div>
 
-    <!-- MODALS -->
-    <div class="modal-overlay" id="banModal">
-        <div class="modal">
-            <h2>Ban User</h2>
-            <p>Enter a custom reason for this ban (User will see this).</p>
-            <input type="text" id="banReasonInput" placeholder="e.g., Suspicious activity detected." style="width: 100%; margin-bottom: 0;">
-            <div class="modal-btns">
-                <button class="btn-confirm" onclick="confirmBan()">CONFIRM BAN</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="keyBanModal">
-        <div class="modal">
-            <h2 style="color: var(--error);">Ban Key</h2>
-            <p style="margin-bottom: 10px;">Key: <br><span id="keyBanTarget" style="color: var(--accent); font-family: monospace; font-size: 19px; font-weight: 800; display: inline-block; margin-top: 10px;"></span></p>
-            <input type="text" id="keyBanReasonInput" placeholder="e.g., Key was shared publicly." style="width: 100%; margin-top: 15px;">
-            <div class="modal-btns">
-                <button class="btn-confirm" onclick="confirmKeyBan()">CONFIRM BAN</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="resetModal">
-        <div class="modal">
-            <h2 id="resetModalTitle" style="color: var(--error);">⚠️ Factory Reset</h2>
-            <p id="resetModalDesc">Are you sure you want to wipe everything?</p>
-            <div class="modal-btns">
-                <button class="btn-confirm" id="resetConfirmBtn">CONFIRM</button>
-                <button class="btn-cancel" onclick="closeModals()">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
 <!-- Firebase SDK & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -730,6 +710,7 @@
     let mkUsageData = {};
     let resetStep = 0;
     let pendingConfirmAction = null; 
+    let securityLogsData = {};
 
     // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
@@ -1009,6 +990,7 @@
             document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
             document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
             document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
+            document.getElementById('securityLogsList').innerHTML = getSkeletonHTML();
             
             setTimeout(() => {
                 renderMasterKeys();
@@ -1190,6 +1172,63 @@
             await remove(ref(db, 'settings/bannedKeys/' + keyStr));
         });
     }
+    
+    // --- SECURITY LOGS RENDERER ---
+    onValue(ref(db, 'settings/securityLogs'), (snapshot) => {
+        if (snapshot.exists()) {
+            securityLogsData = snapshot.val();
+        } else {
+            securityLogsData = {};
+        }
+        renderSecurityLogs();
+    });
+
+    function renderSecurityLogs() {
+        const listDiv = document.getElementById('securityLogsList');
+        if(!listDiv) return;
+        listDiv.innerHTML = '';
+        
+        const keys = Object.keys(securityLogsData);
+        if(keys.length === 0) {
+            listDiv.innerHTML = '<div style="color:var(--text-dim); text-align:center; padding: 20px; font-weight: 600;">No security logs found.</div>';
+            return;
+        }
+
+        const logs = keys.map(k => ({ id: k, ...securityLogsData[k] }));
+        logs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        const users = globalUsersSnap && globalUsersSnap.exists() ? globalUsersSnap.val() : {};
+
+        logs.forEach(log => {
+            const genUser = users[log.generatorId];
+            const usedUser = users[log.usedById];
+
+            const genName = genUser && genUser.name ? genUser.name : `Unknown (ID: ${log.generatorId || 'N/A'})`;
+            const usedName = usedUser && usedUser.name ? usedUser.name : `Unknown Device (ID: ${log.usedById || 'N/A'})`;
+            
+            const dateStr = log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A';
+
+            listDiv.innerHTML += `
+                <div class="mk-item" style="border-left: 3px solid var(--warn);">
+                    <div>
+                        <div style="font-size:12px; color:var(--text-dim); margin-bottom:5px;">${dateStr}</div>
+                        <span class="mk-text" style="color: var(--text-main); font-size: 15px;">
+                            <span style="color: var(--accent);">${genName}</span> sent key to <span style="color: var(--error);">${usedName}</span>
+                        </span>
+                        <div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-family: monospace;">Key: ${log.key || 'N/A'}</div>
+                    </div>
+                    <button class="mk-del" style="color: var(--error);" title="Ban This Key" onclick="fastBanKey('${log.key}')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                    </button>
+                </div>`;
+        });
+    }
+
+    window.fastBanKey = function(key) {
+        document.getElementById('keyToBanInput').value = key;
+        switchTab('ban-keys', document.getElementById('nav-ban-keys'));
+        openKeyBanModal();
+    }
 
     onValue(ref(db, 'users'), (snapshot) => {
         globalUsersSnap = snapshot;
@@ -1205,6 +1244,7 @@
             document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
             activeListDiv.innerHTML = getSkeletonHTML();
             bannedListDiv.innerHTML = getSkeletonHTML();
+            renderSecurityLogs(); // Ensure logs UI updates even if no users
             return;
         }
 
@@ -1243,6 +1283,8 @@
         document.getElementById('stat-total').innerText = users.length;
         document.getElementById('stat-active').innerText = activeCount;
         document.getElementById('stat-banned').innerText = bannedCount;
+        
+        renderSecurityLogs(); // Refresh logs to map new names automatically
     }
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
