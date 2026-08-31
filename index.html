@@ -353,7 +353,7 @@
         .dl-file-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         .dl-file-row:first-child { border-top: none; }
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
-        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid; text-transform: uppercase; }
+        .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid;}
     </style>
 </head>
 <body>
@@ -567,13 +567,6 @@
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Manage user sessions securely.</li>
                         </ul>
                     </div>
-
-                    <div class="g-inner g-important">
-                        <div class="g-inner-title" style="color: var(--accent);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Important</div>
-                        <ul class="check-list">
-                            <li><span style="font-size: 13px; color: var(--text-dim);">Keep your Global Key secure and never share it with unauthorized users.</span></li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div class="g-card">
@@ -590,7 +583,6 @@
                     </div>
                 </div>
 
-                <!-- ADDED MORE MANUAL SECTIONS AS REQUESTED -->
                 <div class="g-card">
                     <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 3. Tracking & Bans</h3>
                     <p>Learn how the system monitors users and enforces bans seamlessly.</p>
@@ -646,13 +638,12 @@
                     </div>
                     <div class="acc-body">
                         <div class="dl-file-row">
+                            <span class="dl-file-name">index.html (Generator Core)</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('gen_index', this)">DL</button>
+                        </div>
+                        <div class="dl-file-row">
                             <span class="dl-file-name">steps.html (Key Web)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
-                        </div>
-                        <!-- ADDED LOGIN.HTML HERE AS REQUESTED -->
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">login.html (Web Generator)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_live', this)">DL</button>
                         </div>
                     </div>
                 </div>
@@ -664,7 +655,6 @@
                         <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="acc-body">
-                        <!-- LOGIN HTML CHANGED TO JUST A STATIC LABEL (NA) AS REQUESTED -->
                         <div class="dl-file-row">
                             <span class="dl-file-name">login.html (Offline/App Asset)</span>
                             <span style="font-size: 11px; font-weight: 800; color: var(--text-dim); background: rgba(150,150,150,0.1); padding: 4px 10px; border-radius: 6px;">LOCKED</span>
@@ -751,7 +741,7 @@
         item.classList.toggle('active');
     };
 
-    // --- PURE SAFE DOWNLOAD SYSTEM (100% JS SAFE, NO DOM STRINGS) ---
+    // --- PURE SAFE DOWNLOAD SYSTEM (NO DOM INJECTIONS) ---
     function triggerDownload(blob, fileName, btnElement, originalText) {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -795,27 +785,44 @@
                 content = document.documentElement.outerHTML; 
                 finalName = "index.html";
             } else if (fileId === 'auth_smali') {
-                // Safely decode Base64
                 content = atob('LmNsYXNzIHB1YmxpYyBMY29tL2RneGVuL0F1dGg7Ci5zdXBlciBMamF2YS9sYW5nL09iamVjdDsKLnNvdXJjZSAiQXV0aC5qYXZhIgoKCiMgc3RhdGljIGZpZWxkcwouZmllbGQgcHVibGljIHN0YXRpYyBkaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCi5maWVsZCBwdWJsaWMgc3RhdGljIHVubG9ja2VkOloKCi5maWVsZCBwdWJsaWMgc3RhdGljIHdlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgoKIyBkaXJlY3QgbWV0aG9kcwoubWV0aG9kIHB1YmxpYyBjb25zdHJ1Y3RvciA8aW5pdD4oKVYKICAgIC5yZWdpc3RlcnMgMQoKICAgIGludm9rZS1kaXJlY3Qge3AwfSwgTGphdmEvbGFuZy9PYmplY3Q7LT48aW5pdD4oKVYKCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZAoKLm1ldGhvZCBwdWJsaWMgc3RhdGljIHNob3coTGFuZHJvaWQvYXBwL0FjdGl2aXR5OylWCiAgICAucmVnaXN0ZXJzIDUKCiAgICBzZ2V0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBpZi1lcXogdjAsIDpjb25kXzUKCiAgICByZXR1cm4tdm9pZAoKICAgIDpjb25kXzUKICAgIG5ldy1pbnN0YW5jZSB2MCwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgaW52b2tlLWRpcmVjdCB7djAsIHAwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT48aW5pdD4oTGFuZHJvaWQvY29udGV4dC9Db250ZXh0OylWCgogICAgc3B1dC1vYmplY3QgdjAsIExjb20vZGd4ZW4vQXV0aDstPndlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgY29uc3QgdjEsIC0weDEwMDAwMDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5zZXRCYWNrZ3JvdW5kQ29sb3IoSSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0LzQgdjIsIDB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MSwgdjJ9LCBMYW5kcm9pZC93ZWJraXQvV2ViU2V0dGluZ3M7LT5zZXRKYXZhU2NyaXB0RW5hYmxlZChaKVYKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOy0+c2V0RG9tU3RvcmFnZUVuYWJsZWQoWilWCgogICAgbmV3LWluc3RhbmNlIHYxLCBMY29tL2RneGVuL0F1dGg7CgogICAgaW52b2tlLWRpcmVjdCB7djF9LCBMY29tL2RneGVuL0F1dGg7LT48aW5pdD4oKVYKCiAgICBjb25zdC1zdHJpbmcgdjIsICJBbmRyb2lkIgoKICAgIGludm9rZS12aXJ0dWFsIHt2MCwgdjEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5hZGRKYXZhc2NyaXB0SW50ZXJmYWNlKExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL2xhbmcvU3RyaW5nOylWCgogICAgY29uc3Qtc3RyaW5nIHYyLCAiZmlsZTovLy9hbmRyb2lkX2Fzc2V0L2xvZ2luLmh0bWwiCgogICAgaW52b2tlLXZpcnR1YWwge3YwLCB2Mn0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+bG9hZFVybChMamF2YS9sYW5nL1N0cmluZzspVgoKICAgIGludm9rZS12aXJ0dWFsIHt2MH0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+cmVxdWVzdEZvY3VzKCpaCgogICAgbmV3LWluc3RhbmNlIHYxLCBMYW5kcm9pZC9hcHAvRGlhbG9nOwoKICAgIGNvbnN0IHYyLCAweDEwMzAwMDYKCiAgICBpbnZva2UtZGlyZWN0IHt2MSwgcDAsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPjxpbml0PihMYW5kcm9pZC9jb250ZXh0L0NvbnRleHQ7SSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YxLCB2MH0sIExhbmRyb2lkL2FwcC9EaWFsb2c7LT5zZXRDb250ZW50VmlldyhMYW5kcm9pZC92aWV3L1ZpZXc7KVYKCiAgICBjb25zdC80IHYyLCAweDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPnNldENhbmNlbGFibGUoWilWCgogICAgaW52b2tlLXZpcnR1YWwge3YxfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmdldFdpbmRvdygpTGFuZHJvaWQvdmlldy9XaW5kb3c7CgogICAgbW92ZS1yZXN1bHQtb2JqZWN0IHYyCgogICAgY29uc3QgcDAsIDB4MjAwMDgKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5jbGVhckZsYWdzKEkpVgoKICAgIGNvbnN0LzE2IHAwLCAweDIwCgogICAgaW52b2tlLXZpcnR1YWwge3YyLCBwMH0sIExhbmRyb2lkL3ZpZXcvV2luZG93Oy0+c2V0U29mdElucHV0TW9kZShJKVYKCiAgICBjb25zdCBwMCwgLTB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MiwgcDAsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRMYXlvdXQoSUkpVgoKICAgIGNvbnN0IHYzLCAweDEwMzAwMzAKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHYzfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRXaW5kb3dBbmltYXRpb25zKEkpVgoKICAgIHNwdXQtb2JqZWN0IHYxLCBMY29tL2RneGVuL0F1dGg7LT5kaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCiAgICBpbnZva2UtdmlydHVhbCB7djF9LCBMYW5kcm9pZC9hcHAvRGlhbG9nOy0+c2hvdygpVgoKICAgIHJldHVybi12b2lkCi5lbmQgbWV0aG9kCgoKIyB2aXJ0dWFsIG1ldGhvZHMKLm1ldGhvZCBwdWJsaWMgdW5sb2NrKClWCiAgICAucmVnaXN0ZXJzIDIKICAgIC5hbm5vdGF0aW9uIHJ1bnRpbWUgTGFuZHJvaWQvd2Via2l0L0phdmFzY3JpcHRJbnRlcmZhY2U7CiAgICAuZW5kIGFubm90YXRpb24KCiAgICBjb25zdC80IHYwLCAweDEKCiAgICBzcHV0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBzZ2V0LW9iamVjdCB2MCwgLGNvbS9kZ3hlbi9BdXRoOy0+ZGlhbG9nOkxhbmRyb2lkL2FwcC9EaWFsb2c7CgogICAgaWYtZXF6IHYwLCA6Y29uZF9hCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmRpc21pc3MoKVYKCiAgICA6Y29uZF9hCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZA==');
                 finalName = "Auth.smali";
             } else if (fileId === 'hook_smali') {
                 content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
                 finalName = "Hook.smali";
-            } else {
-                // Server files
-                let fetchName = "";
-                if (fileId === 'steps') fetchName = "steps.html";
-                else if (fileId === 'manifest') fetchName = "manifest.json";
-                else if (fileId === 'login_live') fetchName = "login.html";
-                
-                const response = await fetch('./' + fetchName);
-                if (!response.ok) throw new Error("File missing on server");
+            } else if (fileId === 'gen_index') {
+                // Absolute fetch to prevent downloading Admin's index.html
+                const response = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/index.html');
+                if (!response.ok) throw new Error("Generator index missing");
                 content = await response.text();
-                finalName = fetchName;
+                finalName = "index.html";
+            } else {
+                let fetchName = "";
+                if (fileId === 'manifest') fetchName = "manifest.json";
+                else if (fileId === 'steps') fetchName = "steps.html";
+                
+                if(fetchName) {
+                    const response = await fetch('./' + fetchName);
+                    if (!response.ok) {
+                        if (fileId === 'steps') {
+                             const res2 = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/steps.html');
+                             if(!res2.ok) throw new Error("File missing");
+                             content = await res2.text();
+                             finalName = fetchName;
+                        } else {
+                             throw new Error("File missing on server");
+                        }
+                    } else {
+                        content = await response.text();
+                        finalName = fetchName;
+                    }
+                }
             }
 
-            const blob = new Blob([content], { type: finalName.endsWith('.smali') ? 'text/plain;charset=utf-8' : 'text/html;charset=utf-8' });
-            triggerDownload(blob, finalName, btnElement, originalText);
+            if(content) {
+                const blob = new Blob([content], { type: finalName.endsWith('.smali') ? 'text/plain;charset=utf-8' : 'text/html;charset=utf-8' });
+                triggerDownload(blob, finalName, btnElement, originalText);
+            }
 
         } catch (error) {
             console.error(error);
