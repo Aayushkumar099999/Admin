@@ -442,13 +442,30 @@
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-banned-users').click()"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-keys').click()"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-ban-keys').click()"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-share-logs') && document.getElementById('nav-share-logs').click()"><h3>Share Logs</h3><div class="val" id="stat-logs">0</div></div>
             </div>
         </div>
 
         <div id="keys" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2>Manage Master Keys</h2>
-                <p>Generate high-level master keys that bypass standard normal key restrictions.</p>
+                <p>Generate high-level master keys. Choose a type before adding.</p>
+
+                <!-- Key Type Selector -->
+                <div style="margin-bottom:18px;">
+                    <div style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:10px;">KEY TYPE</div>
+                    <div id="mkTypeSelector" style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button type="button" class="btn mk-type-btn active" data-type="pure" onclick="selectMkType('pure')" style="padding:10px 16px;font-size:13px;border-radius:12px;">Unlimited</button>
+                        <button type="button" class="btn mk-type-btn" data-type="limited" onclick="selectMkType('limited')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Limited Uses</button>
+                        <button type="button" class="btn mk-type-btn" data-type="device" onclick="selectMkType('device')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Device Locked</button>
+                    </div>
+                </div>
+
+                <!-- Extra field (shown only for limited / device) -->
+                <div id="mkExtraWrap" style="display:none;margin-bottom:14px;">
+                    <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
+                </div>
+
                 <div class="input-group">
                     <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
                     <button class="btn" onclick="addMasterKey()">ADD KEY</button>
@@ -1167,6 +1184,67 @@
         renderMasterKeys();
     });
 
+    // --- Master Key Type UI ---
+    let selectedMkType = 'pure';
+
+    window.selectMkType = function(type) {
+        selectedMkType = type;
+        document.querySelectorAll('.mk-type-btn').forEach(btn => {
+            const active = btn.getAttribute('data-type') === type;
+            btn.classList.toggle('active', active);
+            if (active) {
+                btn.style.background = '';
+                btn.style.color = '';
+            } else {
+                btn.style.background = 'rgba(150,150,150,0.12)';
+                btn.style.color = 'var(--text-main)';
+            }
+        });
+        const wrap = document.getElementById('mkExtraWrap');
+        const input = document.getElementById('mkExtraInput');
+        if (type === 'pure') {
+            wrap.style.display = 'none';
+            input.value = '';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            input.type = 'text';
+        } else if (type === 'limited') {
+            wrap.style.display = 'block';
+            input.placeholder = 'Max logins allowed (e.g. 10)';
+            input.type = 'number';
+            input.setAttribute('inputmode', 'numeric');
+            input.setAttribute('pattern', '[0-9]*');
+            input.setAttribute('min', '1');
+            input.value = '';
+            input.focus();
+        } else if (type === 'device') {
+            wrap.style.display = 'block';
+            input.placeholder = 'Device UUID (e.g. e411b97a-3264-48d5-...)';
+            input.type = 'text';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            input.removeAttribute('min');
+            input.value = '';
+            input.focus();
+        }
+    };
+
+    function normalizeMkEntry(val) {
+        // Backward compatible: old keys are plain strings
+        if (typeof val === 'string') {
+            return { key: val.trim(), type: 'pure', maxUses: null, deviceId: null };
+        }
+        if (val && typeof val === 'object') {
+            return {
+                key: String(val.key || '').trim(),
+                type: val.type || 'pure',
+                maxUses: val.maxUses != null ? Number(val.maxUses) : null,
+                deviceId: val.deviceId || null
+            };
+        }
+        return { key: '', type: 'pure', maxUses: null, deviceId: null };
+    }
+
     function renderMasterKeys() {
         const listDiv = document.getElementById('masterKeysList');
         listDiv.innerHTML = '';
@@ -1175,16 +1253,37 @@
         
         if(keys.length > 0) {
             keys.forEach(pushId => {
-                const keyStr = masterKeysData[pushId];
-                const trimmedKey = String(keyStr).trim();
+                const entry = normalizeMkEntry(masterKeysData[pushId]);
+                const trimmedKey = entry.key;
+                if (!trimmedKey) return;
                 let safeKey = "";
                 try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
-                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
-                
+                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || 0;
+
+                let typeBadge = '';
+                if (entry.type === 'limited') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--warn);background:rgba(255,200,0,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">LIMIT ${usageCount}/${entry.maxUses || '?'}</span>`;
+                } else if (entry.type === 'device') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#5b9dff;background:rgba(91,157,255,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">DEVICE</span>`;
+                } else {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--accent);background:rgba(0,255,136,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">UNLIMITED</span>`;
+                }
+
+                const extraInfo = entry.type === 'device' && entry.deviceId
+                    ? `<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-family:monospace;word-break:break-all;">ID: ${entry.deviceId}</div>`
+                    : '';
+
                 listDiv.innerHTML += `
                     <div class="mk-item">
-                        <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <div style="flex:1;">
+                            <div>
+                                <span class="mk-text copyable" style="cursor:pointer;" data-copy="${trimmedKey}" title="Click to copy">${trimmedKey}</span>
+                                ${typeBadge}
+                                <span class="mk-usage">Uses: ${usageCount}</span>
+                            </div>
+                            ${extraInfo}
+                        </div>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${trimmedKey.replace(/'/g,"\\'")}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                     </div>`;
             });
         } else {
@@ -1195,9 +1294,32 @@
 
     window.addMasterKey = async function() {
         const newKey = document.getElementById('masterKeyInput').value.trim();
-        if(!newKey) return showConfirm("Error", "Key cannot be empty!", null);
-        await push(ref(db, 'settings/masterKeys'), newKey);
+        if (!newKey) return showConfirm("Error", "Key cannot be empty!", null);
+
+        const payload = {
+            key: newKey,
+            type: selectedMkType || 'pure',
+            createdAt: Date.now()
+        };
+
+        if (selectedMkType === 'limited') {
+            const n = Number(document.getElementById('mkExtraInput').value);
+            if (!n || n < 1 || !Number.isFinite(n)) {
+                return showConfirm("Error", "Enter a valid number of max logins (1 or more).", null);
+            }
+            payload.maxUses = Math.floor(n);
+        } else if (selectedMkType === 'device') {
+            const did = document.getElementById('mkExtraInput').value.trim();
+            if (!did) {
+                return showConfirm("Error", "Enter the device UUID to lock this key to.", null);
+            }
+            payload.deviceId = did;
+        }
+
+        await push(ref(db, 'settings/masterKeys'), payload);
         document.getElementById('masterKeyInput').value = '';
+        const extra = document.getElementById('mkExtraInput');
+        if (extra) extra.value = '';
     }
 
     window.showConfirm = function(title, desc, callback) {
@@ -1348,6 +1470,10 @@
 
     onValue(ref(db, 'settings/shareLogs'), (snap) => {
         window._renderShareLogs(snap);
+        const countEl = document.getElementById('stat-logs');
+        if (countEl) {
+            countEl.innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
+        }
     });
 
     // Ban the KEY only → appears in Banned Normal Keys section
