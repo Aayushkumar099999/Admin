@@ -877,6 +877,28 @@
 
     // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
+        // Click-to-copy for any .copyable element or data-copy attribute
+        const copyEl = e.target.closest('.copyable, [data-copy]');
+        if (copyEl) {
+            const text = copyEl.getAttribute('data-copy') || copyEl.textContent.trim();
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const old = copyEl.textContent;
+                    copyEl.textContent = 'Copied!';
+                    setTimeout(() => { copyEl.textContent = old; }, 900);
+                }).catch(() => {
+                    // fallback
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                });
+            }
+            return; // don't trigger ripple on copy
+        }
+
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
         if (!target) return;
         const rect = target.getBoundingClientRect();
@@ -1151,75 +1173,136 @@
     });
 
     // --- SHARE LOGS ---
-    onValue(ref(db, 'settings/shareLogs'), (snap) => {
+    let globalUsersForLogs = {};
+    let globalBannedKeysForLogs = {};
+
+    onValue(ref(db, 'users'), (snap) => {
+        globalUsersForLogs = snap.exists() ? snap.val() : {};
+    });
+    onValue(ref(db, 'settings/bannedKeys'), (snap) => {
+        globalBannedKeysForLogs = snap.exists() ? snap.val() : {};
+    });
+
+    function resolveReceiverName(log) {
+        const fp = log.receiverFingerprint || log.receiverDevice || '';
+        const storedId = log.receiverDevice || '';
+        let name = (log.receiverName && log.receiverName !== 'unknown user') ? log.receiverName : 'unknown user';
+        let displayId = fp || storedId;
+
+        if (globalUsersForLogs[storedId] && globalUsersForLogs[storedId].name) {
+            name = globalUsersForLogs[storedId].name;
+            displayId = storedId;
+        } else if (globalUsersForLogs[fp] && globalUsersForLogs[fp].name) {
+            name = globalUsersForLogs[fp].name;
+            displayId = fp;
+        } else {
+            for (const uKey in globalUsersForLogs) {
+                const u = globalUsersForLogs[uKey];
+                if (uKey === fp || uKey === storedId ||
+                    (u.deviceId && (u.deviceId === fp || u.deviceId === storedId)) ||
+                    (u.fingerprint && (u.fingerprint === fp || u.fingerprint === storedId)) ||
+                    (u.lastDeviceId && (u.lastDeviceId === fp || u.lastDeviceId === storedId))) {
+                    name = u.name || uKey;
+                    displayId = uKey;
+                    break;
+                }
+            }
+        }
+        return { name, displayId };
+    }
+
+    window._renderShareLogs = function(snap) {
         const list = document.getElementById('shareLogsList');
         if (!list) return;
         list.innerHTML = '';
-        if (!snap.exists()) {
+        if (!snap || !snap.exists()) {
             list.innerHTML = '<div style="color:var(--text-dim);padding:20px;text-align:center;">No share attempts yet</div>';
             return;
         }
         const logs = Object.entries(snap.val()).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
         logs.forEach(([id, log]) => {
             const time = log.timestamp ? new Date(log.timestamp).toLocaleString() : '';
-            const receiverDisplay = log.receiverName || 'unknown user';
-            const receiverId = log.receiverDevice || '';
-            const isUnknown = !receiverDisplay || receiverDisplay === 'unknown user';
-            // Show real device ID when registered, fingerprint only when unknown
-            const idPart = receiverId ? ` <span style="font-size:12px;color:var(--text-dim);">(${receiverId})</span>` : '';
+            const resolved = resolveReceiverName(log);
+            const keyStr = log.key || '';
+            const isKeyBanned = !!globalBannedKeysForLogs[keyStr];
+
+            const banBtnHtml = isKeyBanned
+                ? `<button id="ban-btn-${id}" class="btn" style="background:rgba(150,150,150,0.25);color:var(--text-dim);padding:10px 18px;font-size:12px;border-radius:12px;" onclick="unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">KEY BANNED</button>`
+                : `<button id="ban-btn-${id}" class="btn" style="background:var(--error);color:white;padding:10px 18px;font-size:12px;border-radius:12px;" onclick="banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">BAN KEY</button>`;
 
             list.innerHTML += `
                 <div class="mk-item" id="log-row-${id}">
                     <div style="flex:1;">
                         <div style="font-size:16px;font-weight:800;color:var(--text-main);">
-                            <span style="color:var(--accent)">${log.generatorName || 'Unknown'}</span>
+                            <span class="copyable" style="color:var(--accent);cursor:pointer;" title="Click to copy" data-copy="${(log.generatorName||'').replace(/"/g,'&quot;')}">${log.generatorName || 'Unknown'}</span>
                             <span style="color:var(--text-dim);margin:0 8px;">→ sended key to →</span>
-                            <span style="color:var(--warn)">${receiverDisplay}</span>${idPart}
+                            <span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>
+                            <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;" title="Click to copy ID" data-copy="${resolved.displayId}">(${resolved.displayId})</span>
                         </div>
                         <div style="font-size:13px;color:var(--text-dim);margin-top:8px;font-family:monospace;">
-                            Key: ${log.key || ''} · ${time}
+                            Key: <span class="copyable" style="cursor:pointer;" title="Click to copy key" data-copy="${keyStr}">${keyStr}</span> · ${time}
                         </div>
                     </div>
-                    <button id="ban-btn-${id}" class="btn" style="background:var(--error);color:white;padding:10px 18px;font-size:12px;border-radius:12px;" 
-                        onclick="banFromLog('${receiverId}', '${(log.receiverName||'').replace(/'/g,"\\'")}', '${id}')">
-                        BAN RECEIVER
-                    </button>
+                    ${banBtnHtml}
                     <button class="mk-del" title="Delete Log" onclick="deleteShareLog('${id}')" style="margin-left:8px;">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                 </div>`;
         });
+    };
+
+    onValue(ref(db, 'settings/shareLogs'), (snap) => {
+        window._renderShareLogs(snap);
     });
 
-    window.banFromLog = function(deviceId, name, logId) {
-        if (!deviceId) return showConfirm("Error", "No device ID to ban.", null);
-        showConfirm("Ban Receiver?", `Ban device "${name || deviceId}" for key sharing?`, async () => {
+    // Ban the KEY only → appears in Banned Normal Keys section
+    window.banKeyFromLog = function(keyStr, logId) {
+        if (!keyStr) return showConfirm("Error", "No key to ban.", null);
+        showConfirm("Ban Key?", `Ban the key "${keyStr}"? It will appear in Banned Normal Keys and stop working for everyone.`, async () => {
             try {
-                const userRef = ref(db, 'users/' + deviceId);
-                const snap = await get(userRef);
-                if (snap.exists()) {
-                    await update(userRef, { status: 'banned', banReason: 'Key sharing detected' });
-                } else {
-                    await set(userRef, {
-                        name: name || 'Unknown Sharer',
-                        status: 'banned',
-                        banReason: 'Key sharing detected',
-                        joined: new Date().toISOString()
-                    });
+                await set(ref(db, 'settings/bannedKeys/' + keyStr), {
+                    reason: 'Key was shared / used on another device',
+                    bannedAt: new Date().toISOString()
+                });
+                // Clear the key from any user record
+                const usersSnap = await get(ref(db, 'users'));
+                if (usersSnap.exists()) {
+                    const all = usersSnap.val();
+                    for (const uid in all) {
+                        if (all[uid].lastGeneratedKey && String(all[uid].lastGeneratedKey).trim() === keyStr) {
+                            await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
+                        }
+                    }
                 }
-                // Update the button UI immediately
                 const btn = document.getElementById('ban-btn-' + logId);
                 if (btn) {
-                    btn.textContent = 'BANNED';
-                    btn.style.background = 'rgba(150,150,150,0.3)';
+                    btn.textContent = 'KEY BANNED';
+                    btn.style.background = 'rgba(150,150,150,0.25)';
                     btn.style.color = 'var(--text-dim)';
-                    btn.style.pointerEvents = 'none';
-                    btn.disabled = true;
+                    btn.setAttribute('onclick', `unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${logId}')`);
                 }
-                showConfirm("Banned", "Receiver has been banned. They will now see the banned message on login.", null);
             } catch (e) {
                 console.error(e);
-                showConfirm("Error", "Could not ban: " + e.message, null);
+                showConfirm("Error", "Could not ban key: " + e.message, null);
+            }
+        });
+    };
+
+    // Click "KEY BANNED" again to unban
+    window.unbanKeyFromLog = function(keyStr, logId) {
+        if (!keyStr) return;
+        showConfirm("Unban Key?", `Remove the ban from key "${keyStr}"?`, async () => {
+            try {
+                await remove(ref(db, 'settings/bannedKeys/' + keyStr));
+                const btn = document.getElementById('ban-btn-' + logId);
+                if (btn) {
+                    btn.textContent = 'BAN KEY';
+                    btn.style.background = 'var(--error)';
+                    btn.style.color = 'white';
+                    btn.setAttribute('onclick', `banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${logId}')`);
+                }
+            } catch (e) {
+                showConfirm("Error", "Could not unban: " + e.message, null);
             }
         });
     };
