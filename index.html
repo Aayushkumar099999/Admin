@@ -397,9 +397,13 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Ban Keys
         </div>
+        <div class="nav-link" onclick="switchTab('live-active', this)" id="nav-live-active">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Active Users
+        </div>
         <div class="nav-link" onclick="switchTab('active-users', this)" id="nav-active-users">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Active Users
+            Registered Users
         </div>
         <div class="nav-link" onclick="switchTab('banned-users', this)" id="nav-banned-users">
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
@@ -433,7 +437,8 @@
 
             <div class="stats-grid">
                 <div class="stat-card glass-panel float-anim"><h3>Total Devices</h3><div class="val" id="stat-total">0</div></div>
-                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-active-users').click()"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-live-active').click()"><h3>Active Users</h3><div class="val green" id="stat-live-active">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-active-users').click()"><h3>Registered Users</h3><div class="val green" id="stat-active">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-banned-users').click()"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-keys').click()"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-ban-keys').click()"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
@@ -464,9 +469,17 @@
             </div>
         </div>
 
+        <div id="live-active" class="tab-section">
+            <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+                <h2 style="margin-bottom: 30px; font-size: 28px; color: var(--accent);">Active Users (Live Keys)</h2>
+                <p style="color:var(--text-dim);margin-bottom:20px;">Users who currently have a valid non-expired key.</p>
+                <div class="user-grid" id="liveActiveUserList"></div>
+            </div>
+        </div>
+
         <div id="active-users" class="tab-section">
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
-                <h2 style="margin-bottom: 30px; font-size: 28px;">Active Registered Devices</h2>
+                <h2 style="margin-bottom: 30px; font-size: 28px;">Registered Users</h2>
                 <div class="user-grid" id="activeUserList"></div>
             </div>
         </div>
@@ -1032,7 +1045,7 @@
         </div>`;
 
     // --- MANUAL REFRESH BUTTON LOGIC ---
-    window.forceInternalRefresh = function(isSilent = false) {
+    window.forceInternalRefresh = async function(isSilent = false) {
         const icon = document.getElementById('refreshIcon');
         
         if(!isSilent && icon) {
@@ -1042,18 +1055,38 @@
                 setTimeout(() => icon.classList.remove('spin-anim'), 800);
             }, 10);
             
-            document.getElementById('masterKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
-            
-            setTimeout(() => {
-                renderMasterKeys();
-                renderBannedKeysUI(globalBannedSnap);
-                renderUsersUI(globalUsersSnap);
-            }, 400);
-        } else {
-            get(ref(db, '/')).catch(e => console.error(e));
+            // Show skeletons
+            ['masterKeysList','bannedKeysList','activeUserList','bannedUserList','liveActiveUserList','shareLogsList'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = getSkeletonHTML();
+            });
+        }
+
+        try {
+            // Force fresh reads from Firebase
+            const [usersSnap, bannedSnap, mkSnap, usageSnap, logsSnap] = await Promise.all([
+                get(ref(db, 'users')),
+                get(ref(db, 'settings/bannedKeys')),
+                get(ref(db, 'settings/masterKeys')),
+                get(ref(db, 'settings/mkUsage')),
+                get(ref(db, 'settings/shareLogs'))
+            ]);
+
+            globalUsersSnap = usersSnap;
+            globalBannedSnap = bannedSnap;
+            if (mkSnap.exists()) masterKeysData = mkSnap.val(); else masterKeysData = {};
+            if (usageSnap.exists()) mkUsageData = usageSnap.val(); else mkUsageData = {};
+
+            renderMasterKeys();
+            renderBannedKeysUI(bannedSnap);
+            renderUsersUI(usersSnap);
+            if (window._renderShareLogs) window._renderShareLogs(logsSnap);
+        } catch (e) {
+            console.error('Refresh failed:', e);
+            // fallback to cached
+            renderMasterKeys();
+            renderBannedKeysUI(globalBannedSnap);
+            renderUsersUI(globalUsersSnap);
         }
     }
 
@@ -1186,9 +1219,10 @@
     function resolveReceiverName(log) {
         const fp = log.receiverFingerprint || log.receiverDevice || '';
         const storedId = log.receiverDevice || '';
-        let name = (log.receiverName && log.receiverName !== 'unknown user') ? log.receiverName : 'unknown user';
-        let displayId = fp || storedId;
+        let name = 'unknown user';
+        let displayId = fp || storedId || 'unknown';
 
+        // Live lookup only – never trust the stored name if it might be the generator
         if (globalUsersForLogs[storedId] && globalUsersForLogs[storedId].name) {
             name = globalUsersForLogs[storedId].name;
             displayId = storedId;
@@ -1388,12 +1422,20 @@
     function renderUsersUI(snapshot) {
         const activeListDiv = document.getElementById('activeUserList');
         const bannedListDiv = document.getElementById('bannedUserList');
-        activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
+        const liveListDiv = document.getElementById('liveActiveUserList');
+        if (activeListDiv) activeListDiv.innerHTML = '';
+        if (bannedListDiv) bannedListDiv.innerHTML = '';
+        if (liveListDiv) liveListDiv.innerHTML = '';
 
         if (!snapshot || !snapshot.exists()) {
-            document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
-            activeListDiv.innerHTML = getSkeletonHTML();
-            bannedListDiv.innerHTML = getSkeletonHTML();
+            document.getElementById('stat-total').innerText = 0;
+            document.getElementById('stat-active').innerText = 0;
+            document.getElementById('stat-banned').innerText = 0;
+            const liveStat = document.getElementById('stat-live-active');
+            if (liveStat) liveStat.innerText = 0;
+            if (activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+            if (bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+            if (liveListDiv) liveListDiv.innerHTML = getSkeletonHTML();
             return;
         }
 
@@ -1401,37 +1443,63 @@
         const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
         users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
 
-        let activeCount = 0; let bannedCount = 0;
+        let registeredCount = 0; let bannedCount = 0; let liveCount = 0;
+        const now = Date.now();
         
         users.forEach(user => {
             const isBanned = user.status === 'banned';
             const dateStr = new Date(user.joined).toLocaleDateString();
+            const hasLiveKey = user.lastGeneratedKey && user.keyExpiresAt && user.keyExpiresAt > now && !isBanned;
 
             if(isBanned) {
                 bannedCount++;
-                bannedListDiv.innerHTML += `
+                if (bannedListDiv) bannedListDiv.innerHTML += `
                     <div class="user-card glass-panel banned float-anim">
                         <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
                         ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
             } else {
-                activeCount++;
-                activeListDiv.innerHTML += `
+                registeredCount++;
+                if (activeListDiv) activeListDiv.innerHTML += `
                     <div class="user-card glass-panel float-anim">
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>`;
+            }
+
+            // Live Active = has a currently valid key
+            if (hasLiveKey && liveListDiv) {
+                liveCount++;
+                const remainingMs = user.keyExpiresAt - now;
+                const hrs = Math.floor(remainingMs / 3600000);
+                const mins = Math.floor((remainingMs % 3600000) / 60000);
+                const timeLeft = hrs > 0 ? `${hrs}h ${mins}m left` : `${mins}m left`;
+                liveListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3);">
+                        <div class="user-date" style="color:var(--accent);">${timeLeft}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div style="font-size:12px;color:var(--text-dim);margin:10px 0;font-family:monospace;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">Key: ${user.lastGeneratedKey || '—'}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
         });
         
-        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
-        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
+        if (registeredCount === 0 && activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+        if (bannedCount === 0 && bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+        if (liveCount === 0 && liveListDiv) liveListDiv.innerHTML = '<div style="color:var(--text-dim);padding:30px;text-align:center;">No users with a live key right now</div>';
 
         document.getElementById('stat-total').innerText = users.length;
-        document.getElementById('stat-active').innerText = activeCount;
+        document.getElementById('stat-active').innerText = registeredCount;
         document.getElementById('stat-banned').innerText = bannedCount;
+        const liveStat = document.getElementById('stat-live-active');
+        if (liveStat) liveStat.innerText = liveCount;
     }
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
