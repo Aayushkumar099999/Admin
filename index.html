@@ -476,10 +476,9 @@
 
         <div id="ban-keys" class="tab-section">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 59, 48, 0.4);">
-                <h2 style="color: var(--error);">Ban Normal Keys (DGXEN-XXXX)</h2>
-                <p>Paste the exact key here to block it instantly. Normal keys are generated on user devices.</p>
+                <h2 style="color: var(--error);">Ban Key</h2>
                 <div class="input-group">
-                    <input type="text" id="keyToBanInput" placeholder="e.g., DGXEN-AB12-CD34-EF56-GH78" style="font-family: monospace; text-transform: uppercase;">
+                    <input type="text" id="keyToBanInput" placeholder="Paste key" style="font-family: monospace; text-transform: uppercase;">
                     <button class="btn" style="background: var(--error); color: white;" onclick="openKeyBanModal()">BAN KEY</button>
                 </div>
                 <div class="mk-list" id="bannedKeysList"></div>
@@ -522,13 +521,12 @@
         <div id="reset-device" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="display: flex; align-items: center;">
-                    <span>Manual Device Reset / Unbind</span>
+                    <span>Unbind Device</span>
                     <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </h2>
-                <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
-                    <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
-                    <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND DEVICE</button>
+                    <input type="text" id="resetIdInput" placeholder="Device ID">
+                    <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND</button>
                 </div>
             </div>
 
@@ -1309,9 +1307,9 @@
             }
             payload.maxUses = Math.floor(n);
         } else if (selectedMkType === 'device') {
-            const did = document.getElementById('mkExtraInput').value.trim();
+            const did = document.getElementById('mkExtraInput').value.trim().replace(/\s+/g, '');
             if (!did) {
-                return showConfirm("Error", "Enter the device UUID to lock this key to.", null);
+                return showConfirm("Error", "Enter the device ID to lock this key to.", null);
             }
             payload.deviceId = did;
         }
@@ -1323,16 +1321,21 @@
     }
 
     window.showConfirm = function(title, desc, callback) {
-        // Only show dialog when user confirmation is required (callback exists)
-        // Successful/info-only messages are silent (no popup)
-        if (!callback) return;
-
         document.getElementById('confirmActionTitle').innerText = title;
-        document.getElementById('confirmActionTitle').style.color = "var(--error)";
         document.getElementById('confirmActionDesc').innerText = desc;
-        pendingConfirmAction = callback;
-        document.querySelector('#confirmActionModal .btn-cancel').style.display = "block";
-        document.querySelector('#confirmActionModal .btn-confirm').innerText = "CONFIRM";
+        pendingConfirmAction = callback || null;
+
+        if (callback) {
+            // Needs user confirmation
+            document.getElementById('confirmActionTitle').style.color = "var(--error)";
+            document.querySelector('#confirmActionModal .btn-cancel').style.display = "block";
+            document.querySelector('#confirmActionModal .btn-confirm').innerText = "CONFIRM";
+        } else {
+            // Success / info only
+            document.getElementById('confirmActionTitle').style.color = "var(--accent)";
+            document.querySelector('#confirmActionModal .btn-cancel').style.display = "none";
+            document.querySelector('#confirmActionModal .btn-confirm').innerText = "OK";
+        }
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
@@ -1381,41 +1384,48 @@
     });
 
     function resolveReceiverName(log) {
-        const fp = log.receiverFingerprint || log.receiverDevice || '';
-        const storedId = log.receiverDevice || '';
+        const fp = String(log.receiverFingerprint || log.receiverDevice || '').trim();
+        const storedId = String(log.receiverDevice || '').trim();
         const genName = log.generatorName || '';
-        const genId = log.generatorId || '';
+        const genId = String(log.generatorId || '').trim();
         let name = 'unknown user';
         let displayId = fp || storedId || 'unknown';
 
-        // Live lookup – must NOT match the generator
+        const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, '');
+        const fpN = norm(fp);
+        const storedN = norm(storedId);
+        const genIdN = norm(genId);
+
         const tryUser = (uKey, u) => {
-            if (!u || uKey === genId) return false;
-            if (u.name && u.name === genName && uKey === genId) return false;
+            if (!u || norm(uKey) === genIdN) return false;
             name = u.name || uKey;
             displayId = uKey;
             return true;
         };
 
-        if (storedId && storedId !== genId && globalUsersForLogs[storedId]) {
+        // Exact key match
+        if (storedId && globalUsersForLogs[storedId] && norm(storedId) !== genIdN) {
             tryUser(storedId, globalUsersForLogs[storedId]);
-        } else if (fp && fp !== genId && globalUsersForLogs[fp]) {
+        } else if (fp && globalUsersForLogs[fp] && fpN !== genIdN) {
             tryUser(fp, globalUsersForLogs[fp]);
         } else {
+            // Case-insensitive / field scan
             for (const uKey in globalUsersForLogs) {
-                if (uKey === genId) continue;
+                if (norm(uKey) === genIdN) continue;
                 const u = globalUsersForLogs[uKey];
-                if (uKey === fp || uKey === storedId ||
-                    (u.deviceId && (u.deviceId === fp || u.deviceId === storedId)) ||
-                    (u.fingerprint && (u.fingerprint === fp || u.fingerprint === storedId)) ||
-                    (u.lastDeviceId && (u.lastDeviceId === fp || u.lastDeviceId === storedId))) {
+                const uKeyN = norm(uKey);
+                if (uKeyN === fpN || uKeyN === storedN ||
+                    norm(u.deviceId) === fpN || norm(u.deviceId) === storedN ||
+                    norm(u.fingerprint) === fpN || norm(u.fingerprint) === storedN ||
+                    norm(u.lastDeviceId) === fpN || norm(u.lastDeviceId) === storedN ||
+                    norm(u.androidId) === fpN || norm(u.androidId) === storedN) {
                     tryUser(uKey, u);
                     break;
                 }
             }
         }
-        // Final safety: never show generator as receiver
-        if (name === genName || displayId === genId) {
+
+        if (name === genName || norm(displayId) === genIdN) {
             name = 'unknown user';
             displayId = fp || storedId || 'unknown';
         }
@@ -1720,12 +1730,17 @@
     
     window.resetDevice = async function() {
         const id = document.getElementById('resetIdInput').value.trim();
-        if(id) { 
-            await remove(ref(db, 'users/' + id)); 
-            showConfirm("Success", "Device unbound successfully!", null);
-            document.getElementById('resetIdInput').value = ''; 
-        } else { 
-            showConfirm("Error", "Please enter a valid Device ID.", null); 
+        if (!id) {
+            showConfirm("Error", "Enter a Device ID.", null);
+            return;
+        }
+        try {
+            await remove(ref(db, 'users/' + id));
+            // Also clear any key-device tracks that used this id (best-effort)
+            showConfirm("Successful", "Device unbound successfully.", null);
+            document.getElementById('resetIdInput').value = '';
+        } catch (e) {
+            showConfirm("Error", "Unbind failed: " + e.message, null);
         }
     }
 
