@@ -34,6 +34,7 @@
             --float-amount: -5px;
         }
 
+        /* Premium Light Mode */
         body.light-mode {
             --bg-color: #f2f2f7; 
             --accent: #00c76b; 
@@ -50,6 +51,7 @@
             --float-amount: -5px;
         }
 
+        /* MAX PRO MODE 🔥 */
         body.max-mode {
             --bg-color: #01060e; 
             --accent: #00ffd5; 
@@ -72,6 +74,8 @@
             padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; 
             -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
@@ -92,6 +96,7 @@
             transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* --- Ambient Background --- */
         body::before, body::after {
             content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: -3; opacity: 0.8; pointer-events: none;
             animation: orbFloat 10s infinite alternate ease-in-out; transition: background 1s ease;
@@ -100,6 +105,7 @@
         body::after { width: 550px; height: 550px; background: var(--orb-2); bottom: -150px; right: 5vw; animation-delay: -5s; }
         @keyframes orbFloat { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(60px) scale(1.15); } }
 
+        /* --- MAX MODE WATER EFFECT --- */
         .water-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2; opacity: 0; pointer-events: none; overflow: hidden;
@@ -124,6 +130,7 @@
         }
         @keyframes rotateWater { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- THEME CHANGE WAVE EFFECT --- */
         .theme-wave {
             position: fixed; width: 10px; height: 10px; border-radius: 50%;
             z-index: 9998; pointer-events: none; opacity: 1; transform: scale(1);
@@ -131,6 +138,7 @@
             transform-origin: center center;
         }
 
+        /* --- BUTTON CLICK RIPPLE ANIMATION --- */
         .btn, .mk-del, .trash-btn, .nav-link, .dynamic-island, .manual-refresh-btn, .auto-notch, .m-tab { position: relative; overflow: hidden; }
         .click-ripple {
             position: absolute; border-radius: 50%; transform: scale(0);
@@ -139,6 +147,7 @@
         body.light-mode .click-ripple { background: rgba(0, 0, 0, 0.15); }
         @keyframes btn-ripple { to { transform: scale(4); opacity: 0; } }
 
+        /* --- Premium Floating Glass Utility --- */
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
@@ -160,6 +169,7 @@
         .float-anim:nth-child(4) { animation-delay: -4.5s; }
         @keyframes floatBlocks { 0%, 100% { transform: translateY(0) rotateX(0deg); } 50% { transform: translateY(var(--float-amount)) rotateX(1.5deg); } }
 
+        /* --- AUTO-SYNC NOTCH --- */
         .auto-notch {
             position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 10000;
             display: flex; align-items: center; gap: 8px; padding: 6px 20px;
@@ -175,6 +185,7 @@
         .auto-notch.active span { color: var(--accent); }
         .auto-notch.active .notch-led { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow), inset 0 0 4px #fff; }
 
+        /* --- Top Controls --- */
         .top-controls {
             position: fixed; top: 25px; right: 35px; z-index: 9999;
             display: flex; gap: 15px; align-items: center;
@@ -202,6 +213,7 @@
         .spin-anim { animation: spinIcon 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* --- Sidebar & Main Content --- */
         .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
@@ -216,6 +228,7 @@
         .tab-section.active { display: block; }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
 
+        /* --- Dashboard Stats --- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-bottom: 45px; }
         .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 40px 70px var(--shadow-color); border-color: var(--accent); }
@@ -224,6 +237,7 @@
         .stat-card .val.green { color: var(--accent); text-shadow: 0 0 25px var(--accent-glow); }
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
+        /* --- Sections, Cards & Inputs --- */
         .section-box { padding: 40px; margin-bottom: 40px; }
         .section-box h2 { font-size: 24px; margin-bottom: 15px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; justify-content: space-between; position: relative;}
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
@@ -233,7 +247,7 @@
             flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
             color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); pointer-events: auto !important;
-            -webkit-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
+            -webkit-user-select: auto !important; -moz-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
@@ -289,6 +303,7 @@
         .btn-cancel { flex: 1; padding: 18px; border-radius: 18px; border: 1px solid var(--glass-border); font-weight: 800; cursor: pointer; background: rgba(150,150,150,0.1); color: var(--text-main); transition: 0.3s; }
         .btn-cancel:hover { background: rgba(150,150,150,0.25); transform: translateY(-3px); }
 
+        /* --- Info Button --- */
         .info-btn { position: fixed; bottom: 35px; right: 35px; width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 1px solid rgba(0, 255, 136, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); color: var(--accent); font-size: 28px; font-weight: bold; font-family: "SF Pro Display", sans-serif; font-style: italic; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 100; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2); transition: 0.3s; }
         body.max-mode .info-btn { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: 0 10px 30px rgba(0, 255, 213, 0.2); }
         .info-btn:hover { transform: scale(1.15) rotate(10deg); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--accent-glow); }
@@ -296,8 +311,10 @@
         .header-info-icon { position: absolute; right: 0; width: 24px !important; height: 24px !important; min-width: 24px !important; color: var(--text-dim); cursor: pointer; transition: 0.3s; flex-shrink: 0; }
         .header-info-icon:hover { color: var(--accent); transform: scale(1.15) rotate(10deg); filter: drop-shadow(0 0 10px var(--accent-glow)); }
 
+        /* --- Modern Guide Modal & Tabs (ACCORDION STYLE) --- */
         .guide-modal { max-width: 650px !important; max-height: 85vh; overflow-y: auto; text-align: left; padding: 40px !important; }
         .guide-modal::-webkit-scrollbar { width: 6px; }
+        .guide-modal::-webkit-scrollbar-track { background: transparent; }
         .guide-modal::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
         
         .modal-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 16px; border: 1px solid var(--glass-border); }
@@ -315,10 +332,15 @@
         
         .g-inner { background: rgba(0,0,0,0.2); padding: 15px 20px; border-radius: 14px; margin-top: 15px; }
         .g-inner-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; margin-bottom: 12px; color: var(--text-main); }
+        .g-inner-title svg { width: 16px; height: 16px; opacity: 0.7; }
         .check-list { list-style: none; padding: 0; margin: 0; }
         .check-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-dim); margin-bottom: 8px; line-height: 1.5; }
         .check-list svg { width: 16px; height: 16px; stroke: var(--accent); stroke-width: 3; fill: none; flex-shrink: 0; margin-top: 2px; }
+        
+        .g-important { border: 1px solid rgba(0, 255, 136, 0.3); background: rgba(0, 255, 136, 0.05); }
+        body.max-mode .g-important { border-color: rgba(0, 255, 213, 0.3); background: rgba(0, 255, 213, 0.05); }
 
+        /* Accordion Styles for Downloads */
         .acc-item { border: 1px solid var(--glass-border); border-radius: 16px; margin-bottom: 12px; overflow: hidden; background: rgba(150,150,150,0.05); transition: 0.3s; }
         .acc-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 800; font-size: 15px; color: var(--text-main); user-select: none; }
         .acc-header svg { width: 20px; height: 20px; stroke: var(--text-dim); transition: transform 0.3s; fill: none; stroke-width: 2.5; }
@@ -336,17 +358,20 @@
 </head>
 <body>
 
+    <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
         <div class="water-wave"></div>
         <div class="water-wave"></div>
         <div class="water-wave"></div>
     </div>
 
+    <!-- AUTO SYNC NOTCH (Top Center) -->
     <div class="auto-notch" id="autoSyncNotch" role="button">
         <div class="notch-led" id="syncLed"></div>
         <span id="syncNotchText">AUTO SYNC: OFF</span>
     </div>
 
+    <!-- TOP CONTROLS (Manual Refresh + Theme Island) -->
     <div class="top-controls">
         <div class="manual-refresh-btn" id="manualRefreshBtn" title="Force Sync">
             <svg id="refreshIcon" viewBox="0 0 24 24"><path d="M12 2.75a9.25 9.25 0 1 0 4.737 1.435M16.5 2.75v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -357,6 +382,7 @@
         </div>
     </div>
 
+    <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
         <h1>DGXEN</h1>
         <div class="nav-link active" onclick="switchTab('dashboard', this)" id="nav-dashboard">
@@ -379,16 +405,13 @@
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
             Banned Users
         </div>
-        <div class="nav-link" onclick="switchTab('security-logs', this)" id="nav-logs">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Security Logs
-        </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             System Reset
         </div>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
         <div id="dashboard" class="tab-section active">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(0, 255, 136, 0.4); box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.05), 0 25px 60px var(--shadow-color);">
@@ -448,18 +471,6 @@
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                 <h2 style="color: var(--error); margin-bottom: 30px; font-size: 28px;">Banned Devices Database</h2>
                 <div class="user-grid" id="bannedUserList"></div>
-            </div>
-        </div>
-
-        <!-- SECURITY LOGS SECTION -->
-        <div id="security-logs" class="tab-section">
-            <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 159, 10, 0.4);">
-                <h2 style="color: var(--warn); display: flex; align-items: center; gap: 10px;">
-                    <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Key Sharing Logs
-                </h2>
-                <p>Monitor unauthorized key sharing between devices. Names resolve automatically.</p>
-                <div class="mk-list" id="securityLogsList"></div>
             </div>
         </div>
 
@@ -535,6 +546,7 @@
 
             <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
+                
                 <div class="g-card" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h3 style="color: var(--accent); margin-bottom: 5px;">Welcome to DGXEN</h3>
@@ -546,7 +558,9 @@
                 <div class="g-card">
                     <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 1. Global Key Explain</h3>
                     <p>The Global Key controls the primary access lifespan for all standard users. Set in hours.</p>
+                    
                     <div class="g-inner">
+                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Key Functions</div>
                         <ul class="check-list">
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access system core features.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Authenticate secure sessions globally.</li>
@@ -558,7 +572,9 @@
                 <div class="g-card">
                     <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> 2. Master Keys</h3>
                     <p>Master Keys provide elevated access to advanced modules and configuration settings.</p>
+                    
                     <div class="g-inner">
+                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Master Key Benefits</div>
                         <ul class="check-list">
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlock advanced modules.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Modify system configurations.</li>
@@ -566,12 +582,37 @@
                         </ul>
                     </div>
                 </div>
+
+                <div class="g-card">
+                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 3. Tracking & Bans</h3>
+                    <p>Learn how the system monitors users and enforces bans seamlessly.</p>
+                    <div class="g-inner">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Smart Tracker:</b> Master Key limits usage accurately per unique device.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Device Bans:</b> Permanently blocks a phone ID regardless of app reinstalls.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Key Bans:</b> Specifically blacklists a compromised access key instantly.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="g-card">
+                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 4. Internal Mechanics</h3>
+                    <p>Quick breakdown of advanced background systems.</p>
+                    <div class="g-inner">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Auto-Sync System:</b> Tap the top notch to sync the database silently every 5 seconds.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Deep Nuke:</b> Master key deletion securely wipes associated device tracking traces.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Paste Bypass:</b> Native Android paste enabled dynamically across inputs.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- TAB CONTENT: DOWNLOADS -->
+            <!-- TAB CONTENT: DOWNLOADS (ACCORDION STYLE) -->
             <div id="tab-downloads" class="m-content">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Download core module components for local integration. Offline bundles are fully updated.</p>
                 
+                <!-- Category 1: Admin Panel -->
                 <div class="acc-item" id="acc-admin">
                     <div class="acc-header" onclick="toggleAccordion('acc-admin')">
                         Admin Panel System
@@ -589,6 +630,7 @@
                     </div>
                 </div>
 
+                <!-- Category 2: Generator Logic -->
                 <div class="acc-item" id="acc-gen">
                     <div class="acc-header" onclick="toggleAccordion('acc-gen')">
                         Key Generator Logic
@@ -610,6 +652,7 @@
                     </div>
                 </div>
 
+                <!-- Category 3: Auth System (Injected/App Assets) -->
                 <div class="acc-item" id="acc-auth">
                     <div class="acc-header" onclick="toggleAccordion('acc-auth')">
                         Authentication Module
@@ -637,7 +680,7 @@
         </div>
     </div>
 
-    <!-- ACTION MODALS -->
+    <!-- MODALS -->
     <div class="modal-overlay" id="banModal">
         <div class="modal">
             <h2>Ban User</h2>
@@ -673,7 +716,7 @@
         </div>
     </div>
 
-<!-- Firebase SDK & Logic (Explicitly Window-Bound) -->
+<!-- Firebase SDK & Logic -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, push, remove, set, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -687,392 +730,22 @@
     let mkUsageData = {};
     let resetStep = 0;
     let pendingConfirmAction = null; 
-    let securityLogsData = {};
-    let globalBannedSnap = null;
-    let globalUsersSnap = null;
 
-    // --- MODAL UTILITIES ---
-    window.showConfirm = function(title, desc, callback) {
-        document.getElementById('confirmActionTitle').innerText = title;
-        document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
-        document.getElementById('confirmActionDesc').innerText = desc;
-        pendingConfirmAction = callback;
-        document.querySelector('#confirmActionModal .btn-cancel').style.display = callback ? "block" : "none";
-        document.querySelector('#confirmActionModal .btn-confirm').innerText = callback ? "CONFIRM" : "OK";
-        document.getElementById('confirmActionModal').style.display = 'flex';
-    };
-
-    window.closeModals = () => { 
-        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
-        modals.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.style.display = 'none';
-        });
-    };
-
-    window.executeConfirm = async function() {
-        const action = pendingConfirmAction;
-        pendingConfirmAction = null;
-        window.closeModals(); 
-        if(action) { 
-            try { await action(); } catch (err) { console.error(err); } 
-        }
-    };
-
-    window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; };
-    window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; };
-
-    // --- NAVIGATION & GUIDE TABS ---
-    window.switchTab = function(tabId, el) {
-        document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-        if(el) el.classList.add('active');
-        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-        const target = document.getElementById(tabId);
-        if(target) target.classList.add('active');
-    };
-
+    // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
         document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
-        if(el) el.classList.add('active');
+        el.classList.add('active');
         document.querySelectorAll('.m-content').forEach(c => c.classList.remove('active'));
-        const target = document.getElementById('tab-' + tabName);
-        if(target) target.classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
     };
 
+    // --- ACCORDION TOGGLER ---
     window.toggleAccordion = function(id) {
         const item = document.getElementById(id);
-        if(item) item.classList.toggle('active');
+        item.classList.toggle('active');
     };
 
-    // --- SKELETON LOADER ---
-    const getSkeletonHTML = () => `
-        <div class="skeleton-box">
-            <div class="skeleton-line" style="width: 60%;"></div>
-            <div class="skeleton-line" style="width: 40%;"></div>
-        </div>
-        <div class="skeleton-box" style="animation-delay: 0.2s;">
-            <div class="skeleton-line" style="width: 50%;"></div>
-            <div class="skeleton-line" style="width: 30%;"></div>
-        </div>`;
-
-    // --- MASTER KEYS LOGIC ---
-    let masterKeysData = {};
-
-    onValue(ref(db, 'settings/mkUsage'), (snap) => { 
-        mkUsageData = snap.exists() ? snap.val() : {};
-        renderMasterKeys(); 
-    });
-
-    onValue(ref(db, 'settings/masterKeys'), (snapshot) => {
-        masterKeysData = snapshot.exists() ? snapshot.val() : {};
-        renderMasterKeys();
-    });
-
-    function renderMasterKeys() {
-        const listDiv = document.getElementById('masterKeysList');
-        if(!listDiv) return;
-        listDiv.innerHTML = '';
-        const keys = Object.keys(masterKeysData);
-        document.getElementById('stat-keys').innerText = keys.length;
-        
-        if(keys.length > 0) {
-            keys.forEach(pushId => {
-                const keyStr = masterKeysData[pushId];
-                const trimmedKey = String(keyStr).trim();
-                let safeKey = "";
-                try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
-                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
-                
-                listDiv.innerHTML += `
-                    <div class="mk-item">
-                        <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                    </div>`;
-            });
-        } else {
-            listDiv.innerHTML = getSkeletonHTML();
-        }
-    }
-
-    window.addMasterKey = async function() {
-        const newKey = document.getElementById('masterKeyInput').value.trim();
-        if(!newKey) return window.showConfirm("Error", "Key cannot be empty!", null);
-        await push(ref(db, 'settings/masterKeys'), newKey);
-        document.getElementById('masterKeyInput').value = '';
-    };
-
-    window.deleteMasterKey = function(pushId, keyStr) {
-        window.showConfirm("Delete Master Key?", "Are you sure you want to delete this master key?", async () => {
-            const trimmedKey = String(keyStr).trim();
-            let safeKey = trimmedKey;
-            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
-            
-            try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
-            try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
-            try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
-            try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
-        });
-    };
-
-    // --- NORMAL KEY BAN LOGIC ---
-    onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
-        globalBannedSnap = snapshot;
-        renderBannedKeysUI(snapshot);
-    });
-
-    function renderBannedKeysUI(snapshot) {
-        const listDiv = document.getElementById('bannedKeysList');
-        if(!listDiv) return;
-        listDiv.innerHTML = '';
-        if (snapshot && snapshot.exists()) {
-            const data = snapshot.val();
-            const keys = Object.keys(data);
-            document.getElementById('stat-banned-keys').innerText = keys.length;
-            keys.forEach(keyStr => {
-                const info = data[keyStr] || {};
-                listDiv.innerHTML += `
-                    <div class="mk-item">
-                        <div><span class="mk-text" style="color: var(--error);">${keyStr}</span>${info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
-                        <button class="mk-del" style="color: var(--accent);" title="Unban Key" onclick="unbanKey('${keyStr}')">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        </button>
-                    </div>`;
-            });
-        } else {
-            document.getElementById('stat-banned-keys').innerText = "0";
-            listDiv.innerHTML = getSkeletonHTML();
-        }
-    }
-
-    window.openKeyBanModal = function() {
-        const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
-        if (!key) return window.showConfirm("Error", "Enter a key first!", null);
-        if (!key.startsWith('DGXEN-') || key.length < 10) return window.showConfirm("Invalid Key Format", "Please enter a valid key format.", null);
-        pendingKeyToBan = key;
-        document.getElementById('keyBanTarget').innerText = key;
-        document.getElementById('keyBanReasonInput').value = '';
-        document.getElementById('keyBanModal').style.display = 'flex';
-    };
-
-    window.confirmKeyBan = async function() {
-        if (!pendingKeyToBan) return;
-        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
-        window.closeModals();
-        await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
-        const usersRef = ref(db, 'users');
-        const snap = await get(usersRef);
-        if(snap.exists()){
-            const allUsers = snap.val();
-            for(let uid in allUsers){
-                if(allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim().toUpperCase() === pendingKeyToBan.toUpperCase()){
-                    await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
-                }
-            }
-        }
-        document.getElementById('keyToBanInput').value = '';
-        pendingKeyToBan = null;
-    };
-
-    window.unbanKey = function(keyStr) {
-        window.showConfirm("Unban Key?", "Are you sure you want to remove the ban from this key?", async () => {
-            await remove(ref(db, 'settings/bannedKeys/' + keyStr));
-        });
-    };
-
-    // --- EXPIRY HOURS ---
-    onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
-        const hrs = snap.exists() ? snap.val() : 24;
-        document.getElementById('currentExpiryDisplay').innerText = hrs;
-        document.getElementById('expiryHoursInput').value = hrs;
-    });
-
-    window.updateExpiryHours = async function() {
-        const hrs = parseFloat(document.getElementById('expiryHoursInput').value);
-        if(hrs > 0) {
-            await set(ref(db, 'settings/keyExpiryHours'), hrs);
-            window.showConfirm("Update Successful", "✅ Key Expiry Time updated to " + hrs + " hours!", null);
-        } else { 
-            window.showConfirm("Error", "Please enter a valid number of hours.", null); 
-        }
-    };
-
-    // --- USERS MANAGEMENT ---
-    onValue(ref(db, 'users'), (snapshot) => {
-        globalUsersSnap = snapshot;
-        renderUsersUI(snapshot);
-    });
-
-    function renderUsersUI(snapshot) {
-        const activeListDiv = document.getElementById('activeUserList');
-        const bannedListDiv = document.getElementById('bannedUserList');
-        if(!activeListDiv || !bannedListDiv) return;
-        activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
-
-        if (!snapshot || !snapshot.exists()) {
-            document.getElementById('stat-total').innerText = 0; 
-            document.getElementById('stat-active').innerText = 0; 
-            document.getElementById('stat-banned').innerText = 0;
-            activeListDiv.innerHTML = getSkeletonHTML();
-            bannedListDiv.innerHTML = getSkeletonHTML();
-            renderSecurityLogs();
-            return;
-        }
-
-        const data = snapshot.val();
-        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
-
-        let activeCount = 0; let bannedCount = 0;
-        
-        users.forEach(user => {
-            const isBanned = user.status === 'banned';
-            const dateStr = new Date(user.joined || Date.now()).toLocaleDateString();
-
-            if(isBanned) {
-                bannedCount++;
-                bannedListDiv.innerHTML += `
-                    <div class="user-card glass-panel banned float-anim">
-                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
-                        <div class="user-date">${dateStr}</div>
-                        <div class="user-name">${user.name || 'User'}</div>
-                        <div class="user-id">ID: ${user.id}</div>
-                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
-                        <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
-                    </div>`;
-            } else {
-                activeCount++;
-                activeListDiv.innerHTML += `
-                    <div class="user-card glass-panel float-anim">
-                        <div class="user-date">${dateStr}</div>
-                        <div class="user-name">${user.name || 'User'}</div>
-                        <div class="user-id">ID: ${user.id}</div>
-                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
-                    </div>`;
-            }
-        });
-        
-        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
-        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
-
-        document.getElementById('stat-total').innerText = users.length;
-        document.getElementById('stat-active').innerText = activeCount;
-        document.getElementById('stat-banned').innerText = bannedCount;
-        
-        renderSecurityLogs();
-    }
-
-    window.openBanModal = (userId) => { 
-        currentBanUserId = userId; 
-        document.getElementById('banReasonInput').value = ''; 
-        document.getElementById('banModal').style.display = 'flex'; 
-    };
-
-    window.confirmBan = async function() { 
-        if(!currentBanUserId) return;
-        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
-        window.closeModals(); 
-        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
-    };
-
-    window.unbanUser = async function(userId) { 
-        await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); 
-    };
-    
-    window.deleteUser = function(userId) { 
-        window.showConfirm("Permanently Delete User?", "This action will wipe the device from the database.", async () => {
-            await remove(ref(db, 'users/' + userId));
-        });
-    };
-    
-    window.resetDevice = async function() {
-        const id = document.getElementById('resetIdInput').value.trim();
-        if(id) { 
-            await remove(ref(db, 'users/' + id)); 
-            window.showConfirm("Success", "Device unbound successfully!", null);
-            document.getElementById('resetIdInput').value = ''; 
-        } else { 
-            window.showConfirm("Error", "Please enter a valid Device ID.", null); 
-        }
-    };
-
-    // --- SECURITY LOGS SYSTEM ---
-    onValue(ref(db, 'settings/securityLogs'), (snapshot) => {
-        securityLogsData = snapshot.exists() ? snapshot.val() : {};
-        renderSecurityLogs();
-    });
-
-    function renderSecurityLogs() {
-        const listDiv = document.getElementById('securityLogsList');
-        if(!listDiv) return;
-        listDiv.innerHTML = '';
-        
-        const keys = Object.keys(securityLogsData);
-        if(keys.length === 0) {
-            listDiv.innerHTML = '<div style="color:var(--text-dim); text-align:center; padding: 20px; font-weight: 600;">No key sharing detected yet.</div>';
-            return;
-        }
-
-        const logs = keys.map(k => ({ id: k, ...securityLogsData[k] }));
-        logs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-        const users = globalUsersSnap && globalUsersSnap.exists() ? globalUsersSnap.val() : {};
-
-        logs.forEach(log => {
-            const genUser = users[log.generatorId];
-            const usedUser = users[log.usedById];
-
-            const genName = genUser && genUser.name ? genUser.name : `Unknown (ID: ${log.generatorId || 'N/A'})`;
-            const usedName = usedUser && usedUser.name ? usedUser.name : `Unknown Device (ID: ${log.usedById || 'N/A'})`;
-            
-            const dateStr = log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A';
-
-            listDiv.innerHTML += `
-                <div class="mk-item" style="border-left: 3px solid var(--warn);">
-                    <div>
-                        <div style="font-size:12px; color:var(--text-dim); margin-bottom:5px;">${dateStr}</div>
-                        <span class="mk-text" style="color: var(--text-main); font-size: 15px;">
-                            <span style="color: var(--accent); font-weight:800;">${genName}</span> sent key to <span style="color: var(--error); font-weight:800;">${usedName}</span>
-                        </span>
-                        <div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-family: monospace;">Key: ${log.key || 'N/A'}</div>
-                    </div>
-                </div>`;
-        });
-    }
-
-    // --- FACTORY RESET ---
-    window.startFactoryReset = function() {
-        resetStep = 1; 
-        document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; 
-        document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; 
-        document.getElementById('resetModal').style.display = 'flex'; 
-        document.getElementById('resetConfirmBtn').onclick = executeResetStep;
-    };
-
-    function executeResetStep() {
-        if (resetStep === 1) { 
-            resetStep = 2; 
-            document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; 
-            document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; 
-        } else if (resetStep === 2) { 
-            window.closeModals(); 
-            wipeEntireDatabase(); 
-        }
-    }
-
-    async function wipeEntireDatabase() { 
-        try { 
-            await set(ref(db, '/'), null); 
-            window.showConfirm("Success", "Database completely wiped!", () => location.reload()); 
-        } catch (error) { 
-            window.showConfirm("Error", "Error wiping database: " + error.message, null); 
-        } 
-    }
-
-    // --- SAFE DOWNLOAD MODULES ---
+    // --- PURE SAFE DOWNLOAD SYSTEM (NO DOM INJECTIONS) ---
     function triggerDownload(blob, fileName, btnElement, originalText) {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1116,7 +789,7 @@
                 content = document.documentElement.outerHTML; 
                 finalName = "index.html";
             } else if (fileId === 'auth_smali') {
-                content = atob('LmNsYXNzIHB1YmxpYyBMY29tL2RneGVuL0F1dGg7Ci5zdXBlciBMamF2YS9sYW5nL09iamVjdDsKLnNvdXJjZSAiQXV0aC5qYXZhIgoKCiMgc3RhdGljIGZpZWxkcwouZmllbGQgcHVibGljIHN0YXRpYyBkaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCi5maWVsZCBwdWJsaWMgc3RhdGljIHVubG9ja2VkOloKCi5maWVsZCBwdWJsaWMgc3RhdGljIHdlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgoKIyBkaXJlY3QgbWV0aG9kcwoubWV0aG9kIHB1YmxpYyBjb25zdHJ1Y3RvciA8aW5pdD4oKVYKICAgIC5yZWdpc3RlcnMgMQoKICAgIGludm9rZS1kaXJlY3Qge3AwfSwgTGphdmEvbGFuZy9PYmplY3Q7LT48aW5pdD4oKVYKCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZAoKLm1ldGhvZCBwdWJsaWMgc3RhdGljIHNob3coTGFuZHJvaWQvYXBwL0FjdGl2aXR5OylWCiAgICAucmVnaXN0ZXJzIDUKCiAgICBzZ2V0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBpZi1lcXogdjAsIDpjb25kXzUKCiAgICByZXR1cm4tdm9pZAoKICAgIDpjb25kXzUKICAgIG5ldy1pbnN0YW5jZSB2MCwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgaW52b2tlLWRpcmVjdCB7djAsIHAwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT48aW5pdD4oTGFuZHJvaWQvY29udGV4dC9Db250ZXh0OylWCgogICAgc3B1dC1vYmplY3QgdjAsIExjb20vZGd4ZW4vQXV0aDstPndlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgY29uc3QgdjEsIC0weDEwMDAwMDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5zZXRCYWNrZ3JvdW5kQ29sb3IoSSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0LzQgdjIsIDB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MSwgdjJ9LCBMYW5kcm9pZC93ZWJraXQvV2ViU2V0dGluZ3M7LT5zZXRKYXZhU2NyaXB0RW5hYmxlZChaKVYKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOy0+c2V0RG9tU3RvcmFnZUVuYWJsZWQoWilWCgogICAgbmV3LWluc3RhbmNlIHYxLCBMY29tL2RneGVuL0F1dGg7CgogICAgaW52b2tlLWRpcmVjdCB7djF9LCBMY29tL2RneGVuL0F1dGg7LT48aW5pdD4oKVYKCiAgICBjb25zdC1zdHJpbmcgdjIsICJBbmRyb2lkIgoKICAgIGludm9rZS12aXJ0dWFsIHt2MCwgdjEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5hZGRKYXZhc2NyaXB0SW50ZXJmYWNlKExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL2xhbmcvU3RyaW5nOylWCgogICAgY29uc3Qtc3RyaW5nIHYyLCAiZmlsZTovLy9hbmRyb2lkX2Fzc2V0L2xvZ2luLmh0bWwiCgogICAgaW52b2tlLXZpcnR1YWwge3YwLCB2Mn0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+bG9hZFVybChMamF2YS9sYW5nL1N0cmluZzspVgoKICAgIGludm9rZS12aXJ0dWFsIHt2MH0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+cmVxdWVzdEZvY3VzKCpaCgogICAgbmV3LWluc3RhbmNlIHYxLCBMYW5kcm9pZC9hcHAvRGlhbG9nOwoKICAgIGNvbnN0IHYyLCAweDEwMzAwMDYKCiAgICBpbnZva2UtZGlyZWN0IHt2MSwgcDAsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPjxpbml0PihMYW5kcm9pZC9jb250ZXh0L0NvbnRleHQ7SSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YxLCB2MH0sIExhbmRyb2lkL2FwcC9EaWFsb2c7LT5zZXRDb250ZW50VmlldyhMYW5kcm9pZC92aWV3L1ZpZXc7KVYKCiAgICBjb25zdC80IHYyLCAweDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPnNldENhbmNlbGFibGUoWilWCgogICAgaW52b2tlLXZpcnR1YWwge3YxfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmdldFdpbmRvdygpTGFuZHJvaWQvdmlldy9XaW5kb3c7CgogICAgbW92ZS1yZXN1bHQtb2JqZWN0IHYyCgogICAgY29uc3QgcDAsIDB4MjAwMDgKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5jbGVhckZsYWdzKEkpVgoKICAgIGNvbnN0LzE2IHAwLCAweDIwCgogICAgaW52b2tlLXZpcnR1YWwge3YyLCBwMH0sIExhbmRyb2lkL3ZpZXcvV2luZG93Oy0+c2V0U29mdElucHV0TW9kZShJKVYKCiAgICBjb25zdCBwMCwgLTB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MiwgcDAsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRMYXlvdXQoSUkpVgoKICAgIGNvbnN0IHYzLCAweDEwMzAwMzAKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHYzfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRXaW5kb3dBbmltYXRpb25zKEkpVgoKICAgIHNwdXQtb2JqZWN0IHYxLCBMY29tL2RneGVuL0F1dGg7LT5kaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCiAgICBpbnZva2UtdmlydHVhbCB7djF9LCBMYW5kcm9pZC9hcHAvRGlhbG9nOy0+c2hvdygpVgoKICAgIHJldHVybi12b2lkCi5lbmQgbWV0aG9kCgoKIyB2aXJ0dWFsIG1ldGhvZHMKLm1ldGhvZCBwdWJsaWMgdW5sb2NrKClWCiAgICAucmVnaXN0ZXJzIDIKICAgIC5hbm5vdGF0aW9uIHJ1bnRpbWUgTGFuZHJvaWQvd2Via2l0L0phdmFzY3JpcHRJbnRlcmZhY2U7CiAgICAuZW5kIGFubm90YXRpb24KCiAgICBjb25zdC80IHYwLCAweDEKCiAgICBzcHV0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBzZ2V0LW9iamVjdCB2MCwgLGNvbS9kZ3hlbi9BdXRoOy0+ZGlhbG9nOkxhbmRyb2lkL2FwcC9EaWFsb2c7CgogICAgaWYtZXF6IHYwLCA6Y29uZF9hCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmRpc21pc3MoKVYKCiAgICA6Y29uZF9hCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZA==');
+                content = atob('LmNsYXNzIHB1YmxpYyBMY29tL2RneGVuL0F1dGg7Ci5zdXBlciBMamF2YS9sYW5nL09iamVjdDsKLnNvdXJjZSAiQXV0aC5qYXZhIgoKCiMgc3RhdGljIGZpZWxkcwouZmllbGQgcHVibGljIHN0YXRpYyBkaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCi5maWVsZCBwdWJsaWMgc3RhdGljIHVubG9ja2VkOloKCi5maWVsZCBwdWJsaWMgc3RhdGljIHdlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgoKIyBkaXJlY3QgbWV0aG9kcwoubWV0aG9kIHB1YmxpYyBjb25zdHJ1Y3RvciA8aW5pdD4oKVYKICAgIC5yZWdpc3RlcnMgMQoKICAgIGludm9rZS1kaXJlY3Qge3AwfSwgTGphdmEvbGFuZy9PYmplY3Q7LT48aW5pdD4oKVYKCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZAoKLm1ldGhvZCBwdWJsaWMgc3RhdGljIHNob3coTGFuZHJvaWQvYXBwL0FjdGl2aXR5OylWCiAgICAucmVnaXN0ZXJzIDUKCiAgICBzZ2V0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBpZi1lcXogdjAsIDpjb25kXzUKCiAgICByZXR1cm4tdm9pZAoKICAgIDpjb25kXzUKICAgIG5ldy1pbnN0YW5jZSB2MCwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgaW52b2tlLWRpcmVjdCB7djAsIHAwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT48aW5pdD4oTGFuZHJvaWQvY29udGV4dC9Db250ZXh0OylWCgogICAgc3B1dC1vYmplY3QgdjAsIExjb20vZGd4ZW4vQXV0aDstPndlYlZpZXc6TGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7CgogICAgY29uc3QgdjEsIC0weDEwMDAwMDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5zZXRCYWNrZ3JvdW5kQ29sb3IoSSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0LzQgdjIsIDB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MSwgdjJ9LCBMYW5kcm9pZC93ZWJraXQvV2ViU2V0dGluZ3M7LT5zZXRKYXZhU2NyaXB0RW5hYmxlZChaKVYKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOy0+c2V0RG9tU3RvcmFnZUVuYWJsZWQoWilWCgogICAgbmV3LWluc3RhbmNlIHYxLCBMY29tL2RneGVuL0F1dGg7CgogICAgaW52b2tlLWRpcmVjdCB7djF9LCBMY29tL2RneGVuL0F1dGg7LT48aW5pdD4oKVYKCiAgICBjb25zdC1zdHJpbmcgdjIsICJBbmRyb2lkIgoKICAgIGludm9rZS12aXJ0dWFsIHt2MCwgdjEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5hZGRKYXZhc2NyaXB0SW50ZXJmYWNlKExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL2xhbmcvU3RyaW5nOylWCgogICAgY29uc3Qtc3RyaW5nIHYyLCAiZmlsZTovLy9hbmRyb2lkX2Fzc2V0L2xvZ2luLmh0bWwiCgogICAgaW52b2tlLXZpcnR1YWwge3YwLCB2Mn0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+bG9hZFVybChMamF2YS9sYW5nL1N0cmluZzspVgoKICAgIGludm9rZS12aXJ0dWFsIHt2MH0sIExhbmRyb2lkL3dlYmtpdC9XZWJWaWV3Oy0+cmVxdWVzdEZvY3VzKCpaCgogICAgbmV3LWluc3RhbmNlIHYxLCBMYW5kcm9pZC9hcHAvRGlhbG9nOwoKICAgIGNvbnN0IHYyLCAweDEwMzAwMDYKCiAgICBpbnZva2UtZGlyZWN0IHt2MSwgcDAsIHYyfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPjxpbml0PihMYW5kcm9pZC9jb250ZXh0L0NvbnRleHQ7SSlWCgogICAgaW52b2tlLXZpcnR1YWwge3YxLCB2MH0sIExhbmRyb2lkL2FwcC9EaWFsb2c7LT5zZXRDb250ZW50VmlldyhMYW5kcm9pZC92aWV3L1ZpZXc7KVYKCiAgICBjb25zdC80IHYyLCAweDAKCiAgICBpbnZva2UtdmlydHVhbCB7djEsIHYyfSwgTGFuZHJvaWQvd2Via2l0L1dlYlZpZXc7LT5nZXRTZXR0aW5ncygpTGFuZHJvaWQvd2Via2l0L1dlYlNldHRpbmdzOwoKICAgIG1vdmUtcmVzdWx0LW9iamVjdCB2MQoKICAgIGNvbnN0IHAwLCAweDIwMDA4KCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5jbGVhckZsYWdzKEkpVgoKICAgIGNvbnN0LzE2IHAwLCAweDIwCgogICAgaW52b2tlLXZpcnR1YWwge3YyLCBwMH0sIExhbmRyb2lkL3ZpZXcvV2luZG93Oy0+c2V0U29mdElucHV0TW9kZShJKVYKCiAgICBjb25zdCBwMCwgLTB4MQoKICAgIGludm9rZS12aXJ0dWFsIHt2MiwgcDAsIHAwfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRMYXlvdXQoSUkpVgoKICAgIGNvbnN0IHYzLCAweDEwMzAwMzAKCiAgICBpbnZva2UtdmlydHVhbCB7djIsIHYzfSwgTGFuZHJvaWQvdmlldy9XaW5kb3c7LT5zZXRXaW5kb3dBbmltYXRpb25zKEkpVgoKICAgIHNwdXQtb2JqZWN0IHYxLCBMY29tL2RneGVuL0F1dGg7LT5kaWFsb2c6TGFuZHJvaWQvYXBwL0RpYWxvZzsKCiAgICBpbnZva2UtdmlydHVhbCB7djF9LCBMYW5kcm9pZC9hcHAvRGlhbG9nOy0+c2hvdygpVgoKICAgIHJldHVybi12b2lkCi5lbmQgbWV0aG9kCgoKIyB2aXJ0dWFsIG1ldGhvZHMKLm1ldGhvZCBwdWJsaWMgdW5sb2NrKClWCiAgICAucmVnaXN0ZXJzIDIKICAgIC5hbm5vdGF0aW9uIHJ1bnRpbWUgTGFuZHJvaWQvd2Via2l0L0phdmFzY3JpcHRJbnRlcmZhY2U7CiAgICAuZW5kIGFubm90YXRpb24KCiAgICBjb25zdC80IHYwLCAweDEKCiAgICBzcHV0LWJvb2xlYW4gdjAsIExjb20vZGd4ZW4vQXV0aDstPnVubG9ja2VkOloKCiAgICBzZ2V0LW9iamVjdCB2MCwgLGNvbS9kZ3hlbi9BdXRoOy0+ZGlhbG9nOkxhbmRyb2lkL2FwcC9EaWFsb2c7CgogICAgaWYtZXF6IHYwLCA6Y29uZF9hCgogICAgaW52b2tlLXZpcnR1YWwge3YwfSwgTGFuZHJvaWQvYXBwL0RpYWxvZzstPmRpc21pc3MoKVYKCiAgICA6Y29uZF9hCiAgICByZXR1cm4tdm9pZAouZW5kIG1ldGhvZA==');
                 finalName = "Auth.smali";
             } else if (fileId === 'hook_smali') {
                 content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
@@ -1173,7 +846,21 @@
         }
     };
 
-    // --- UI HELPERS ---
+    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS ---
+    document.addEventListener('focusin', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'paused';
+        }
+    });
+    document.addEventListener('focusout', (e) => {
+        if (e.target.matches('input[type="text"], input[type="number"]')) {
+            const floatParent = e.target.closest('.float-anim');
+            if (floatParent) floatParent.style.animationPlayState = 'running';
+        }
+    });
+
+    // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
         if (!target) return;
@@ -1193,6 +880,7 @@
         setTimeout(() => ripple.remove(), 600); 
     });
 
+    // SMOOTH THEME CYCLE
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -1207,6 +895,7 @@
 
         const nextThemeIndex = (currentThemeIndex + 1) % themes.length;
         const nextTheme = themes[nextThemeIndex];
+        
         const waveColor = nextTheme === 'light' ? '#f2f2f7' : (nextTheme === 'max' ? '#01060e' : '#050507');
 
         let wave = document.createElement('div');
@@ -1218,6 +907,7 @@
         wave.style.left = (rect.left + rect.width / 2 - 5) + 'px';
 
         document.body.appendChild(wave);
+        
         requestAnimationFrame(() => { wave.style.transform = 'scale(400)'; });
 
         setTimeout(() => {
@@ -1227,7 +917,7 @@
         }, 500);
 
         setTimeout(() => { wave.remove(); }, 1200);
-    };
+    }
 
     function applyTheme(theme) {
         const body = document.body;
@@ -1251,6 +941,7 @@
         localStorage.setItem('dgxen_admin_theme', theme);
     }
 
+    // --- AUTO SYNC (NOTCH) LOGIC ---
     const syncGap = 5; 
     let autoSyncTimer = null;
 
@@ -1281,6 +972,29 @@
 
     document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
 
+    window.onload = function() {
+        const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
+        currentThemeIndex = themes.indexOf(savedTheme);
+        if(currentThemeIndex === -1) currentThemeIndex = 0;
+        applyTheme(savedTheme);
+        applyAutoSync();
+    }
+
+    // --- GLOBAL STATE FOR REFRESH MECHANISM ---
+    let globalBannedSnap = null;
+    let globalUsersSnap = null;
+
+    const getSkeletonHTML = () => `
+        <div class="skeleton-box">
+            <div class="skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton-line" style="width: 40%;"></div>
+        </div>
+        <div class="skeleton-box" style="animation-delay: 0.2s;">
+            <div class="skeleton-line" style="width: 50%;"></div>
+            <div class="skeleton-line" style="width: 30%;"></div>
+        </div>`;
+
+    // --- MANUAL REFRESH BUTTON LOGIC ---
     window.forceInternalRefresh = function(isSilent = false) {
         const icon = document.getElementById('refreshIcon');
         
@@ -1295,7 +1009,6 @@
             document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
             document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
             document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
-            document.getElementById('securityLogsList').innerHTML = getSkeletonHTML();
             
             setTimeout(() => {
                 renderMasterKeys();
@@ -1305,20 +1018,276 @@
         } else {
             get(ref(db, '/')).catch(e => console.error(e));
         }
-    };
+    }
 
     document.getElementById('manualRefreshBtn').addEventListener('click', () => {
         if(navigator.vibrate) navigator.vibrate(20);
         forceInternalRefresh(false);
     });
 
-    window.onload = function() {
-        const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
-        currentThemeIndex = themes.indexOf(savedTheme);
-        if(currentThemeIndex === -1) currentThemeIndex = 0;
-        applyTheme(savedTheme);
-        applyAutoSync();
-    };
+    // --- FIREBASE LOGIC & UI RENDERING ---
+    onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
+        const hrs = snap.exists() ? snap.val() : 24;
+        document.getElementById('currentExpiryDisplay').innerText = hrs;
+        document.getElementById('expiryHoursInput').value = hrs;
+    });
+
+    window.updateExpiryHours = async function() {
+        const hrs = parseFloat(document.getElementById('expiryHoursInput').value);
+        if(hrs > 0) {
+            await set(ref(db, 'settings/keyExpiryHours'), hrs);
+            showConfirm("Update Successful", "✅ Key Expiry Time updated to " + hrs + " hours for all new keys!", null);
+        } else { showConfirm("Error", "Please enter a valid number of hours.", null); }
+    }
+
+    window.switchTab = function(tabId, el) {
+        document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    let masterKeysData = {};
+
+    onValue(ref(db, 'settings/mkUsage'), (snap) => { 
+        if(snap.exists()) { mkUsageData = snap.val(); } else { mkUsageData = {}; }
+        renderMasterKeys(); 
+    });
+
+    onValue(ref(db, 'settings/masterKeys'), (snapshot) => {
+        if(snapshot.exists()) { masterKeysData = snapshot.val(); } else { masterKeysData = {}; }
+        renderMasterKeys();
+    });
+
+    function renderMasterKeys() {
+        const listDiv = document.getElementById('masterKeysList');
+        listDiv.innerHTML = '';
+        const keys = Object.keys(masterKeysData);
+        document.getElementById('stat-keys').innerText = keys.length;
+        
+        if(keys.length > 0) {
+            keys.forEach(pushId => {
+                const keyStr = masterKeysData[pushId];
+                const trimmedKey = String(keyStr).trim();
+                let safeKey = "";
+                try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
+                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
+                
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    </div>`;
+            });
+        } else {
+            document.getElementById('stat-keys').innerText = "0";
+            listDiv.innerHTML = getSkeletonHTML();
+        }
+    }
+
+    window.addMasterKey = async function() {
+        const newKey = document.getElementById('masterKeyInput').value.trim();
+        if(!newKey) return showConfirm("Error", "Key cannot be empty!", null);
+        await push(ref(db, 'settings/masterKeys'), newKey);
+        document.getElementById('masterKeyInput').value = '';
+    }
+
+    window.showConfirm = function(title, desc, callback) {
+        document.getElementById('confirmActionTitle').innerText = title;
+        document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
+        document.getElementById('confirmActionDesc').innerText = desc;
+        pendingConfirmAction = callback;
+        document.querySelector('#confirmActionModal .btn-cancel').style.display = callback ? "block" : "none";
+        document.querySelector('#confirmActionModal .btn-confirm').innerText = callback ? "CONFIRM" : "OK";
+        document.getElementById('confirmActionModal').style.display = 'flex';
+    }
+
+    window.closeModals = () => { 
+        const modals = ['banModal', 'resetModal', 'keyBanModal', 'guideModal', 'confirmActionModal', 'unbindInfoModal'];
+        modals.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+    }
+
+    window.executeConfirm = async function() {
+        const action = pendingConfirmAction;
+        pendingConfirmAction = null;
+        closeModals(); 
+        if(action) { try { await action(); } catch (err) { console.error(err); } }
+    }
+
+    window.deleteMasterKey = function(pushId, keyStr) {
+        showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
+            const trimmedKey = String(keyStr).trim();
+            let safeKey = trimmedKey;
+            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
+            
+            try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
+            try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
+        });
+    }
+
+    onValue(ref(db, 'settings/bannedKeys'), (snapshot) => {
+        globalBannedSnap = snapshot;
+        renderBannedKeysUI(snapshot);
+    });
+
+    function renderBannedKeysUI(snapshot) {
+        const listDiv = document.getElementById('bannedKeysList');
+        listDiv.innerHTML = '';
+        if (snapshot && snapshot.exists()) {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            document.getElementById('stat-banned-keys').innerText = keys.length;
+            keys.forEach(keyStr => {
+                const info = data[keyStr] || {};
+                listDiv.innerHTML += `
+                    <div class="mk-item">
+                        <div><span class="mk-text" style="color: var(--error);">${keyStr}</span>${info.reason ? `<div style="font-size:13px; color:var(--text-dim); margin-top:8px; font-weight:600;">Reason: "${info.reason}"</div>` : ''}</div>
+                        <button class="mk-del" style="color: var(--accent);" title="Unban Key" onclick="unbanKey('${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></button>
+                    </div>`;
+            });
+        } else {
+            document.getElementById('stat-banned-keys').innerText = "0";
+            listDiv.innerHTML = getSkeletonHTML();
+        }
+    }
+
+    window.openKeyBanModal = function() {
+        const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
+        if (!key) return showConfirm("Error", "Enter a key first!", null);
+        if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
+        pendingKeyToBan = key;
+        document.getElementById('keyBanTarget').innerText = key;
+        document.getElementById('keyBanReasonInput').value = '';
+        document.getElementById('keyBanModal').style.display = 'flex';
+    }
+
+    window.confirmKeyBan = async function() {
+        if (!pendingKeyToBan) return;
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
+        closeModals();
+        await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
+        const usersRef = ref(db, 'users');
+        const snap = await get(usersRef);
+        if(snap.exists()){
+            const allUsers = snap.val();
+            for(let uid in allUsers){
+                if(allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim().toUpperCase() === pendingKeyToBan.toUpperCase()){
+                    await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
+                }
+            }
+        }
+        document.getElementById('keyToBanInput').value = '';
+        pendingKeyToBan = null;
+    }
+
+    window.unbanKey = function(keyStr) {
+        showConfirm("Unban Key?", "Are you sure you want to remove the ban from this key?", async () => {
+            await remove(ref(db, 'settings/bannedKeys/' + keyStr));
+        });
+    }
+
+    onValue(ref(db, 'users'), (snapshot) => {
+        globalUsersSnap = snapshot;
+        renderUsersUI(snapshot);
+    });
+
+    function renderUsersUI(snapshot) {
+        const activeListDiv = document.getElementById('activeUserList');
+        const bannedListDiv = document.getElementById('bannedUserList');
+        activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
+
+        if (!snapshot || !snapshot.exists()) {
+            document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
+            activeListDiv.innerHTML = getSkeletonHTML();
+            bannedListDiv.innerHTML = getSkeletonHTML();
+            return;
+        }
+
+        const data = snapshot.val();
+        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
+
+        let activeCount = 0; let bannedCount = 0;
+        
+        users.forEach(user => {
+            const isBanned = user.status === 'banned';
+            const dateStr = new Date(user.joined).toLocaleDateString();
+
+            if(isBanned) {
+                bannedCount++;
+                bannedListDiv.innerHTML += `
+                    <div class="user-card glass-panel banned float-anim">
+                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
+                        <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
+                    </div>`;
+            } else {
+                activeCount++;
+                activeListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim">
+                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>`;
+            }
+        });
+        
+        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
+        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
+
+        document.getElementById('stat-total').innerText = users.length;
+        document.getElementById('stat-active').innerText = activeCount;
+        document.getElementById('stat-banned').innerText = bannedCount;
+    }
+
+    window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
+    window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
+    window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
+    
+    window.confirmBan = async function() { 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        closeModals(); 
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
+    }
+    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
+    
+    window.deleteUser = function(userId) { 
+        showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
+            await remove(ref(db, 'users/' + userId));
+        });
+    }
+    
+    window.resetDevice = async function() {
+        const id = document.getElementById('resetIdInput').value.trim();
+        if(id) { 
+            await remove(ref(db, 'users/' + id)); 
+            showConfirm("Success", "Device unbound successfully!", null);
+            document.getElementById('resetIdInput').value = ''; 
+        } else { 
+            showConfirm("Error", "Please enter a valid Device ID.", null); 
+        }
+    }
+
+    window.startFactoryReset = function() {
+        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    }
+    function executeResetStep() {
+        if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
+        else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
+    }
+    async function wipeEntireDatabase() { 
+        try { 
+            await set(ref(db, '/'), null); 
+            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        } catch (error) { 
+            showConfirm("Error", "Error wiping database: " + error.message, null); 
+        } 
+    }
 </script>
 </body>
 </html>
