@@ -414,7 +414,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const firebaseConfig={databaseURL:"https://login-pass-1a196-default-rtdb.firebaseio.com/"};
 const app=initializeApp(firebaseConfig),db=getDatabase(app);
 const input=document.getElementById('keyInput'),save=document.getElementById('saveKeyCheck'),status=document.getElementById('statusText'),btn=document.getElementById('unlockBtn');
@@ -535,6 +535,66 @@ async function verifyKey(){
             const devices = parentSnap.val() || {};
             const existing = Object.keys(devices);
             if(existing.length > 0 && !existing.includes(deviceId)){
+              // === SHARE LOG (deduplicated) ===
+              try {
+                const generatorName = (user && user.name) ? user.name : (uid || "Unknown Generator");
+                const generatorId = uid || "";
+                let receiverName = "unknown user";
+                let receiverId = deviceId; // the fingerprint we actually have
+
+                try {
+                  const allUsersSnap = await get(ref(db, 'users'));
+                  if (allUsersSnap.exists()) {
+                    const uData = allUsersSnap.val();
+                    if (uData[deviceId]) {
+                      receiverName = uData[deviceId].name || deviceId;
+                      receiverId = deviceId;
+                    } else {
+                      // Only match by device/fingerprint fields – NEVER by lastGeneratedKey
+                      // (that would incorrectly match the generator)
+                      for (const uKey in uData) {
+                        const u = uData[uKey];
+                        if (uKey === deviceId || 
+                            (u.deviceId && u.deviceId === deviceId) ||
+                            (u.fingerprint && u.fingerprint === deviceId) ||
+                            (u.lastDeviceId && u.lastDeviceId === deviceId)) {
+                          receiverName = u.name || uKey;
+                          receiverId = uKey;
+                          break;
+                        }
+                      }
+                    }
+                  }
+                } catch (_) {}
+
+                // Deduplicate by key + fingerprint
+                const logKey = safeKey + '_' + deviceId.replace(/[.#$\[\]/]/g,'_');
+                const existingLogRef = ref(db, 'settings/shareLogs/' + logKey);
+                const existingLogSnap = await get(existingLogRef);
+
+                // Never store generator as the receiver
+                if (receiverName === generatorName || receiverId === generatorId) {
+                  receiverName = 'unknown user';
+                  receiverId = deviceId;
+                }
+
+                if (!existingLogSnap.exists()) {
+                  await set(existingLogRef, {
+                    generatorName,
+                    generatorId,
+                    key: userInput,
+                    receiverName,
+                    receiverDevice: receiverId,
+                    receiverFingerprint: deviceId,
+                    originalDevices: existing,
+                    timestamp: Date.now(),
+                    type: 'normal'
+                  });
+                }
+              } catch (logErr) {
+                console.error('Share log write failed:', logErr);
+              }
+
               show('This key is already used on another device','var(--error)');
               window.playSound(window.sfxFailed);
               localStorage.removeItem('dgxen_saved_key');
