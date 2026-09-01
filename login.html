@@ -460,29 +460,52 @@ async function verifyKey(){
   try{
     let isValid=false;
     let timeLeftText="";
+    const deviceId = getDeviceFingerprint();
+    const safeKey = btoa(unescape(encodeURIComponent(userInput))).replace(/[.#$\[\]/]/g,'_');
 
+    // ========== MASTER KEYS ==========
     try{
       const snap=await get(ref(db,'settings/masterKeys'));
       if(snap.exists()&&Object.values(snap.val()).map(k=>String(k).trim()).includes(userInput)){
         
-        const safeKey=btoa(unescape(encodeURIComponent(userInput))).replace(/[.#$\[\]/]/g,'_');
-        const deviceId = getDeviceFingerprint();
+        // Original counting + ONE KEY = ONE DEVICE
+        // If this device already tracked → allow (no re-count)
+        // If another device was tracked before → this device claims it (clears old + binds itself)
+        // If no device yet → bind + count +1
         const trackRef = ref(db, `settings/mkDeviceTrack/${safeKey}/${deviceId}`);
         const trackSnap = await get(trackRef);
+        const parentRef = ref(db, `settings/mkDeviceTrack/${safeKey}`);
 
-        if(!trackSnap.exists()){
-          try{
-            await set(trackRef, true);
-            const usageRef=ref(db,'settings/mkUsage/'+safeKey),usage=await get(usageRef);
-            await set(usageRef,(usage.exists()?Number(usage.val()):0)+1);
-          }catch(e){console.error('Usage count update failed:',e)}
+        if(trackSnap.exists()){
+          // Same device already used it → allow, do NOT re-count
+          isValid = true;
+        } else {
+          const parentSnap = await get(parentRef);
+          if(parentSnap.exists() && Object.keys(parentSnap.val() || {}).length > 0){
+            // Other device(s) previously used this master key.
+            // Current device claims it (clears old tracks) so the master key becomes usable again.
+            // Usage count is NOT increased again.
+            try{
+              await set(parentRef, null);               // wipe old multi-device history
+              await set(trackRef, true);                // bind only current device
+            }catch(e){console.error('Master key re-bind failed:',e)}
+            isValid = true;
+          } else {
+            // Truly first device ever for this master key
+            try{
+              await set(trackRef, true);
+              const usageRef=ref(db,'settings/mkUsage/'+safeKey),usage=await get(usageRef);
+              await set(usageRef,(usage.exists()?Number(usage.val()):0)+1);
+            }catch(e){console.error('Usage count update failed:',e)}
+            isValid = true;
+          }
         }
-        isValid=true;
         timeLeftText = " (Unlimited)";
         show('Master Key Accepted! Unlocking...' + timeLeftText,'var(--accent)');
       }
     }catch(e){console.error('Master key fetch error:',e)}
 
+    // ========== NORMAL KEYS ==========
     if(!isValid&&userInput.startsWith('DGXEN-')){
       let banned=false,reason='';
       try{const bannedSnap=await get(ref(db,'settings/bannedKeys/'+userInput));if(bannedSnap.exists()){banned=true;reason=(bannedSnap.val()&&bannedSnap.val().reason)||'This key has been banned by the administrator.'}}catch(e){console.error('Key ban check failed:',e)}
@@ -502,6 +525,25 @@ async function verifyKey(){
                 let mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
                 timeLeftText = hrs > 0 ? ` (Valid for ${hrs}h ${mins}m)` : ` (Valid for ${mins} mins)`;
             }
+          }
+
+          // ONE KEY = ONE DEVICE for normal keys
+          const parentRef = ref(db, `settings/keyDeviceTrack/${safeKey}`);
+          const parentSnap = await get(parentRef);
+
+          if(parentSnap.exists()){
+            const devices = parentSnap.val() || {};
+            const existing = Object.keys(devices);
+            if(existing.length > 0 && !existing.includes(deviceId)){
+              show('This key is already used on another device','var(--error)');
+              window.playSound(window.sfxFailed);
+              localStorage.removeItem('dgxen_saved_key');
+              btn.disabled=false;
+              return;
+            }
+          } else {
+            // First successful device – permanently bind
+            await set(ref(db, `settings/keyDeviceTrack/${safeKey}/${deviceId}`), true);
           }
           
           isValid=true;show('Live Key Verified! Access Granted.' + timeLeftText,'var(--accent)');break;
