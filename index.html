@@ -574,63 +574,79 @@
 
             <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
-                
-                <div class="g-card" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3 style="color: var(--accent); margin-bottom: 5px;">Welcome to DGXEN</h3>
-                        <p style="margin-bottom: 0;">DGXEN is a powerful system optimization and management tool built for advanced users. Explore the manual to unlock full potential.</p>
-                    </div>
-                    <svg style="width: 50px; height: 50px; stroke: var(--accent); fill: none; stroke-width: 1.5; opacity: 0.8; margin-left: 15px; flex-shrink: 0;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-                </div>
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Important system rules, security behaviour and tips.</p>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 1. Global Key Explain</h3>
-                    <p>The Global Key controls the primary access lifespan for all standard users. Set in hours.</p>
-                    
-                    <div class="g-inner">
-                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Key Functions</div>
+                <div class="acc-item active" id="acc-man-1">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-1')">
+                        One Key = One Device (Multi-login Prevention)
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access system core features.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Authenticate secure sessions globally.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Manage user sessions securely.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> The first device that successfully unlocks a key permanently binds it.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Any other device trying the same key is blocked with “This key is already used on another device”.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Works for both normal DGXEN- keys and Master Keys.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can log in again without increasing usage count.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> 2. Master Keys</h3>
-                    <p>Master Keys provide elevated access to advanced modules and configuration settings.</p>
-                    
-                    <div class="g-inner">
-                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Master Key Benefits</div>
+                <div class="acc-item" id="acc-man-2">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-2')">
+                        Share Logs & Key Banning
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlock advanced modules.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Modify system configurations.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Bypass certain restrictions.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> When a second device tries a bound key, a log is created automatically.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Logs show: Generator Name → sended key to → Receiver (or unknown user).</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use <b>BAN KEY</b> to blacklist that key. It appears in Banned Normal Keys.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click <b>KEY BANNED</b> again to unban the key.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Banned keys show “Banned: …” on the login screen (not a device ban).</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 3. Tracking & Bans</h3>
-                    <p>Learn how the system monitors users and enforces bans seamlessly.</p>
-                    <div class="g-inner">
+                <div class="acc-item" id="acc-man-3">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-3')">
+                        Master Keys Behaviour
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Smart Tracker:</b> Master Key limits usage accurately per unique device.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Device Bans:</b> Permanently blocks a phone ID regardless of app reinstalls.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Key Bans:</b> Specifically blacklists a compromised access key instantly.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> First device binds the master key and increments usage once.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can reuse the master key without extra count.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Deleting a master key in admin also wipes its usage and device tracking.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 4. Internal Mechanics</h3>
-                    <p>Quick breakdown of advanced background systems.</p>
-                    <div class="g-inner">
+                <div class="acc-item" id="acc-man-4">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-4')">
+                        Active Users vs Registered Users
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Auto-Sync System:</b> Tap the top notch to sync the database silently every 5 seconds.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Deep Nuke:</b> Master key deletion securely wipes associated device tracking traces.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Paste Bypass:</b> Native Android paste enabled dynamically across inputs.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Active Users</b> = currently have a live (non-expired) key. Live countdown is shown on the right.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Registered Users</b> = all non-banned devices that ever registered.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click any name / ID / key to copy it instantly.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-5">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-5')">
+                        Tips & Best Practices
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Always hard-refresh (Ctrl+Shift+R) after updating login or admin files.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use the top Refresh button or enable Auto Sync for live data.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> If a legitimate user changes phone, use System Reset → Unbind Device.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Clear old Share Logs with the CLEAR ALL LOGS button when needed.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Master keys should be kept private — they still follow the one-device rule.</li>
                         </ul>
                     </div>
                 </div>
@@ -673,10 +689,6 @@
                             <span class="dl-file-name">steps.html (Key Web)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
                         </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">login.html (Web Generator)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_live', this)">DL</button>
-                        </div>
                     </div>
                 </div>
 
@@ -689,7 +701,7 @@
                     <div class="acc-body">
                         <div class="dl-file-row">
                             <span class="dl-file-name">login.html (Offline/App Asset)</span>
-                            <span style="font-size: 11px; font-weight: 800; color: var(--text-dim); background: rgba(150,150,150,0.1); padding: 4px 10px; border-radius: 6px;">LOCKED</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_github', this)">DL</button>
                         </div>
                         <div class="dl-file-row">
                             <span class="dl-file-name">Auth.smali (Hook Core)</span>
@@ -827,11 +839,15 @@
                 if (!response.ok) throw new Error("Generator index missing");
                 content = await response.text();
                 finalName = "index.html";
+            } else if (fileId === 'login_github') {
+                const response = await fetch('https://yourstylexdg.github.io/Admin/login.html');
+                if (!response.ok) throw new Error("login.html missing on GitHub");
+                content = await response.text();
+                finalName = "login.html";
             } else {
                 let fetchName = "";
                 if (fileId === 'manifest') fetchName = "manifest.json";
                 else if (fileId === 'steps') fetchName = "steps.html";
-                else if (fileId === 'login_live') fetchName = "login.html";
                 
                 if(fetchName) {
                     const response = await fetch('./' + fetchName);
@@ -1022,12 +1038,34 @@
 
     document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
 
+    // Live countdown for Active Users timers
+    function updateLiveTimers() {
+        document.querySelectorAll('.live-timer').forEach(el => {
+            const exp = Number(el.getAttribute('data-expires') || 0);
+            const remaining = exp - Date.now();
+            if (remaining <= 0) {
+                el.textContent = 'EXPIRED';
+                el.style.color = 'var(--error)';
+            } else {
+                const hrs = Math.floor(remaining / 3600000);
+                const mins = Math.floor((remaining % 3600000) / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                el.textContent = hrs > 0
+                    ? `${hrs}h ${mins}m ${secs}s`
+                    : `${mins}m ${secs}s`;
+                el.style.color = 'var(--accent)';
+            }
+        });
+    }
+    setInterval(updateLiveTimers, 1000);
+
     window.onload = function() {
         const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
         currentThemeIndex = themes.indexOf(savedTheme);
         if(currentThemeIndex === -1) currentThemeIndex = 0;
         applyTheme(savedTheme);
         applyAutoSync();
+        updateLiveTimers();
     }
 
     // --- GLOBAL STATE FOR REFRESH MECHANISM ---
@@ -1163,12 +1201,16 @@
     }
 
     window.showConfirm = function(title, desc, callback) {
+        // Only show dialog when user confirmation is required (callback exists)
+        // Successful/info-only messages are silent (no popup)
+        if (!callback) return;
+
         document.getElementById('confirmActionTitle').innerText = title;
-        document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
+        document.getElementById('confirmActionTitle').style.color = "var(--error)";
         document.getElementById('confirmActionDesc').innerText = desc;
         pendingConfirmAction = callback;
-        document.querySelector('#confirmActionModal .btn-cancel').style.display = callback ? "block" : "none";
-        document.querySelector('#confirmActionModal .btn-confirm').innerText = callback ? "CONFIRM" : "OK";
+        document.querySelector('#confirmActionModal .btn-cancel').style.display = "block";
+        document.querySelector('#confirmActionModal .btn-confirm').innerText = "CONFIRM";
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
@@ -1476,16 +1518,12 @@
             // Live Active = has a currently valid key
             if (hasLiveKey && liveListDiv) {
                 liveCount++;
-                const remainingMs = user.keyExpiresAt - now;
-                const hrs = Math.floor(remainingMs / 3600000);
-                const mins = Math.floor((remainingMs % 3600000) / 60000);
-                const timeLeft = hrs > 0 ? `${hrs}h ${mins}m left` : `${mins}m left`;
                 liveListDiv.innerHTML += `
-                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3);">
-                        <div class="user-date" style="color:var(--accent);">${timeLeft}</div>
-                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3); position:relative;">
+                        <div class="user-date live-timer" data-expires="${user.keyExpiresAt}" style="color:var(--accent); position:absolute; top:18px; right:20px; font-size:13px; font-weight:800;"></div>
+                        <div class="user-name copyable" style="cursor:pointer; margin-top:8px;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
-                        <div style="font-size:12px;color:var(--text-dim);margin:10px 0;font-family:monospace;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">Key: ${user.lastGeneratedKey || '—'}</div>
+                        <div style="font-size:13px;color:var(--text-dim);margin:12px 0 8px;font-family:monospace;word-break:break-all;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">${user.lastGeneratedKey || '—'}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
