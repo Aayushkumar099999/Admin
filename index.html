@@ -1261,28 +1261,41 @@
     function resolveReceiverName(log) {
         const fp = log.receiverFingerprint || log.receiverDevice || '';
         const storedId = log.receiverDevice || '';
+        const genName = log.generatorName || '';
+        const genId = log.generatorId || '';
         let name = 'unknown user';
         let displayId = fp || storedId || 'unknown';
 
-        // Live lookup only – never trust the stored name if it might be the generator
-        if (globalUsersForLogs[storedId] && globalUsersForLogs[storedId].name) {
-            name = globalUsersForLogs[storedId].name;
-            displayId = storedId;
-        } else if (globalUsersForLogs[fp] && globalUsersForLogs[fp].name) {
-            name = globalUsersForLogs[fp].name;
-            displayId = fp;
+        // Live lookup – must NOT match the generator
+        const tryUser = (uKey, u) => {
+            if (!u || uKey === genId) return false;
+            if (u.name && u.name === genName && uKey === genId) return false;
+            name = u.name || uKey;
+            displayId = uKey;
+            return true;
+        };
+
+        if (storedId && storedId !== genId && globalUsersForLogs[storedId]) {
+            tryUser(storedId, globalUsersForLogs[storedId]);
+        } else if (fp && fp !== genId && globalUsersForLogs[fp]) {
+            tryUser(fp, globalUsersForLogs[fp]);
         } else {
             for (const uKey in globalUsersForLogs) {
+                if (uKey === genId) continue;
                 const u = globalUsersForLogs[uKey];
                 if (uKey === fp || uKey === storedId ||
                     (u.deviceId && (u.deviceId === fp || u.deviceId === storedId)) ||
                     (u.fingerprint && (u.fingerprint === fp || u.fingerprint === storedId)) ||
                     (u.lastDeviceId && (u.lastDeviceId === fp || u.lastDeviceId === storedId))) {
-                    name = u.name || uKey;
-                    displayId = uKey;
+                    tryUser(uKey, u);
                     break;
                 }
             }
+        }
+        // Final safety: never show generator as receiver
+        if (name === genName || displayId === genId) {
+            name = 'unknown user';
+            displayId = fp || storedId || 'unknown';
         }
         return { name, displayId };
     }
@@ -1519,12 +1532,12 @@
             if (hasLiveKey && liveListDiv) {
                 liveCount++;
                 liveListDiv.innerHTML += `
-                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3); position:relative;">
-                        <div class="user-date live-timer" data-expires="${user.keyExpiresAt}" style="color:var(--accent); position:absolute; top:18px; right:20px; font-size:13px; font-weight:800;"></div>
-                        <div class="user-name copyable" style="cursor:pointer; margin-top:8px;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3); position:relative; overflow:visible;">
+                        <div class="live-timer" data-expires="${user.keyExpiresAt}" style="color:var(--accent); position:absolute; top:14px; right:14px; font-size:12px; font-weight:800; z-index:5; background:rgba(0,0,0,0.35); padding:4px 10px; border-radius:8px;"></div>
+                        <div class="user-name copyable" style="cursor:pointer; margin-top:6px; padding-right:100px;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
                         <div style="font-size:13px;color:var(--text-dim);margin:12px 0 8px;font-family:monospace;word-break:break-all;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">${user.lastGeneratedKey || '—'}</div>
-                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                        <button class="btn-full bg-warn" onclick="banUserKey('${user.id}', '${(user.lastGeneratedKey||'').replace(/'/g,"\\'")}')">BAN KEY</button>
                     </div>`;
             }
         });
@@ -1542,6 +1555,22 @@
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
+    window.banUserKey = function(userId, keyStr) {
+        if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
+        showConfirm("Ban Key?", `Ban the key belonging to this user?\n${keyStr}`, async () => {
+            try {
+                await set(ref(db, 'settings/bannedKeys/' + keyStr), {
+                    reason: 'Banned from Active Users',
+                    bannedAt: new Date().toISOString()
+                });
+                // Clear the key from the user so it is no longer live
+                await update(ref(db, 'users/' + userId), { lastGeneratedKey: null, keyExpiresAt: null });
+            } catch (e) {
+                showConfirm("Error", "Could not ban key: " + e.message, null);
+            }
+        });
+    };
+
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
     window.confirmBan = async function() { 
