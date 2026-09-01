@@ -1319,14 +1319,20 @@
                 ? `<button id="ban-btn-${id}" class="btn" style="background:rgba(150,150,150,0.25);color:var(--text-dim);padding:10px 18px;font-size:12px;border-radius:12px;" onclick="unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">KEY BANNED</button>`
                 : `<button id="ban-btn-${id}" class="btn" style="background:var(--error);color:white;padding:10px 18px;font-size:12px;border-radius:12px;" onclick="banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">BAN KEY</button>`;
 
+            // Always show full UUID for the receiver
+            const fullUuid = resolved.displayId || log.receiverFingerprint || log.receiverDevice || 'unknown';
+            const namePart = (resolved.name && resolved.name !== 'unknown user')
+                ? `<span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy name" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>`
+                : `<span style="color:var(--warn)">unknown user</span>`;
+
             list.innerHTML += `
                 <div class="mk-item" id="log-row-${id}">
                     <div style="flex:1;">
                         <div style="font-size:16px;font-weight:800;color:var(--text-main);">
                             <span class="copyable" style="color:var(--accent);cursor:pointer;" title="Click to copy" data-copy="${(log.generatorName||'').replace(/"/g,'&quot;')}">${log.generatorName || 'Unknown'}</span>
                             <span style="color:var(--text-dim);margin:0 8px;">→ sended key to →</span>
-                            <span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>
-                            <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;" title="Click to copy ID" data-copy="${resolved.displayId}">(${resolved.displayId})</span>
+                            ${namePart}
+                            <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;word-break:break-all;" title="Click to copy full UUID" data-copy="${fullUuid}">(${fullUuid})</span>
                         </div>
                         <div style="font-size:13px;color:var(--text-dim);margin-top:8px;font-family:monospace;">
                             Key: <span class="copyable" style="cursor:pointer;" title="Click to copy key" data-copy="${keyStr}">${keyStr}</span> · ${time}
