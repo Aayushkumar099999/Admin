@@ -403,6 +403,29 @@
 .gate-box .btn{width:100%;margin-top:6px;}
 .gate-status{min-height:18px;font-size:12px;font-weight:700;color:var(--error);margin-top:10px;}
 
+
+/* Security FAB + panel */
+.sec-fab{
+  position:fixed;bottom:35px;left:35px;z-index:100;
+  width:54px;height:54px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.4);
+  color:var(--accent);cursor:pointer;
+  box-shadow:0 10px 28px rgba(0,255,136,0.2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:transform .25s,background .25s;
+}
+.sec-fab:hover{transform:scale(1.1);background:var(--accent);color:#000;}
+.sec-fab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+#securityPanel{
+  position:fixed;bottom:100px;left:28px;z-index:101;
+  width:min(380px,calc(100vw - 56px));max-height:min(72vh,640px);overflow:auto;
+  display:none;padding:22px;border-radius:22px;
+}
+#securityPanel.open{display:block;animation:slideUpFade .35s ease forwards;}
+#gateCodeWrap{display:none;}
+#gateCodeWrap.show{display:block;}
+
 </style>
 </head>
 <body>
@@ -410,12 +433,14 @@
 <div id="adminGate">
   <div class="gate-box glass-panel">
     <h2>Admin Access</h2>
-    <p>Use fingerprint or face first when enrolled. Code is fallback only (not shown).</p>
+    <p>Fingerprint or face unlock. Hold fingerprint if you need the other path.</p>
     <button class="btn" id="gateFpBtn" type="button" style="background:var(--accent);color:#000;">FINGERPRINT</button>
     <button class="btn" id="gateFaceBtn" type="button" style="margin-top:8px;background:rgba(0,150,255,0.25);color:var(--text-main);">FACE UNLOCK</button>
-    <div style="margin:14px 0 8px;font-size:11px;font-weight:800;color:var(--text-dim);">OR CODE</div>
-    <input type="password" id="gateCodeInput" placeholder="Admin code" autocomplete="off">
-    <button class="btn" id="gateCodeBtn" type="button">ENTER WITH CODE</button>
+    <div id="gateCodeWrap">
+      <div style="margin:14px 0 8px;font-size:11px;font-weight:800;color:var(--text-dim);">ADMIN CODE</div>
+      <input type="password" id="gateCodeInput" placeholder="Admin code" autocomplete="off">
+      <button class="btn" id="gateCodeBtn" type="button">ENTER WITH CODE</button>
+    </div>
     <div class="gate-status" id="gateStatus"></div>
     <video id="gateFaceVideo" playsinline muted style="display:none;width:100%;max-height:180px;border-radius:14px;margin-top:12px;background:#000;"></video>
   </div>
@@ -476,10 +501,6 @@
         <div class="nav-link" onclick="switchTab('share-logs', this)" id="nav-share-logs">
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             Share Logs
-        </div>
-        <div class="nav-link" onclick="switchTab('security', this)" id="nav-security">
-            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Security
         </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -602,33 +623,7 @@
             </div>
         </div>
 
-        <div id="security" class="tab-section">
-            <div class="section-box glass-panel float-anim">
-                <h2 style="color:var(--accent);">Admin Security</h2>
-                <p>Fingerprint &amp; face IDs are shown here for reference. <b>They cannot be deleted from this panel</b> — only via Firebase. Adding a fingerprint requires an existing fingerprint when one is already enrolled. First face enrollments (up to 2) define real admins. Face unlock needs eyes open and looking at the screen.</p>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Change admin code (fingerprint required if enrolled)</label>
-                <div class="input-group">
-                    <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
-                    <button class="btn" onclick="changeAdminCode()">SAVE CODE</button>
-                </div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin:18px 0 8px;">Add fingerprint (verify fingerprint first if any exist)</label>
-                <div class="input-group">
-                    <button class="btn" style="background:var(--accent);color:#000;" onclick="registerAdminFingerprint()">ADD FINGERPRINT</button>
-                </div>
-                <div id="fpList" class="mk-list" style="margin-top:12px;"></div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin:18px 0 8px;">Enroll admin face (look at camera, eyes open)</label>
-                <div class="input-group">
-                    <button class="btn" style="background:rgba(0,150,255,0.35);color:#fff;" onclick="enrollAdminFace()">ENROLL FACE</button>
-                </div>
-                <video id="secFaceVideo" playsinline muted style="display:none;width:min(320px,100%);border-radius:14px;background:#000;margin-top:8px;"></video>
-                <canvas id="secFaceCanvas" style="display:none;"></canvas>
-                <div id="faceList" class="mk-list" style="margin-top:12px;"></div>
-                <p id="secStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:10px;"></p>
-            </div>
-        </div>
+        <!-- Security moved to FAB (bottom-left) -->
 
         <div id="reset-device" class="tab-section">
             <div class="section-box glass-panel float-anim">
@@ -654,6 +649,33 @@
     </div>
 
     <!-- FLOATING INFO BUTTON -->
+    
+<button type="button" class="sec-fab" id="secFab" title="Security" onclick="toggleSecurityPanel()">
+  <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+</button>
+<div id="securityPanel" class="glass-panel">
+  <h2 style="color:var(--accent);font-size:18px;margin:0 0 8px;">Admin Security</h2>
+  <p style="font-size:12px;color:var(--text-dim);margin:0 0 14px;line-height:1.45;">IDs are view-only here. Delete only via Firebase. Face enroll: look straight at screen 1s, eyes open, no side face.</p>
+  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
+  <div class="input-group" style="margin-bottom:14px;">
+    <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
+    <button class="btn" onclick="changeAdminCode()">SAVE</button>
+  </div>
+  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
+  <div class="input-group" style="margin-bottom:10px;">
+    <button class="btn" style="background:var(--accent);color:#000;" onclick="registerAdminFingerprint()">ADD FINGERPRINT</button>
+  </div>
+  <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
+  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin:14px 0 6px;">Face (1s look ahead)</label>
+  <div class="input-group" style="margin-bottom:10px;">
+    <button class="btn" style="background:rgba(0,150,255,0.35);color:#fff;" onclick="enrollAdminFace()">ENROLL FACE</button>
+  </div>
+  <video id="secFaceVideo" playsinline muted style="display:none;width:100%;border-radius:14px;background:#000;margin-top:6px;"></video>
+  <canvas id="secFaceCanvas" style="display:none;"></canvas>
+  <div id="faceList" class="mk-list" style="margin-top:6px;"></div>
+  <p id="secStatus" style="font-size:12px;font-weight:700;color:var(--text-dim);margin-top:8px;"></p>
+</div>
+
     <button class="info-btn" onclick="openGuideModal()">i</button>
 
     <!-- CUSTOM CONFIRMATION MODAL -->
@@ -991,39 +1013,70 @@ const db = getDatabase(app);
     }
 
     // --- Face helpers (browser FaceDetector + simple embedding fallback) ---
-    async function captureFaceDescriptor(videoEl) {
+    async function detectOneFace(videoEl) {
         if (!videoEl || videoEl.readyState < 2) throw new Error('Camera not ready');
         const w = videoEl.videoWidth, h = videoEl.videoHeight;
         const canvas = document.createElement('canvas');
         canvas.width = w; canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(videoEl, 0, 0);
-        // Prefer native FaceDetector when available
+        let box = null;
         if (window.FaceDetector) {
-            try {
-                const fd = new FaceDetector({ fastMode: false, maxDetectedFaces: 1 });
-                const faces = await fd.detect(canvas);
-                if (!faces || !faces.length) throw new Error('No face detected — look at the screen');
-                const box = faces[0].boundingBox;
-                // Face should be reasonably centered and large (looking at screen)
-                const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-                if (box.width < w * 0.18 || box.height < h * 0.18) throw new Error('Move closer to the camera');
-                if (Math.abs(cx - w / 2) > w * 0.28 || Math.abs(cy - h / 2) > h * 0.28) throw new Error('Center your face on screen');
-                // Sample embedding from face region
-                const sx = Math.max(0, box.x|0), sy = Math.max(0, box.y|0);
-                const sw = Math.min(w - sx, box.width|0), sh = Math.min(h - sy, box.height|0);
-                const img = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, sh));
-                return embedFromImageData(img);
-            } catch (e) {
-                if (e && e.message && e.message.indexOf('face') !== -1) throw e;
-                // fall through to center crop
-            }
+            const fd = new FaceDetector({ fastMode: false, maxDetectedFaces: 1 });
+            const faces = await fd.detect(canvas);
+            if (faces && faces.length) box = faces[0].boundingBox;
         }
-        // Fallback: center crop embedding (weaker)
-        const cw = Math.floor(w * 0.4), ch = Math.floor(h * 0.5);
-        const sx = Math.floor((w - cw) / 2), sy = Math.floor((h - ch) / 3);
-        const img = ctx.getImageData(sx, sy, cw, ch);
-        return embedFromImageData(img);
+        if (!box) {
+            // fallback assumed center — still enforce timing, weaker geometry
+            box = { x: w * 0.3, y: h * 0.2, width: w * 0.4, height: h * 0.5 };
+        }
+        const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+        const ratio = box.width / Math.max(1, box.height);
+        // Frontal face: roughly square-ish, not narrow side profile
+        if (ratio < 0.55 || ratio > 1.35) throw new Error('Face the screen — no side face');
+        if (box.width < w * 0.16 || box.height < h * 0.16) throw new Error('Move closer — look at the screen');
+        if (Math.abs(cx - w / 2) > w * 0.22 || Math.abs(cy - h / 2) > h * 0.25) throw new Error('Center your face on screen');
+        // "Eyes open / looking" heuristic: upper third of face must have enough bright variance (open eyes)
+        const sx = Math.max(0, box.x|0), sy = Math.max(0, box.y|0);
+        const sw = Math.min(w - sx, box.width|0), sh = Math.min(h - sy, box.height|0);
+        const eyeBand = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, Math.floor(sh * 0.45)));
+        let sum = 0, sum2 = 0, n = 0;
+        for (let i = 0; i < eyeBand.data.length; i += 16) {
+            const lum = (eyeBand.data[i] * 3 + eyeBand.data[i+1] * 6 + eyeBand.data[i+2]) / 10;
+            sum += lum; sum2 += lum * lum; n++;
+        }
+        const mean = sum / Math.max(1, n);
+        const variance = sum2 / Math.max(1, n) - mean * mean;
+        if (variance < 180) throw new Error('Eyes open and look at the screen');
+        const faceImg = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, sh));
+        return { embed: embedFromImageData(faceImg), box, cx, cy };
+    }
+
+    async function captureFaceDescriptor(videoEl) {
+        // Must look ahead continuously for ~1 second (no closed eyes / side face)
+        const needMs = 1000;
+        const start = Date.now();
+        const embeds = [];
+        let lastCx = null, lastCy = null;
+        while (Date.now() - start < needMs) {
+            const { embed, cx, cy } = await detectOneFace(videoEl);
+            if (lastCx != null) {
+                if (Math.abs(cx - lastCx) > videoEl.videoWidth * 0.08 || Math.abs(cy - lastCy) > videoEl.videoHeight * 0.08) {
+                    throw new Error('Hold still — look straight for 1 second');
+                }
+            }
+            lastCx = cx; lastCy = cy;
+            embeds.push(embed);
+            await new Promise(r => setTimeout(r, 120));
+        }
+        if (embeds.length < 3) throw new Error('Look at the screen for a full second');
+        // average embedding
+        const avg = embeds[0].map((_, i) => {
+            let s = 0;
+            embeds.forEach(e => s += e[i]);
+            return +(s / embeds.length).toFixed(6);
+        });
+        return avg;
     }
 
     function embedFromImageData(img) {
@@ -1063,7 +1116,7 @@ const db = getDatabase(app);
 
     async function tryFaceLogin() {
         try {
-            setGateStatus('Look at the camera — eyes open…', true);
+            setGateStatus('Look straight for 1 second — eyes open…', true);
             const v = await startCamera('gateFaceVideo');
             await new Promise(r => setTimeout(r, 700));
             const desc = await captureFaceDescriptor(v);
@@ -1165,7 +1218,7 @@ const db = getDatabase(app);
             }
         }
         try {
-            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Look at the camera — eyes open, face the screen…'; }
+            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Look straight 1 second — eyes open, no side face…'; }
             const v = await startCamera('secFaceVideo');
             await new Promise(r => setTimeout(r, 900));
             const desc = await captureFaceDescriptor(v);
@@ -1268,6 +1321,13 @@ const db = getDatabase(app);
         });
     }
 
+    window.toggleSecurityPanel = function() {
+        const p = document.getElementById('securityPanel');
+        if (!p) return;
+        const open = p.classList.toggle('open');
+        if (open) { renderFpList(); renderFaceList(); }
+    };
+
     function initAdminGate() {
         const g = document.getElementById('adminGate');
         if (adminUnlocked && g) g.classList.add('hidden');
@@ -1275,10 +1335,37 @@ const db = getDatabase(app);
         const faceBtn = document.getElementById('gateFaceBtn');
         const codeBtn = document.getElementById('gateCodeBtn');
         const codeIn = document.getElementById('gateCodeInput');
-        if (fpBtn) fpBtn.onclick = () => tryFingerprintLogin();
         if (faceBtn) faceBtn.onclick = () => tryFaceLogin();
         if (codeBtn) codeBtn.onclick = () => tryCodeLogin();
         if (codeIn) codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryCodeLogin(); });
+
+        // Secret: hold FINGERPRINT 10s → reveal code block
+        if (fpBtn) {
+            let holdTimer = null;
+            let holdFired = false;
+            const clearHold = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
+            const startHold = (e) => {
+                holdFired = false;
+                clearHold();
+                holdTimer = setTimeout(() => {
+                    holdFired = true;
+                    const wrap = document.getElementById('gateCodeWrap');
+                    if (wrap) wrap.classList.add('show');
+                    setGateStatus('Code entry unlocked', true);
+                }, 10000);
+            };
+            const endHold = (e) => {
+                clearHold();
+                if (!holdFired) tryFingerprintLogin();
+            };
+            fpBtn.addEventListener('pointerdown', startHold);
+            fpBtn.addEventListener('pointerup', endHold);
+            fpBtn.addEventListener('pointerleave', clearHold);
+            fpBtn.addEventListener('pointercancel', clearHold);
+            // prevent long-press context menu
+            fpBtn.addEventListener('contextmenu', e => e.preventDefault());
+        }
+
         if (!adminUnlocked && getLocalFpIds().length) {
             setTimeout(() => tryFingerprintLogin(), 400);
         }
