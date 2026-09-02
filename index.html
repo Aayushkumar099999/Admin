@@ -463,10 +463,8 @@
 
                 <!-- Extra field (shown only for limited / device) -->
                 <div id="mkExtraWrap" style="display:none;margin-bottom:14px;">
-                    <select id="mkDeviceUserPicker" style="display:none;width:100%;margin-bottom:10px;padding:14px 18px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);border-radius:14px;font-size:14px;font-weight:600;">
-                        <option value="">— Pick a device that has opened the app (recommended) —</option>
-                    </select>
                     <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
+                    <datalist id="knownDevicesList"></datalist>
                 </div>
 
                 <div class="input-group">
@@ -788,6 +786,23 @@
     let mkUsageData = {};
     let resetStep = 0;
     let pendingConfirmAction = null; 
+
+    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS ---
+    onValue(ref(db, 'settings/knownDevices'), (snap) => {
+        const dlist = document.getElementById('knownDevicesList');
+        if(!dlist) return;
+        dlist.innerHTML = '';
+        if(snap.exists()){
+            const devices = snap.val();
+            Object.keys(devices).forEach(devId => {
+                const opt = document.createElement('option');
+                const date = new Date(devices[devId].lastSeen).toLocaleString();
+                opt.value = devId;
+                opt.textContent = `Last seen: ${date}`;
+                dlist.appendChild(opt);
+            });
+        }
+    });
 
     // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
@@ -1203,34 +1218,33 @@
         });
         const wrap = document.getElementById('mkExtraWrap');
         const input = document.getElementById('mkExtraInput');
-        const picker = document.getElementById('mkDeviceUserPicker');
         if (type === 'pure') {
             wrap.style.display = 'none';
             input.value = '';
+            input.removeAttribute('list');
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
             input.type = 'text';
-            picker.style.display = 'none';
         } else if (type === 'limited') {
             wrap.style.display = 'block';
             input.placeholder = 'Max logins allowed (e.g. 10)';
             input.type = 'number';
+            input.removeAttribute('list');
             input.setAttribute('inputmode', 'numeric');
             input.setAttribute('pattern', '[0-9]*');
             input.setAttribute('min', '1');
             input.value = '';
             input.focus();
-            picker.style.display = 'none';
         } else if (type === 'device') {
             wrap.style.display = 'block';
-            input.placeholder = 'Or paste a Device UUID manually (e.g. e411b97a-3264-48d5-...)';
+            input.placeholder = 'Select or type Device ID...';
             input.type = 'text';
+            input.setAttribute('list', 'knownDevicesList');
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
             input.removeAttribute('min');
             input.value = '';
-            picker.style.display = 'block';
-            populateDeviceUserPicker();
+            input.focus();
         }
     };
 
@@ -1382,34 +1396,7 @@
     // --- SHARE LOGS ---
     let globalUsersForLogs = {};
     let globalBannedKeysForLogs = {};
-    let globalKnownDevices = {};
 
-    function populateDeviceUserPicker() {
-        const picker = document.getElementById('mkDeviceUserPicker');
-        if (!picker) return;
-        const current = picker.value;
-        picker.innerHTML = '<option value="">— Pick a device that has opened the app (recommended) —</option>';
-        const entries = Object.values(globalKnownDevices || {});
-        entries.sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
-        entries.forEach((d) => {
-            if (!d || !d.fingerprint) return;
-            const opt = document.createElement('option');
-            opt.value = d.fingerprint;
-            const seen = d.lastSeen ? new Date(d.lastSeen).toLocaleString() : 'unknown';
-            opt.textContent = d.fingerprint + '  (last seen: ' + seen + ')';
-            picker.appendChild(opt);
-        });
-        picker.value = current;
-    }
-
-    document.getElementById('mkDeviceUserPicker').addEventListener('change', function () {
-        if (this.value) document.getElementById('mkExtraInput').value = this.value;
-    });
-
-    onValue(ref(db, 'settings/knownDevices'), (snap) => {
-        globalKnownDevices = snap.exists() ? snap.val() : {};
-        populateDeviceUserPicker();
-    });
     onValue(ref(db, 'users'), (snap) => {
         globalUsersForLogs = snap.exists() ? snap.val() : {};
     });
@@ -1645,4 +1632,154 @@
         });
     }
 
-    onValue(ref(db, 'users'), (snapshot) 
+    onValue(ref(db, 'users'), (snapshot) => {
+        globalUsersSnap = snapshot;
+        renderUsersUI(snapshot);
+    });
+
+    function renderUsersUI(snapshot) {
+        const activeListDiv = document.getElementById('activeUserList');
+        const bannedListDiv = document.getElementById('bannedUserList');
+        const liveListDiv = document.getElementById('liveActiveUserList');
+        if (activeListDiv) activeListDiv.innerHTML = '';
+        if (bannedListDiv) bannedListDiv.innerHTML = '';
+        if (liveListDiv) liveListDiv.innerHTML = '';
+
+        if (!snapshot || !snapshot.exists()) {
+            document.getElementById('stat-total').innerText = 0;
+            document.getElementById('stat-active').innerText = 0;
+            document.getElementById('stat-banned').innerText = 0;
+            const liveStat = document.getElementById('stat-live-active');
+            if (liveStat) liveStat.innerText = 0;
+            if (activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+            if (bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+            if (liveListDiv) liveListDiv.innerHTML = getSkeletonHTML();
+            return;
+        }
+
+        const data = snapshot.val();
+        const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
+
+        let registeredCount = 0; let bannedCount = 0; let liveCount = 0;
+        const now = Date.now();
+        
+        users.forEach(user => {
+            const isBanned = user.status === 'banned';
+            const dateStr = new Date(user.joined).toLocaleDateString();
+            const hasLiveKey = user.lastGeneratedKey && user.keyExpiresAt && user.keyExpiresAt > now && !isBanned;
+
+            if(isBanned) {
+                bannedCount++;
+                if (bannedListDiv) bannedListDiv.innerHTML += `
+                    <div class="user-card glass-panel banned float-anim">
+                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
+                        <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
+                    </div>`;
+            } else {
+                registeredCount++;
+                if (activeListDiv) activeListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim">
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>`;
+            }
+
+            // Live Active = has a currently valid key
+            if (hasLiveKey && liveListDiv) {
+                liveCount++;
+                liveListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3); position:relative; overflow:visible;">
+                        <div class="live-timer" data-expires="${user.keyExpiresAt}" style="color:var(--accent); position:absolute; top:14px; right:14px; font-size:12px; font-weight:800; z-index:5; background:rgba(0,0,0,0.35); padding:4px 10px; border-radius:8px;"></div>
+                        <div class="user-name copyable" style="cursor:pointer; margin-top:6px; padding-right:100px;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div style="font-size:13px;color:var(--text-dim);margin:12px 0 8px;font-family:monospace;word-break:break-all;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">${user.lastGeneratedKey || '—'}</div>
+                        <button class="btn-full bg-warn" onclick="banUserKey('${user.id}', '${(user.lastGeneratedKey||'').replace(/'/g,"\\'")}')">BAN KEY</button>
+                    </div>`;
+            }
+        });
+        
+        if (registeredCount === 0 && activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+        if (bannedCount === 0 && bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+        if (liveCount === 0 && liveListDiv) liveListDiv.innerHTML = '<div style="color:var(--text-dim);padding:30px;text-align:center;">No users with a live key right now</div>';
+
+        document.getElementById('stat-total').innerText = users.length;
+        document.getElementById('stat-active').innerText = registeredCount;
+        document.getElementById('stat-banned').innerText = bannedCount;
+        const liveStat = document.getElementById('stat-live-active');
+        if (liveStat) liveStat.innerText = liveCount;
+    }
+
+    window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
+    window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
+    window.banUserKey = function(userId, keyStr) {
+        if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
+        showConfirm("Ban Key?", `Ban the key belonging to this user?\n${keyStr}`, async () => {
+            try {
+                await set(ref(db, 'settings/bannedKeys/' + keyStr), {
+                    reason: 'Banned from Active Users',
+                    bannedAt: new Date().toISOString()
+                });
+                // Clear the key from the user so it is no longer live
+                await update(ref(db, 'users/' + userId), { lastGeneratedKey: null, keyExpiresAt: null });
+            } catch (e) {
+                showConfirm("Error", "Could not ban key: " + e.message, null);
+            }
+        });
+    };
+
+    window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
+    
+    window.confirmBan = async function() { 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        closeModals(); 
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
+    }
+    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
+    
+    window.deleteUser = function(userId) { 
+        showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
+            await remove(ref(db, 'users/' + userId));
+        });
+    }
+    
+    window.resetDevice = async function() {
+        const id = document.getElementById('resetIdInput').value.trim();
+        if (!id) {
+            showConfirm("Error", "Enter a Device ID.", null);
+            return;
+        }
+        try {
+            await remove(ref(db, 'users/' + id));
+            // Also clear any key-device tracks that used this id (best-effort)
+            showConfirm("Successful", "Device unbound successfully.", null);
+            document.getElementById('resetIdInput').value = '';
+        } catch (e) {
+            showConfirm("Error", "Unbind failed: " + e.message, null);
+        }
+    }
+
+    window.startFactoryReset = function() {
+        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    }
+    function executeResetStep() {
+        if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
+        else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
+    }
+    async function wipeEntireDatabase() { 
+        try { 
+            await set(ref(db, '/'), null); 
+            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        } catch (error) { 
+            showConfirm("Error", "Error wiping database: " + error.message, null); 
+        } 
+    }
+</script>
+</body>
+</html>
