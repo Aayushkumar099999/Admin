@@ -485,17 +485,21 @@
                         <button type="button" class="btn mk-type-btn active" data-type="pure" onclick="selectMkType('pure')" style="padding:10px 16px;font-size:13px;border-radius:12px;">Unlimited</button>
                         <button type="button" class="btn mk-type-btn" data-type="limited" onclick="selectMkType('limited')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Limited Uses</button>
                         <button type="button" class="btn mk-type-btn" data-type="device" onclick="selectMkType('device')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Device Locked</button>
+                        <button type="button" class="btn mk-type-btn" data-type="time" onclick="selectMkType('time')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Time Limited</button>
+                        <button type="button" class="btn mk-type-btn" data-type="device_time" onclick="selectMkType('device_time')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Device + Time</button>
                     </div>
                 </div>
 
-                <!-- Extra field (shown only for limited / device) -->
+                <!-- Extra field (limited / device / time) -->
                 <div id="mkExtraWrap" style="display:none;margin-bottom:14px;">
                     <div style="display: flex; gap: 15px; align-items: stretch; flex-wrap: wrap;">
                         <div style="flex: 1; min-width: 200px;">
                             <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
+                            <div id="mkTimeWrap" style="display:none;margin-top:12px;">
+                                <div style="font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Expires (date + time, seconds allowed)</div>
+                                <input type="datetime-local" id="mkExpiresInput" step="1" style="width:100%;padding:14px 16px;border-radius:14px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-weight:600;">
+                            </div>
                         </div>
-                        
-                        <!-- Device Requests Box (Right side) -->
                         <div id="deviceRequestsWrapper" style="display: none;">
                             <div style="font-size:11px;font-weight:800;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;">Recent Device IDs</div>
                             <div class="device-id-box" id="deviceRequestsBox">
@@ -1272,15 +1276,22 @@
         });
         const wrap = document.getElementById('mkExtraWrap');
         const input = document.getElementById('mkExtraInput');
+        const timeWrap = document.getElementById('mkTimeWrap');
+        const exp = document.getElementById('mkExpiresInput');
+        const devBox = document.getElementById('deviceRequestsWrapper');
+        if (timeWrap) timeWrap.style.display = 'none';
+        if (exp) exp.value = '';
         if (type === 'pure') {
             wrap.style.display = 'none';
             input.value = '';
+            input.type = 'text';
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
-            input.type = 'text';
+            if (devBox) devBox.style.display = 'none';
         } else if (type === 'limited') {
             wrap.style.display = 'block';
-            document.getElementById('deviceRequestsWrapper').style.display = 'none';
+            if (devBox) devBox.style.display = 'none';
+            input.style.display = '';
             input.placeholder = 'Max logins allowed (e.g. 10)';
             input.type = 'number';
             input.setAttribute('inputmode', 'numeric');
@@ -1290,31 +1301,50 @@
             input.focus();
         } else if (type === 'device') {
             wrap.style.display = 'block';
-            document.getElementById('deviceRequestsWrapper').style.display = 'block';
-            input.placeholder = 'Paste Device ID (e.g. dev_...)';
+            if (devBox) devBox.style.display = 'block';
+            input.style.display = '';
+            input.placeholder = 'Paste Device ID';
             input.type = 'text';
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
             input.removeAttribute('min');
             input.value = '';
             input.focus();
+        } else if (type === 'time') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'none';
+            input.style.display = 'none';
+            input.value = '';
+            if (timeWrap) timeWrap.style.display = 'block';
+            if (exp) exp.focus();
+        } else if (type === 'device_time') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'block';
+            input.style.display = '';
+            input.placeholder = 'Paste Device ID';
+            input.type = 'text';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            input.value = '';
+            if (timeWrap) timeWrap.style.display = 'block';
+            input.focus();
         }
     };
 
     function normalizeMkEntry(val) {
-        // Backward compatible: old keys are plain strings
         if (typeof val === 'string') {
-            return { key: val.trim(), type: 'pure', maxUses: null, deviceId: null };
+            return { key: val.trim(), type: 'pure', maxUses: null, deviceId: null, expiresAt: null };
         }
         if (val && typeof val === 'object') {
             return {
                 key: String(val.key || '').trim(),
                 type: val.type || 'pure',
                 maxUses: val.maxUses != null ? Number(val.maxUses) : null,
-                deviceId: val.deviceId || null
+                deviceId: val.deviceId || null,
+                expiresAt: val.expiresAt != null ? Number(val.expiresAt) : null
             };
         }
-        return { key: '', type: 'pure', maxUses: null, deviceId: null };
+        return { key: '', type: 'pure', maxUses: null, deviceId: null, expiresAt: null };
     }
 
     function renderMasterKeys() {
@@ -1337,13 +1367,23 @@
                     typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--warn);background:rgba(255,200,0,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">LIMIT ${usageCount}/${entry.maxUses || '?'}</span>`;
                 } else if (entry.type === 'device') {
                     typeBadge = `<span style="font-size:11px;font-weight:800;color:#5b9dff;background:rgba(91,157,255,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">DEVICE</span>`;
+                } else if (entry.type === 'time') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#c084fc;background:rgba(192,132,252,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">TIME</span>`;
+                } else if (entry.type === 'device_time') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#f472b6;background:rgba(244,114,182,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">DEVICE+TIME</span>`;
                 } else {
                     typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--accent);background:rgba(0,255,136,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">UNLIMITED</span>`;
                 }
 
-                const extraInfo = entry.type === 'device' && entry.deviceId
-                    ? `<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-family:monospace;word-break:break-all;">ID: ${entry.deviceId}</div>`
-                    : '';
+                let extraInfo = '';
+                if (entry.deviceId) {
+                    extraInfo += `<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-family:monospace;word-break:break-all;">ID: ${entry.deviceId}</div>`;
+                }
+                if (entry.expiresAt) {
+                    const expStr = new Date(entry.expiresAt).toLocaleString();
+                    const dead = Date.now() > entry.expiresAt;
+                    extraInfo += `<div style="font-size:12px;color:${dead?'var(--error)':'var(--text-dim)'};margin-top:4px;">Expires: ${expStr}${dead?' (EXPIRED)':''}</div>`;
+                }
 
                 listDiv.innerHTML += `
                     <div class="mk-item">
@@ -1378,7 +1418,7 @@
             createdAt: Date.now()
         };
 
-        if (selectedMkType === 'limited') {
+                if (selectedMkType === 'limited') {
             const n = Number(document.getElementById('mkExtraInput').value);
             if (!n || n < 1 || !Number.isFinite(n)) {
                 return showConfirm("Error", "Enter a valid number of max logins (1 or more).", null);
@@ -1390,9 +1430,28 @@
                 return showConfirm("Error", "Enter the device ID to lock this key to.", null);
             }
             payload.deviceId = did;
+        } else if (selectedMkType === 'time' || selectedMkType === 'device_time') {
+            const expEl = document.getElementById('mkExpiresInput');
+            const expVal = expEl ? expEl.value : '';
+            if (!expVal) {
+                return showConfirm("Error", "Pick an expiry date and time.", null);
+            }
+            const expMs = new Date(expVal).getTime();
+            if (!Number.isFinite(expMs) || expMs <= Date.now()) {
+                return showConfirm("Error", "Expiry must be a future date/time.", null);
+            }
+            payload.expiresAt = expMs;
+            if (selectedMkType === 'device_time') {
+                const did = document.getElementById('mkExtraInput').value.trim().replace(/\s+/g, '');
+                if (!did) {
+                    return showConfirm("Error", "Enter the device ID for Device + Time key.", null);
+                }
+                payload.deviceId = did;
+            }
         }
 
         await push(ref(db, 'settings/masterKeys'), payload);
+
         document.getElementById('masterKeyInput').value = '';
         const extra = document.getElementById('mkExtraInput');
         if (extra) extra.value = '';
@@ -1683,7 +1742,7 @@
 
     window.confirmKeyBan = async function() {
         if (!pendingKeyToBan) return;
-        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Ban: generate a new key to continue.";
         closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         const usersRef = ref(db, 'users');
@@ -1696,6 +1755,11 @@
                 }
             }
         }
+        if (window.__banKeyUserId) {
+            try { await update(ref(db, 'users/' + window.__banKeyUserId), { lastGeneratedKey: null, keyExpiresAt: null }); } catch(e) {}
+            window.__banKeyUserId = null;
+        }
+        window.__banKeyFromActive = false;
         document.getElementById('keyToBanInput').value = '';
         pendingKeyToBan = null;
     }
@@ -1830,21 +1894,18 @@
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
-    window.banUserKey = function(userId, keyStr) {
+        window.banUserKey = function(userId, keyStr) {
         if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
-        showConfirm("Ban Key?", `Ban the key belonging to this user?\n${keyStr}`, async () => {
-            try {
-                await set(ref(db, 'settings/bannedKeys/' + keyStr), {
-                    reason: 'Ban: generate a new key to continue.',
-                    bannedAt: new Date().toISOString()
-                });
-                // Clear the key from the user so it is no longer live
-                await update(ref(db, 'users/' + userId), { lastGeneratedKey: null, keyExpiresAt: null });
-            } catch (e) {
-                showConfirm("Error", "Could not ban key: " + e.message, null);
-            }
-        });
+        pendingKeyToBan = keyStr;
+        window.__banKeyUserId = userId;
+        const reasonEl = document.getElementById('keyBanReasonInput');
+        if (reasonEl) reasonEl.value = 'Ban: generate a new key to continue.';
+        document.getElementById('keyBanTarget').innerText = keyStr;
+        document.getElementById('keyBanModal').style.display = 'flex';
+        // Override confirm to also clear user key
+        window.__banKeyFromActive = true;
     };
+
 
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
