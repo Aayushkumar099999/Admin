@@ -37,7 +37,7 @@ body::before{
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
   mix-blend-mode:soft-light;
 }
-.scene{width:min(360px,100%);perspective:1500px;position:relative;isolation:isolate;will-change:transform;transition:transform .55s cubic-bezier(.22,1,.36,1)}
+.scene{width:min(360px,100%);perspective:1500px;position:relative;isolation:isolate;will-change:transform;transition:transform .55s cubic-bezier(.22,1,.36,1);transform:translateZ(0)}
 
 /* Soft grounding shadow only. The trapezium is clipped inside the glass. */
 .scene::before{content:"";position:absolute;inset:20px -18px -26px;z-index:-2;background:radial-gradient(ellipse at 50% 74%,rgba(0,0,0,.62),transparent 69%)}
@@ -46,6 +46,7 @@ body::before{
 .card-shell{
   position:relative;width:100%;transform-origin:0 0;transform-style:preserve-3d;touch-action:none;cursor:grab;
   will-change:transform;backface-visibility:hidden;contain:layout style;
+  transform:translateZ(0);
   animation:unrollCorner4D 1.85s cubic-bezier(.16,.84,.18,1) both;
 }
 /* Realistic top-left page release: compressed corner, deep fold, overshoot, then settle. */
@@ -149,6 +150,7 @@ body::before{
 .logo{width:70px;height:70px;object-fit:cover;border-radius:50%;margin-bottom:14px;border:1px solid rgba(255,255,255,.16);box-shadow:0 12px 35px rgba(0,0,0,.35),0 0 24px rgba(0,255,136,.12)}
 h2{color:var(--accent);margin:0 0 6px;font-size:22px;letter-spacing:.3px;text-shadow:0 0 22px rgba(0,255,136,.3)}
 .tagline{color:var(--muted);font-size:13px;margin:0 0 25px}
+
 .key-wrap{position:relative;margin-bottom:16px}
 input[type=text]{width:100%;padding:15px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.13);color:#fff;border-radius:14px;text-align:center;font-size:15px;font-weight:750;letter-spacing:.8px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,.3);transition:.22s;-webkit-user-select:text!important;-moz-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
 input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),inset 0 2px 8px rgba(0,0,0,.3)}
@@ -184,17 +186,20 @@ body.recall-ready{cursor:crosshair}
 /* Smooth travelling mode: only active while the card is moving. */
 .scene.drag-active{will-change:transform;contain:layout style paint}
 body.is-dragging .glass, body.is-recalling .glass{
-  backdrop-filter:blur(34px) saturate(220%) contrast(112%) !important;
-  -webkit-backdrop-filter:blur(34px) saturate(220%) contrast(112%) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  background:linear-gradient(
+    145deg,
+    rgba(28,32,30,.96),
+    rgba(12,16,14,.97) 52%,
+    rgba(7,10,8,.98)
+  ) !important;
 }
-body.is-dragging .grain, body.is-recalling .grain{
-  opacity:.12 !important;
-}
-body.is-dragging .iridescent, body.is-recalling .iridescent{
-  opacity:.28 !important;
-}
-body.is-dragging .light-cap, body.is-recalling .light-cap{
-  opacity:1 !important;
+body.is-dragging .grain, body.is-recalling .grain,
+body.is-dragging .iridescent, body.is-recalling .iridescent,
+body.is-dragging .light-cap, body.is-recalling .light-cap,
+body.is-dragging .glass-shadow-runner, body.is-recalling .glass-shadow-runner{
+  display:none !important;
 }
 body.is-dragging .hang,body.is-recalling .hang,
 body.is-dragging .join-badge,body.is-recalling .join-badge{animation-play-state:paused!important}
@@ -215,6 +220,7 @@ body.is-dragging .join-badge,body.is-recalling .join-badge{animation-play-state:
         <img src="./assets/logo.png" alt="DGXEN" class="logo" onerror="this.style.display='none'">
         <h2>DGXEN VIP</h2>
         <p class="tagline">Enter your access key to unlock.</p>
+
         <div class="key-wrap">
           <input type="text" id="keyInput" placeholder="Enter Access Key..." autocomplete="off" autocapitalize="none" spellcheck="false">
         </div>
@@ -225,7 +231,7 @@ body.is-dragging .join-badge,body.is-recalling .join-badge{animation-play-state:
         </label>
         <button class="btn" id="unlockBtn" type="button">UNLOCK APP</button>
         <div id="statusText" class="status" role="status" aria-live="polite"></div>
-        <a href="https://yourstylexdg.github.io/DGXEN-KEY/steps.html" class="get-key" target="_blank" rel="noopener noreferrer">Don't have a key? Get one here.</a>
+        <a href="https://aayushkumar099999.github.io/DGXEN-KEY/steps.html" class="get-key" id="getKeyLink" target="_blank" rel="noopener noreferrer">Don't have a key? Get one here.</a>
       </div>
     </div>
   </section>
@@ -427,6 +433,60 @@ save.addEventListener('change', (e) => {
 });
 
 function getDeviceFingerprint() {
+    const isRealId = (s) => {
+        if (!s || typeof s !== 'string') return false;
+        const t = s.trim();
+        if (!t || t.indexOf('dev_') === 0) return false;
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(t)) return true;
+        if (/^[0-9a-f]{16,}$/i.test(t)) return true;
+        if (t.length >= 8 && t.indexOf(' ') === -1) return true;
+        return false;
+    };
+
+    // 1. URL param (Auth.smali now injects ?deviceId=ANDROID_ID)
+    try {
+        const p = new URLSearchParams(location.search);
+        const urlKeys = ['deviceId', 'uuid', 'id', 'device', 'userId'];
+        for (let i = 0; i < urlKeys.length; i++) {
+            const fromUrl = p.get(urlKeys[i]);
+            if (isRealId(fromUrl)) {
+                try { localStorage.setItem('deviceId', fromUrl.trim()); } catch (e) {}
+                return fromUrl.trim();
+            }
+        }
+    } catch (e) {}
+
+    // 2. localStorage / sessionStorage
+    try {
+        const keys = [
+            'deviceId', 'device_id', 'uuid', 'userId', 'user_id',
+            'dgxen_device_id', 'dgxen_uuid', 'dgxen_id',
+            'androidId', 'android_id', 'UNIQUE_ID', 'unique_id'
+        ];
+        for (let i = 0; i < keys.length; i++) {
+            const v = localStorage.getItem(keys[i]) || sessionStorage.getItem(keys[i]);
+            if (isRealId(v)) return v.trim();
+        }
+    } catch (e) {}
+
+    // 3. Android bridge
+    try {
+        if (window.Android) {
+            const methods = ['getDeviceId', 'getId', 'getUniqueId', 'getAndroidId', 'getUUID', 'getUuid'];
+            for (let i = 0; i < methods.length; i++) {
+                const m = methods[i];
+                if (typeof window.Android[m] === 'function') {
+                    const id = String(window.Android[m]() || '').trim();
+                    if (isRealId(id)) {
+                        try { localStorage.setItem('deviceId', id); } catch (e) {}
+                        return id;
+                    }
+                }
+            }
+        }
+    } catch (e) {}
+
+    // 4. Last resort fingerprint
     const str = navigator.userAgent + screen.width + 'x' + screen.height + (navigator.hardwareConcurrency || '');
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -434,6 +494,74 @@ function getDeviceFingerprint() {
         hash |= 0;
     }
     return "dev_" + Math.abs(hash).toString(16);
+}
+
+
+function getAppVersion() {
+  try {
+    if (window.Android && typeof window.Android.getAppVersion === 'function') {
+      const v = String(window.Android.getAppVersion() || '').trim();
+      if (v) return v;
+    }
+  } catch (e) {}
+  try {
+    const p = new URLSearchParams(location.search);
+    if (p.get('appVersion')) return p.get('appVersion').trim();
+  } catch (e) {}
+  return localStorage.getItem('dgxen_app_version') || '1.0.0';
+}
+
+async function reportAppVersion() {
+  try {
+    const devId = getDeviceFingerprint();
+    const ver = getAppVersion();
+    if (!devId) return;
+    // Always store under knownDevices
+    await set(ref(db, 'settings/knownDevices/' + devId), {
+      lastSeen: Date.now(),
+      id: devId,
+      appVersion: ver
+    });
+    // If this device is a registered user node, write appVersion there too
+    const userSnap = await get(ref(db, 'users/' + devId));
+    if (userSnap.exists()) {
+      await set(ref(db, 'users/' + devId + '/appVersion'), ver);
+    } else {
+      // Also try match any user whose device fields equal this id
+      const all = await get(ref(db, 'users'));
+      if (all.exists()) {
+        const data = all.val();
+        const norm = (s) => String(s || '').trim().toLowerCase();
+        const n = norm(devId);
+        for (const uid in data) {
+          const u = data[uid] || {};
+          if (norm(uid) === n || norm(u.deviceId) === n || norm(u.fingerprint) === n || norm(u.lastDeviceId) === n || norm(u.androidId) === n) {
+            await set(ref(db, 'users/' + uid + '/appVersion'), ver);
+            break;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error('reportAppVersion failed', e);
+  }
+}
+
+
+// Global registry of this device ID on load
+window.addEventListener('load', async () => {
+    try { await reportAppVersion(); } catch (e) {}
+});
+
+// Single Tap "Get Key" → copy native device ID + Send directly to Admin
+const getKeyLink = document.getElementById('getKeyLink');
+if (getKeyLink) {
+    getKeyLink.addEventListener('click', async (e) => {
+        const id = getDeviceFingerprint();
+        try { navigator.clipboard.writeText(id); } catch(err) {}
+        try { await set(ref(db, 'deviceRequests/' + id), { deviceId: id, time: Date.now() }); } catch(err) {}
+        // Does not prevent default, so the link still successfully opens!
+    });
 }
 
 function updateNotchUI(){autoNotch.classList.toggle('active',isAutoLoginEnabled);autoNotch.setAttribute('aria-pressed',String(isAutoLoginEnabled))}
@@ -449,7 +577,7 @@ function toggleAutoLogin(){
 autoNotch.addEventListener('click',toggleAutoLogin);
 autoNotch.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleAutoLogin()}});
 const show=(message,color='white')=>{status.textContent=message;status.style.color=color};
-window.addEventListener('load',()=>{updateNotchUI();const p=new URLSearchParams(location.search);const urlKey=p.get('key')||p.get('token');const saved=urlKey||localStorage.getItem('dgxen_saved_key');if(saved){input.value=saved.trim();save.checked=true;if(isAutoLoginEnabled&&!urlKey)setTimeout(()=>{if(!btn.disabled)verifyKey()},1000)}});
+window.addEventListener('load',()=>{updateNotchUI();const p=new URLSearchParams(location.search);const urlDid=p.get('deviceId')||p.get('uuid')||p.get('id')||p.get('device');if(urlDid&&urlDid.trim()){try{localStorage.setItem('deviceId',urlDid.trim());}catch(e){}}const urlKey=p.get('key')||p.get('token');const saved=urlKey||localStorage.getItem('dgxen_saved_key');if(saved){input.value=saved.trim();save.checked=true;if(isAutoLoginEnabled&&!urlKey)setTimeout(()=>{if(!btn.disabled)verifyKey()},1000)}});
 btn.addEventListener('click',verifyKey);
 input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!btn.disabled)verifyKey()});
 
@@ -466,42 +594,112 @@ async function verifyKey(){
     // ========== MASTER KEYS ==========
     try{
       const snap=await get(ref(db,'settings/masterKeys'));
-      if(snap.exists()&&Object.values(snap.val()).map(k=>String(k).trim()).includes(userInput)){
-        
-        // Original counting + ONE KEY = ONE DEVICE
-        // If this device already tracked → allow (no re-count)
-        // If another device was tracked before → this device claims it (clears old + binds itself)
-        // If no device yet → bind + count +1
-        const trackRef = ref(db, `settings/mkDeviceTrack/${safeKey}/${deviceId}`);
-        const trackSnap = await get(trackRef);
-        const parentRef = ref(db, `settings/mkDeviceTrack/${safeKey}`);
-
-        if(trackSnap.exists()){
-          // Same device already used it → allow, do NOT re-count
-          isValid = true;
-        } else {
-          const parentSnap = await get(parentRef);
-          if(parentSnap.exists() && Object.keys(parentSnap.val() || {}).length > 0){
-            // Other device(s) previously used this master key.
-            // Current device claims it (clears old tracks) so the master key becomes usable again.
-            // Usage count is NOT increased again.
-            try{
-              await set(parentRef, null);               // wipe old multi-device history
-              await set(trackRef, true);                // bind only current device
-            }catch(e){console.error('Master key re-bind failed:',e)}
-            isValid = true;
-          } else {
-            // Truly first device ever for this master key
-            try{
-              await set(trackRef, true);
-              const usageRef=ref(db,'settings/mkUsage/'+safeKey),usage=await get(usageRef);
-              await set(usageRef,(usage.exists()?Number(usage.val()):0)+1);
-            }catch(e){console.error('Usage count update failed:',e)}
-            isValid = true;
+      if(snap.exists()){
+        // Find matching key
+        let mkEntry = null;
+        for (const val of Object.values(snap.val())) {
+          const keyStr = (typeof val === 'string') ? val.trim() : String((val && val.key) || '').trim();
+          if (keyStr === userInput) {
+            mkEntry = (typeof val === 'string')
+              ? { key: keyStr, type: 'pure', maxUses: null, deviceId: null }
+              : { key: keyStr, type: val.type || 'pure', maxUses: val.maxUses != null ? Number(val.maxUses) : null, deviceId: val.deviceId || null };
+            break;
           }
         }
-        timeLeftText = " (Unlimited)";
-        show('Master Key Accepted! Unlocking...' + timeLeftText,'var(--accent)');
+
+        if (mkEntry) {
+          const mkType = mkEntry.type || 'pure';
+
+          // --- DEVICE LOCKED ---
+          if (mkType === 'device') {
+            let liveId = getDeviceFingerprint();
+
+            const allowedRaw = String(mkEntry.deviceId || '').trim();
+            const currentRaw = String(liveId || '').trim();
+            const allowedId = allowedRaw.toLowerCase().replace(/\s+/g, '');
+            const currentId = currentRaw.toLowerCase().replace(/\s+/g, '');
+
+            console.log('[MK-DEVICE] allowed=', allowedRaw, 'current=', currentRaw);
+
+            if (!allowedRaw) {
+              show('Device lock misconfigured (no ID saved on key). Delete & recreate the key.', 'var(--error)');
+              window.playSound(window.sfxFailed);
+              localStorage.removeItem('dgxen_saved_key');
+              btn.disabled = false;
+              return;
+            }
+
+            const idMatch = currentId && (
+              currentId === allowedId ||
+              currentId.indexOf(allowedId) !== -1 ||
+              allowedId.indexOf(currentId) !== -1
+            );
+
+            if (!idMatch) {
+              show('Locked to other device. Yours: ' + currentRaw + ' | Key wants: ' + allowedRaw, 'var(--error)');
+              window.playSound(window.sfxFailed);
+              localStorage.removeItem('dgxen_saved_key');
+              btn.disabled = false;
+              return;
+            }
+
+            const usageRef = ref(db, 'settings/mkUsage/' + safeKey);
+            const usage = await get(usageRef);
+            await set(usageRef, (usage.exists() ? Number(usage.val()) : 0) + 1);
+            isValid = true;
+            timeLeftText = ' (Device Locked)';
+            show('Master Key Accepted! Unlocking...' + timeLeftText, 'var(--accent)');
+          }
+          // --- LIMITED USES ---
+          else if (mkType === 'limited') {
+            const maxUses = Number(mkEntry.maxUses) || 0;
+            const usageRef = ref(db, 'settings/mkUsage/' + safeKey);
+            const usageSnap = await get(usageRef);
+            const currentUses = usageSnap.exists() ? Number(usageSnap.val()) : 0;
+
+            if (currentUses >= maxUses) {
+              show('This master key has reached its login limit (' + maxUses + ').', 'var(--error)');
+              window.playSound(window.sfxFailed);
+              localStorage.removeItem('dgxen_saved_key');
+              btn.disabled = false;
+              return;
+            }
+
+            await set(usageRef, currentUses + 1);
+            isValid = true;
+            timeLeftText = ` (${currentUses + 1}/${maxUses} uses)`;
+            show('Master Key Accepted! Unlocking...' + timeLeftText, 'var(--accent)');
+          }
+          // --- PURE / UNLIMITED ---
+          else {
+            const trackRef = ref(db, `settings/mkDeviceTrack/${safeKey}/${deviceId}`);
+            const trackSnap = await get(trackRef);
+            const parentRef = ref(db, `settings/mkDeviceTrack/${safeKey}`);
+
+            if (trackSnap.exists()) {
+              isValid = true;
+            } else {
+              const parentSnap = await get(parentRef);
+              if (parentSnap.exists() && Object.keys(parentSnap.val() || {}).length > 0) {
+                try {
+                  await set(parentRef, null);
+                  await set(trackRef, true);
+                } catch (e) { console.error('Master key re-bind failed:', e); }
+                isValid = true;
+              } else {
+                try {
+                  await set(trackRef, true);
+                  const usageRef = ref(db, 'settings/mkUsage/' + safeKey);
+                  const usage = await get(usageRef);
+                  await set(usageRef, (usage.exists() ? Number(usage.val()) : 0) + 1);
+                } catch (e) { console.error('Usage count update failed:', e); }
+                isValid = true;
+              }
+            }
+            timeLeftText = ' (Unlimited)';
+            show('Master Key Accepted! Unlocking...' + timeLeftText, 'var(--accent)');
+          }
+        }
       }
     }catch(e){console.error('Master key fetch error:',e)}
 
@@ -510,109 +708,106 @@ async function verifyKey(){
       let banned=false,reason='';
       try{const bannedSnap=await get(ref(db,'settings/bannedKeys/'+userInput));if(bannedSnap.exists()){banned=true;reason=(bannedSnap.val()&&bannedSnap.val().reason)||'This key has been banned by the administrator.'}}catch(e){console.error('Key ban check failed:',e)}
       if(banned){show('Banned: '+reason,'var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
-      const usersSnap=await get(ref(db,'users'));let found=false;
-      if(usersSnap.exists())for(const uid in usersSnap.val()){
-        const user=usersSnap.val()[uid];
-        if(user.lastGeneratedKey&&String(user.lastGeneratedKey).trim()===userInput){
-          found=true;
-          if(user.status==='banned'){show('Account Banned: '+(user.banReason||'Your device is permanently banned.'),'var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
-          if(user.keyExpiresAt&&Date.now()>user.keyExpiresAt){show('This key has expired! Get a new one.','var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
-          
-          if (user.keyExpiresAt) {
-            let remainingMs = user.keyExpiresAt - Date.now();
-            if (remainingMs > 0) {
-                let hrs = Math.floor(remainingMs / (1000 * 60 * 60));
-                let mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
-                timeLeftText = hrs > 0 ? ` (Valid for ${hrs}h ${mins}m)` : ` (Valid for ${mins} mins)`;
+      
+      const usersSnap=await get(ref(db,'users'));
+      let found=false;
+      if(usersSnap.exists()){
+        for(const uid in usersSnap.val()){
+          const user=usersSnap.val()[uid];
+          if(user.lastGeneratedKey && String(user.lastGeneratedKey).trim() === userInput){
+            found=true;
+            if(user.status==='banned'){show('Account Banned: '+(user.banReason||'Your device is permanently banned.'),'var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
+            if(user.keyExpiresAt&&Date.now()>user.keyExpiresAt){show('This key has expired! Get a new one.','var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
+            
+            if (user.keyExpiresAt) {
+              let remainingMs = user.keyExpiresAt - Date.now();
+              if (remainingMs > 0) {
+                  let hrs = Math.floor(remainingMs / (1000 * 60 * 60));
+                  let mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+                  timeLeftText = hrs > 0 ? ` (Valid for ${hrs}h ${mins}m)` : ` (Valid for ${mins} mins)`;
+              }
             }
-          }
 
-          // ONE KEY = ONE DEVICE for normal keys
-          const parentRef = ref(db, `settings/keyDeviceTrack/${safeKey}`);
-          const parentSnap = await get(parentRef);
+            const parentRef = ref(db, `settings/keyDeviceTrack/${safeKey}`);
+            const parentSnap = await get(parentRef);
 
-          if(parentSnap.exists()){
-            const devices = parentSnap.val() || {};
-            const existing = Object.keys(devices);
-            if(existing.length > 0 && !existing.includes(deviceId)){
-              // === SHARE LOG (deduplicated) ===
-              try {
-                const generatorName = (user && user.name) ? user.name : (uid || "Unknown Generator");
-                const generatorId = uid || "";
-                let receiverName = "unknown user";
-                let receiverId = deviceId; // the fingerprint we actually have
-
+            if(parentSnap.exists()){
+              const devices = parentSnap.val() || {};
+              const existing = Object.keys(devices);
+              if(existing.length > 0 && !existing.includes(deviceId)){
                 try {
-                  const allUsersSnap = await get(ref(db, 'users'));
-                  if (allUsersSnap.exists()) {
-                    const uData = allUsersSnap.val();
-                    if (uData[deviceId]) {
-                      receiverName = uData[deviceId].name || deviceId;
-                      receiverId = deviceId;
-                    } else {
-                      // Only match by device/fingerprint fields – NEVER by lastGeneratedKey
-                      // (that would incorrectly match the generator)
-                      for (const uKey in uData) {
-                        const u = uData[uKey];
-                        if (uKey === deviceId || 
-                            (u.deviceId && u.deviceId === deviceId) ||
-                            (u.fingerprint && u.fingerprint === deviceId) ||
-                            (u.lastDeviceId && u.lastDeviceId === deviceId)) {
-                          receiverName = u.name || uKey;
-                          receiverId = uKey;
-                          break;
+                  const generatorName = (user && user.name) ? user.name : (uid || "Unknown Generator");
+                  const generatorId = uid || "";
+                  let receiverName = "unknown user";
+                  let receiverId = deviceId; 
+
+                  try {
+                    const allUsersSnap = await get(ref(db, 'users'));
+                    if (allUsersSnap.exists()) {
+                      const uData = allUsersSnap.val();
+                      const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, '');
+                      const devN = norm(deviceId);
+                      if (uData[deviceId]) {
+                        receiverName = uData[deviceId].name || deviceId;
+                        receiverId = deviceId;
+                      } else {
+                        for (const uKey in uData) {
+                          const u = uData[uKey];
+                          if (norm(uKey) === devN || norm(u.deviceId) === devN || norm(u.fingerprint) === devN || norm(u.lastDeviceId) === devN || norm(u.androidId) === devN) {
+                            receiverName = u.name || uKey;
+                            receiverId = uKey;
+                            break;
+                          }
                         }
                       }
                     }
+                  } catch (_) {}
+
+                  const logKey = safeKey + '_' + deviceId.replace(/[.#$\[\]/]/g,'_');
+                  const existingLogRef = ref(db, 'settings/shareLogs/' + logKey);
+                  const existingLogSnap = await get(existingLogRef);
+
+                  if (receiverName === generatorName || receiverId === generatorId) {
+                    receiverName = 'unknown user';
+                    receiverId = deviceId;
                   }
-                } catch (_) {}
 
-                // Deduplicate by key + fingerprint
-                const logKey = safeKey + '_' + deviceId.replace(/[.#$\[\]/]/g,'_');
-                const existingLogRef = ref(db, 'settings/shareLogs/' + logKey);
-                const existingLogSnap = await get(existingLogRef);
-
-                // Never store generator as the receiver
-                if (receiverName === generatorName || receiverId === generatorId) {
-                  receiverName = 'unknown user';
-                  receiverId = deviceId;
+                  if (!existingLogSnap.exists()) {
+                    await set(existingLogRef, {
+                      generatorName,
+                      generatorId,
+                      key: userInput,
+                      receiverName,
+                      receiverDevice: receiverId,
+                      receiverFingerprint: deviceId,
+                      originalDevices: existing,
+                      timestamp: Date.now(),
+                      type: 'normal'
+                    });
+                  }
+                } catch (logErr) {
+                  console.error('Share log write failed:', logErr);
                 }
 
-                if (!existingLogSnap.exists()) {
-                  await set(existingLogRef, {
-                    generatorName,
-                    generatorId,
-                    key: userInput,
-                    receiverName,
-                    receiverDevice: receiverId,
-                    receiverFingerprint: deviceId,
-                    originalDevices: existing,
-                    timestamp: Date.now(),
-                    type: 'normal'
-                  });
-                }
-              } catch (logErr) {
-                console.error('Share log write failed:', logErr);
+                show('This key is already used on another device','var(--error)');
+                window.playSound(window.sfxFailed);
+                localStorage.removeItem('dgxen_saved_key');
+                btn.disabled=false;
+                return;
               }
-
-              show('This key is already used on another device','var(--error)');
-              window.playSound(window.sfxFailed);
-              localStorage.removeItem('dgxen_saved_key');
-              btn.disabled=false;
-              return;
+            } else {
+              await set(ref(db, `settings/keyDeviceTrack/${safeKey}/${deviceId}`), true);
             }
-          } else {
-            // First successful device – permanently bind
-            await set(ref(db, `settings/keyDeviceTrack/${safeKey}/${deviceId}`), true);
+            
+            isValid=true;show('Live Key Verified! Access Granted.' + timeLeftText,'var(--accent)');break;
           }
-          
-          isValid=true;show('Live Key Verified! Access Granted.' + timeLeftText,'var(--accent)');break;
         }
       }
-      if(!found){show('Unregistered or Fake Key!','var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
+      if(!found){show('Deleted, Unregistered or Fake Key!','var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
     }else if(!isValid){show('Invalid Key Format!','var(--error)'); window.playSound(window.sfxFailed); localStorage.removeItem('dgxen_saved_key');btn.disabled=false;return}
 
     if(isValid){
+      try { await reportAppVersion(); } catch(e) {}
       window.playSound(window.sfxSuccess);
       btn.classList.add('success');btn.textContent='ACCESS GRANTED';
       save.checked?localStorage.setItem('dgxen_saved_key',userInput):localStorage.removeItem('dgxen_saved_key');
