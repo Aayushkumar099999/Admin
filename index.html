@@ -410,12 +410,14 @@
 <div id="adminGate">
   <div class="gate-box glass-panel">
     <h2>Admin Access</h2>
-    <p>Fingerprint preferred. Or enter admin code.<br>Default first-time code: <b>adminysdg</b></p>
-    <button class="btn" id="gateFpBtn" type="button" style="background:var(--accent);color:#000;">USE FINGERPRINT</button>
+    <p>Use fingerprint or face first when enrolled. Code is fallback only (not shown).</p>
+    <button class="btn" id="gateFpBtn" type="button" style="background:var(--accent);color:#000;">FINGERPRINT</button>
+    <button class="btn" id="gateFaceBtn" type="button" style="margin-top:8px;background:rgba(0,150,255,0.25);color:var(--text-main);">FACE UNLOCK</button>
     <div style="margin:14px 0 8px;font-size:11px;font-weight:800;color:var(--text-dim);">OR CODE</div>
     <input type="password" id="gateCodeInput" placeholder="Admin code" autocomplete="off">
     <button class="btn" id="gateCodeBtn" type="button">ENTER WITH CODE</button>
     <div class="gate-status" id="gateStatus"></div>
+    <video id="gateFaceVideo" playsinline muted style="display:none;width:100%;max-height:180px;border-radius:14px;margin-top:12px;background:#000;"></video>
   </div>
 </div>
 
@@ -603,19 +605,27 @@
         <div id="security" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="color:var(--accent);">Admin Security</h2>
-                <p>Fingerprint is preferred (device-bound, hard to copy). Code is fallback. Managing fingerprints/code requires fingerprint when one is registered.</p>
+                <p>Fingerprint &amp; face IDs are shown here for reference. <b>They cannot be deleted from this panel</b> — only via Firebase. Adding a fingerprint requires an existing fingerprint when one is already enrolled. First face enrollments (up to 2) define real admins. Face unlock needs eyes open and looking at the screen.</p>
 
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Admin code</label>
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Change admin code (fingerprint required if enrolled)</label>
                 <div class="input-group">
-                    <input type="text" id="adminCodeNew" placeholder="New admin code">
+                    <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
                     <button class="btn" onclick="changeAdminCode()">SAVE CODE</button>
                 </div>
 
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin:18px 0 8px;">Fingerprints on this device</label>
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin:18px 0 8px;">Add fingerprint (verify fingerprint first if any exist)</label>
                 <div class="input-group">
                     <button class="btn" style="background:var(--accent);color:#000;" onclick="registerAdminFingerprint()">ADD FINGERPRINT</button>
                 </div>
                 <div id="fpList" class="mk-list" style="margin-top:12px;"></div>
+
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin:18px 0 8px;">Enroll admin face (look at camera, eyes open)</label>
+                <div class="input-group">
+                    <button class="btn" style="background:rgba(0,150,255,0.35);color:#fff;" onclick="enrollAdminFace()">ENROLL FACE</button>
+                </div>
+                <video id="secFaceVideo" playsinline muted style="display:none;width:min(320px,100%);border-radius:14px;background:#000;margin-top:8px;"></video>
+                <canvas id="secFaceCanvas" style="display:none;"></canvas>
+                <div id="faceList" class="mk-list" style="margin-top:12px;"></div>
                 <p id="secStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:10px;"></p>
             </div>
         </div>
@@ -884,9 +894,11 @@
 const db = getDatabase(app);
 
     // ========== ADMIN GATE (fingerprint + code) ==========
-    const DEFAULT_ADMIN_CODE = 'adminysdg';
+
+    const DEFAULT_ADMIN_CODE = 'adminysdg'; // never shown in UI
     const FP_STORE_KEY = 'dgxen_admin_fp_ids_v1';
     let adminUnlocked = sessionStorage.getItem('dgxen_admin_unlocked') === '1';
+    let faceModelsReady = false;
 
     function getLocalFpIds() {
         try { return JSON.parse(localStorage.getItem(FP_STORE_KEY) || '[]'); } catch(e) { return []; }
@@ -927,16 +939,28 @@ const db = getDatabase(app);
         sessionStorage.setItem('dgxen_admin_unlocked', '1');
         const g = document.getElementById('adminGate');
         if (g) g.classList.add('hidden');
+        stopGateCamera();
+        renderFpList();
+        renderFaceList();
+    }
+
+    function stopGateCamera() {
+        const v = document.getElementById('gateFaceVideo');
+        if (v && v.srcObject) {
+            v.srcObject.getTracks().forEach(t => t.stop());
+            v.srcObject = null;
+            v.style.display = 'none';
+        }
     }
 
     async function tryFingerprintLogin() {
         const ids = getLocalFpIds();
         if (!ids.length) {
-            setGateStatus('No fingerprint registered on this device. Use code or add one after login.');
+            setGateStatus('No fingerprint on this device yet. Use code or enroll after first login.');
             return;
         }
         if (!window.PublicKeyCredential) {
-            setGateStatus('Fingerprint not supported in this browser.');
+            setGateStatus('Fingerprint not supported here.');
             return;
         }
         try {
@@ -966,9 +990,110 @@ const db = getDatabase(app);
         else setGateStatus('Wrong code.');
     }
 
+    // --- Face helpers (browser FaceDetector + simple embedding fallback) ---
+    async function captureFaceDescriptor(videoEl) {
+        if (!videoEl || videoEl.readyState < 2) throw new Error('Camera not ready');
+        const w = videoEl.videoWidth, h = videoEl.videoHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0);
+        // Prefer native FaceDetector when available
+        if (window.FaceDetector) {
+            try {
+                const fd = new FaceDetector({ fastMode: false, maxDetectedFaces: 1 });
+                const faces = await fd.detect(canvas);
+                if (!faces || !faces.length) throw new Error('No face detected — look at the screen');
+                const box = faces[0].boundingBox;
+                // Face should be reasonably centered and large (looking at screen)
+                const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+                if (box.width < w * 0.18 || box.height < h * 0.18) throw new Error('Move closer to the camera');
+                if (Math.abs(cx - w / 2) > w * 0.28 || Math.abs(cy - h / 2) > h * 0.28) throw new Error('Center your face on screen');
+                // Sample embedding from face region
+                const sx = Math.max(0, box.x|0), sy = Math.max(0, box.y|0);
+                const sw = Math.min(w - sx, box.width|0), sh = Math.min(h - sy, box.height|0);
+                const img = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, sh));
+                return embedFromImageData(img);
+            } catch (e) {
+                if (e && e.message && e.message.indexOf('face') !== -1) throw e;
+                // fall through to center crop
+            }
+        }
+        // Fallback: center crop embedding (weaker)
+        const cw = Math.floor(w * 0.4), ch = Math.floor(h * 0.5);
+        const sx = Math.floor((w - cw) / 2), sy = Math.floor((h - ch) / 3);
+        const img = ctx.getImageData(sx, sy, cw, ch);
+        return embedFromImageData(img);
+    }
+
+    function embedFromImageData(img) {
+        const d = img.data;
+        const bins = new Array(64).fill(0);
+        let n = 0;
+        for (let i = 0; i < d.length; i += 16) {
+            const r = d[i], g = d[i+1], b = d[i+2];
+            const lum = (r * 3 + g * 6 + b) / 10;
+            const bi = Math.min(63, Math.floor(lum / 4));
+            bins[bi] += 1;
+            n++;
+        }
+        if (n) for (let i = 0; i < bins.length; i++) bins[i] = +(bins[i] / n).toFixed(6);
+        return bins;
+    }
+
+    function faceDistance(a, b) {
+        if (!a || !b || a.length !== b.length) return 99;
+        let s = 0;
+        for (let i = 0; i < a.length; i++) {
+            const d = a[i] - b[i];
+            s += d * d;
+        }
+        return Math.sqrt(s);
+    }
+
+    async function startCamera(videoId) {
+        const v = document.getElementById(videoId);
+        if (!v) throw new Error('No video element');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        v.srcObject = stream;
+        v.style.display = 'block';
+        await v.play();
+        return v;
+    }
+
+    async function tryFaceLogin() {
+        try {
+            setGateStatus('Look at the camera — eyes open…', true);
+            const v = await startCamera('gateFaceVideo');
+            await new Promise(r => setTimeout(r, 700));
+            const desc = await captureFaceDescriptor(v);
+            const snap = await get(ref(db, 'settings/adminGate/faces'));
+            if (!snap.exists()) {
+                setGateStatus('No admin faces enrolled yet. Login with code first, then enroll face.');
+                stopGateCamera();
+                return;
+            }
+            const faces = snap.val() || {};
+            let best = 99;
+            for (const id in faces) {
+                const f = faces[id];
+                if (!f || !f.descriptor) continue;
+                const dist = faceDistance(desc, f.descriptor);
+                if (dist < best) best = dist;
+            }
+            stopGateCamera();
+            // Threshold tuned for histogram embed
+            if (best < 0.22) unlockAdmin();
+            else setGateStatus('Face not recognized. Try again or use code/fingerprint.');
+        } catch (e) {
+            stopGateCamera();
+            setGateStatus(e.message || 'Face unlock failed.');
+        }
+    }
+
     async function ensureFingerprintIfRequired() {
         const ids = getLocalFpIds();
-        if (!ids.length) return true; // first-time / no fp yet
+        if (!ids.length) return true;
         if (!window.PublicKeyCredential) return false;
         try {
             const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
@@ -988,10 +1113,13 @@ const db = getDatabase(app);
 
     window.registerAdminFingerprint = async function() {
         const st = document.getElementById('secStatus');
-        const ok = await ensureFingerprintIfRequired();
-        if (!ok && getLocalFpIds().length) {
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Fingerprint required to add another.'; }
-            return;
+        const ids = getLocalFpIds();
+        if (ids.length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'Verify fingerprint first to add another.'; }
+                return;
+            }
         }
         if (!window.PublicKeyCredential) {
             if (st) { st.style.color = 'var(--error)'; st.textContent = 'WebAuthn not supported.'; }
@@ -1002,7 +1130,7 @@ const db = getDatabase(app);
             const cred = await navigator.credentials.create({
                 publicKey: {
                     challenge: crypto.getRandomValues(new Uint8Array(32)),
-                    rp: { name: 'DGXEN Admin', id: location.hostname },
+                    rp: { name: 'DGXEN Admin', id: location.hostname || 'localhost' },
                     user: { id: userId, name: 'admin@dgxen', displayName: 'DGXEN Admin' },
                     pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
                     authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
@@ -1014,31 +1142,68 @@ const db = getDatabase(app);
             const list = getLocalFpIds();
             if (!list.includes(id)) list.push(id);
             setLocalFpIds(list);
-            try { await set(ref(db, 'settings/adminGate/fpCount'), list.length); } catch(e) {}
+            try {
+                await set(ref(db, 'settings/adminGate/fingerprints/' + id.replace(/[.#$[\]\/]/g, '_')), {
+                    id, createdAt: Date.now(), device: navigator.userAgent.slice(0, 80)
+                });
+            } catch(e) {}
             renderFpList();
-            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint added on this device.'; }
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint added. IDs cannot be deleted from this panel.'; }
         } catch (e) {
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Could not register fingerprint: ' + (e.message || e); }
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Could not register: ' + (e.message || e); }
         }
     };
 
-    window.deleteAdminFingerprint = async function(id) {
-        const ok = await ensureFingerprintIfRequired();
-        if (!ok) {
-            const st = document.getElementById('secStatus');
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Fingerprint required to delete.'; }
-            return;
+    window.enrollAdminFace = async function() {
+        const st = document.getElementById('secStatus');
+        // If fingerprints exist, require one first
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'Verify fingerprint before enrolling face.'; }
+                return;
+            }
         }
-        setLocalFpIds(getLocalFpIds().filter(x => x !== id));
-        renderFpList();
+        try {
+            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Look at the camera — eyes open, face the screen…'; }
+            const v = await startCamera('secFaceVideo');
+            await new Promise(r => setTimeout(r, 900));
+            const desc = await captureFaceDescriptor(v);
+            if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+            v.style.display = 'none';
+
+            const facesSnap = await get(ref(db, 'settings/adminGate/faces'));
+            const existing = facesSnap.exists() ? facesSnap.val() : {};
+            const count = Object.keys(existing || {}).length;
+            const id = 'face_' + Date.now();
+            await set(ref(db, 'settings/adminGate/faces/' + id), {
+                id,
+                descriptor: desc,
+                createdAt: Date.now(),
+                primary: count < 2 // first two = real admin faces
+            });
+            renderFaceList();
+            if (st) {
+                st.style.color = 'var(--accent)';
+                st.textContent = count < 2
+                    ? 'Primary admin face saved (' + (count + 1) + '/2). Cannot delete from panel — only Firebase.'
+                    : 'Face enrolled. Cannot delete from panel — only Firebase.';
+            }
+        } catch (e) {
+            const v = document.getElementById('secFaceVideo');
+            if (v && v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); v.style.display = 'none'; }
+            if (st) { st.style.color = 'var(--error)'; st.textContent = e.message || 'Face enroll failed'; }
+        }
     };
 
     window.changeAdminCode = async function() {
         const st = document.getElementById('secStatus');
-        const ok = await ensureFingerprintIfRequired();
-        if (!ok && getLocalFpIds().length) {
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Fingerprint required to change code.'; }
-            return;
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'Fingerprint required to change code.'; }
+                return;
+            }
         }
         const neu = (document.getElementById('adminCodeNew').value || '').trim();
         if (!neu || neu.length < 4) {
@@ -1048,7 +1213,7 @@ const db = getDatabase(app);
         try {
             await set(ref(db, 'settings/adminGate/code'), neu);
             document.getElementById('adminCodeNew').value = '';
-            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Admin code updated.'; }
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Admin code updated (not shown on login screen).'; }
         } catch (e) {
             if (st) { st.style.color = 'var(--error)'; st.textContent = 'Save failed: ' + e.message; }
         }
@@ -1058,36 +1223,70 @@ const db = getDatabase(app);
         const box = document.getElementById('fpList');
         if (!box) return;
         const ids = getLocalFpIds();
-        if (!ids.length) {
-            box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">No fingerprints on this device yet.</div>';
-            return;
-        }
-        box.innerHTML = ids.map((id, i) => `
-            <div class="mk-item">
-                <div class="mk-text" style="font-size:13px;">Fingerprint #${i+1} · ${id.slice(0,12)}…</div>
-                <button class="mk-del" title="Delete" onclick="deleteAdminFingerprint('${id.replace(/'/g,"\\'")}')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-            </div>`).join('');
+        // also try firebase list
+        get(ref(db, 'settings/adminGate/fingerprints')).then(snap => {
+            const rows = [];
+            const seen = new Set();
+            ids.forEach((id, i) => {
+                seen.add(id);
+                rows.push(`<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint #${i+1}<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div></div></div>`);
+            });
+            if (snap.exists()) {
+                const data = snap.val();
+                Object.keys(data).forEach(k => {
+                    const id = (data[k] && data[k].id) || k;
+                    if (seen.has(id)) return;
+                    rows.push(`<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint (cloud)<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div></div></div>`);
+                });
+            }
+            box.innerHTML = rows.length ? rows.join('') : '<div style="color:var(--text-dim);padding:12px;">No fingerprints yet.</div>';
+        }).catch(() => {
+            box.innerHTML = ids.length
+                ? ids.map((id, i) => `<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint #${i+1}<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;">${id}</div></div></div>`).join('')
+                : '<div style="color:var(--text-dim);padding:12px;">No fingerprints yet.</div>';
+        });
+    }
+
+    function renderFaceList() {
+        const box = document.getElementById('faceList');
+        if (!box) return;
+        get(ref(db, 'settings/adminGate/faces')).then(snap => {
+            if (!snap.exists()) {
+                box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">No faces enrolled.</div>';
+                return;
+            }
+            const data = snap.val();
+            box.innerHTML = Object.keys(data).map(id => {
+                const f = data[id] || {};
+                return `<div class="mk-item"><div style="font-size:13px;font-weight:700;">Face ID ${f.primary ? '(primary admin)' : ''}
+                    <div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div>
+                    <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div>
+                </div></div>`;
+            }).join('');
+        }).catch(() => {
+            box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">Could not load faces.</div>';
+        });
     }
 
     function initAdminGate() {
         const g = document.getElementById('adminGate');
         if (adminUnlocked && g) g.classList.add('hidden');
         const fpBtn = document.getElementById('gateFpBtn');
+        const faceBtn = document.getElementById('gateFaceBtn');
         const codeBtn = document.getElementById('gateCodeBtn');
         const codeIn = document.getElementById('gateCodeInput');
         if (fpBtn) fpBtn.onclick = () => tryFingerprintLogin();
+        if (faceBtn) faceBtn.onclick = () => tryFaceLogin();
         if (codeBtn) codeBtn.onclick = () => tryCodeLogin();
         if (codeIn) codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryCodeLogin(); });
-        // Auto-prompt fingerprint if registered
         if (!adminUnlocked && getLocalFpIds().length) {
             setTimeout(() => tryFingerprintLogin(), 400);
         }
-        setTimeout(renderFpList, 500);
+        setTimeout(() => { renderFpList(); renderFaceList(); }, 600);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdminGate);
     else initAdminGate();
+
 
 
     let currentBanUserId = null;
@@ -2195,9 +2394,15 @@ const db = getDatabase(app);
             showConfirm("Error", "Enter a Device ID.", null);
             return;
         }
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                showConfirm("Fingerprint required", "Verify fingerprint before unbinding a device.", null);
+                return;
+            }
+        }
         try {
             await remove(ref(db, 'users/' + id));
-            // Also clear any key-device tracks that used this id (best-effort)
             showConfirm("Successful", "Device unbound successfully.", null);
             document.getElementById('resetIdInput').value = '';
         } catch (e) {
@@ -2205,17 +2410,33 @@ const db = getDatabase(app);
         }
     }
 
-    window.startFactoryReset = function() {
-        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    window.startFactoryReset = async function() {
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                showConfirm("Fingerprint required", "Verify fingerprint before factory reset.", null);
+                return;
+            }
+        }
+        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database? Admin security IDs will be kept."; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
     }
     function executeResetStep() {
         if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
         else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
     }
     async function wipeEntireDatabase() { 
-        try { 
-            await set(ref(db, '/'), null); 
-            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        try {
+            // Preserve admin security identities (code / faces / fingerprint metadata)
+            let adminGateData = null;
+            try {
+                const ag = await get(ref(db, 'settings/adminGate'));
+                if (ag.exists()) adminGateData = ag.val();
+            } catch (e) {}
+            await set(ref(db, '/'), null);
+            if (adminGateData) {
+                await set(ref(db, 'settings/adminGate'), adminGateData);
+            }
+            showConfirm("Success", "Database wiped. Admin security IDs were kept.", () => location.reload()); 
         } catch (error) { 
             showConfirm("Error", "Error wiping database: " + error.message, null); 
         } 
