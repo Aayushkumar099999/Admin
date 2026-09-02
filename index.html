@@ -1718,16 +1718,31 @@
     });
 
     function resolveAppVersion(user) {
-        if (user.appVersion) return user.appVersion;
-        const id = user.id;
+        if (user && user.appVersion) return user.appVersion;
         const kd = globalKnownDevices || {};
-        if (kd[id] && kd[id].appVersion) return kd[id].appVersion;
         const norm = (s) => String(s || '').trim().toLowerCase();
-        const n = norm(id);
+        const candidates = [
+            user && user.id,
+            user && user.deviceId,
+            user && user.lastDeviceId,
+            user && user.fingerprint,
+            user && user.androidId,
+            user && user.lastLoginDevice
+        ].filter(Boolean).map(norm);
+
+        for (const c of candidates) {
+            // direct key
+            if (kd[c] && kd[c].appVersion) return kd[c].appVersion;
+            // sanitized key
+            const safe = c.replace(/[.#$\[\]\/]/g, '_');
+            if (kd[safe] && kd[safe].appVersion) return kd[safe].appVersion;
+        }
         for (const k in kd) {
             const d = kd[k] || {};
-            if (norm(k) === n || norm(d.id) === n) {
-                if (d.appVersion) return d.appVersion;
+            const kn = norm(k);
+            const did = norm(d.id);
+            if (d.appVersion && candidates.some(c => c === kn || c === did || kn.indexOf(c) !== -1 || c.indexOf(kn) !== -1)) {
+                return d.appVersion;
             }
         }
         return 'unknown';
