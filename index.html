@@ -262,8 +262,9 @@
         .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; }
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
         .mk-text { font-family: monospace; font-size: 17px; color: var(--text-main); font-weight: 800; letter-spacing: 1px; }
-        .mk-usage { background: rgba(0,255,136,0.1); color: var(--accent); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: 15px; border: 1px solid rgba(0,255,136,0.25); }
-        body.max-mode .mk-usage { background: rgba(0,255,213,0.15); color: var(--accent); border-color: rgba(0,255,213,0.4); }
+        .mk-usage { background: rgba(0,150,255,0.12); color: #3da5ff; border: 1px solid rgba(61,165,255,.35); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: 15px; display: inline-flex; align-items: center; gap: 6px; }
+        body.max-mode .mk-usage { background: rgba(0,150,255,0.15); border-color: rgba(61,165,255,.5); }
+        .mk-usage svg { fill: currentColor; }
         .mk-del { background: transparent; border: none; cursor: pointer; opacity: 0.5; color: var(--text-main); padding: 5px;}
         .mk-del:hover { transform: scale(1.3); opacity: 1; color: var(--error); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
 
@@ -1332,7 +1333,7 @@
                             <div>
                                 <span class="mk-text copyable" style="cursor:pointer;" data-copy="${trimmedKey}" title="Click to copy">${trimmedKey}</span>
                                 ${typeBadge}
-                                <span class="mk-usage">Uses: ${usageCount}</span>
+                                <span class="mk-usage"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/></svg> ${usageCount}</span>
                             </div>
                             ${extraInfo}
                         </div>
@@ -1413,7 +1414,7 @@
         showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
             const trimmedKey = String(keyStr).trim();
             let safeKey = trimmedKey;
-            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
+            try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/g, '_'); } catch(e){}
             
             try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
