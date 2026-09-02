@@ -440,10 +440,6 @@
             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
             Share Logs
         </div>
-        <div class="nav-link" onclick="switchTab('update-app', this)" id="nav-update-app">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Update App
-        </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             System Reset
@@ -558,64 +554,6 @@
                 </h2>
                 <p>Shows when a bound key was tried on a second device (sharing detected).</p>
                 <div class="mk-list" id="shareLogsList"></div>
-            </div>
-        </div>
-
-        <div id="update-app" class="tab-section">
-            <div class="section-box glass-panel float-anim">
-                <h2 style="color: var(--accent);">Update App</h2>
-                <p>Release a new version. Users see the dialog immediately on open. Strict = cannot enter app. Later = can skip.</p>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Enable update prompt</label>
-                <div class="input-group" style="margin-bottom:14px;">
-                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;">
-                        <input type="checkbox" id="updEnabled" style="width:20px;height:20px;accent-color:var(--accent);">
-                        Show update dialog to users
-                    </label>
-                </div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Mode</label>
-                <div class="input-group" style="margin-bottom:18px;gap:12px;flex-wrap:wrap;">
-                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;padding:12px 16px;border-radius:14px;background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.35);">
-                        <input type="radio" name="updMode" id="updModeStrict" value="strict" style="accent-color:var(--error);">
-                        Strict (cannot enter app)
-                    </label>
-                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;padding:12px 16px;border-radius:14px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);">
-                        <input type="radio" name="updMode" id="updModeLater" value="later" checked style="accent-color:var(--accent);">
-                        Later (can skip)
-                    </label>
-                </div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">New version name</label>
-                <div class="input-group">
-                    <input type="text" id="updVersion" placeholder="e.g. 2.1.0">
-                </div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">APK download link (host file then paste URL — skip if not ready)</label>
-                <div class="input-group">
-                    <input type="text" id="updApkUrl" placeholder="https://.../DGXEN.apk">
-                </div>
-
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Message for users</label>
-                <div class="input-group" style="flex-direction:column;align-items:stretch;">
-                    <select id="updPreset" style="padding:14px 18px;border-radius:14px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-weight:600;margin-bottom:10px;">
-                        <option value="">— Choose preset —</option>
-                        <option value="A new version is ready with improved stability and smoother performance. Please update.">Improved stability</option>
-                        <option value="We added new features and polished the experience. Update to try them.">New features</option>
-                        <option value="Bug fixes and performance improvements are included in this update. Recommended for everyone.">Bug fixes & performance</option>
-                        <option value="Important security and reliability improvements. Please update as soon as possible.">Security & reliability</option>
-                        <option value="This update improves login, keys, and overall app stability. Please update now.">Login & keys improvements</option>
-                        <option value="Fresh update with optimizations and a better overall experience. Update when you can.">General improvements</option>
-                        <option value="New version will come soon. Stay tuned!">Coming soon (no APK yet)</option>
-                    </select>
-                    <textarea id="updMessage" rows="4" placeholder="Write a custom message for users..." style="width:100%;padding:16px 18px;border-radius:16px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-size:15px;font-weight:600;resize:vertical;font-family:inherit;"></textarea>
-                </div>
-
-                <div class="input-group" style="margin-top:10px;">
-                    <button class="btn" style="background:var(--accent);color:#000;" onclick="saveAppUpdate()">SAVE UPDATE</button>
-                    <button class="btn" style="background:rgba(150,150,150,0.2);color:var(--text-main);" onclick="clearAppUpdate()">CLEAR / DISABLE</button>
-                </div>
-                <p id="updStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:8px;"></p>
             </div>
         </div>
 
@@ -1768,10 +1706,32 @@
         });
     }
 
+    let globalKnownDevices = {};
+    onValue(ref(db, 'settings/knownDevices'), (snap) => {
+        globalKnownDevices = snap.exists() ? (snap.val() || {}) : {};
+        if (globalUsersSnap) renderUsersUI(globalUsersSnap);
+    });
+
     onValue(ref(db, 'users'), (snapshot) => {
         globalUsersSnap = snapshot;
         renderUsersUI(snapshot);
     });
+
+    function resolveAppVersion(user) {
+        if (user.appVersion) return user.appVersion;
+        const id = user.id;
+        const kd = globalKnownDevices || {};
+        if (kd[id] && kd[id].appVersion) return kd[id].appVersion;
+        const norm = (s) => String(s || '').trim().toLowerCase();
+        const n = norm(id);
+        for (const k in kd) {
+            const d = kd[k] || {};
+            if (norm(k) === n || norm(d.id) === n) {
+                if (d.appVersion) return d.appVersion;
+            }
+        }
+        return 'unknown';
+    }
 
     function renderUsersUI(snapshot) {
         const activeListDiv = document.getElementById('activeUserList');
@@ -1813,7 +1773,6 @@
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
-                        <div style="font-size:12px;font-weight:800;color:var(--text-dim);margin:-12px 0 14px;">App version: ${user.appVersion || 'unknown'}</div>
                         ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
@@ -1824,7 +1783,7 @@
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
-                        <div style="font-size:12px;font-weight:800;color:var(--accent);margin:-18px 0 18px;padding:8px 12px;border-radius:10px;background:rgba(0,255,136,0.08);">App version: ${user.appVersion || 'unknown'}</div>
+                        <div class="copyable" style="font-size:12px;font-weight:800;color:var(--accent);margin:-12px 0 16px;padding:8px 12px;border-radius:10px;background:rgba(0,255,136,0.1);cursor:pointer;" title="Click to copy version" data-copy="${resolveAppVersion(user)}">App version: ${resolveAppVersion(user)}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
@@ -1887,89 +1846,6 @@
         });
     }
     
-
-    // ========== APP UPDATE ==========
-    const UPD_PRESETS = {
-        '': ''
-    };
-    document.getElementById('updPreset')?.addEventListener('change', function() {
-        if (this.value) document.getElementById('updMessage').value = this.value;
-    });
-
-    function loadAppUpdateUI() {
-        get(ref(db, 'settings/appUpdate')).then(snap => {
-            if (!snap.exists()) return;
-            const d = snap.val() || {};
-            const en = document.getElementById('updEnabled');
-            const ver = document.getElementById('updVersion');
-            const url = document.getElementById('updApkUrl');
-            const msg = document.getElementById('updMessage');
-            if (en) en.checked = !!d.enabled;
-            if (ver) ver.value = d.version || '';
-            if (url) url.value = d.apkUrl || '';
-            if (msg) msg.value = d.message || '';
-            const mode = (d.mode === 'strict') ? 'strict' : 'later';
-            const rs = document.getElementById('updModeStrict');
-            const rl = document.getElementById('updModeLater');
-            if (rs && rl) {
-                rs.checked = mode === 'strict';
-                rl.checked = mode !== 'strict';
-            }
-        }).catch(() => {});
-    }
-
-    window.saveAppUpdate = async function() {
-        const enabled = !!document.getElementById('updEnabled').checked;
-        const version = document.getElementById('updVersion').value.trim();
-        const apkUrl = document.getElementById('updApkUrl').value.trim();
-        const message = document.getElementById('updMessage').value.trim() || 'A new version is ready with improved stability. Please update.';
-        const mode = (document.getElementById('updModeStrict') && document.getElementById('updModeStrict').checked) ? 'strict' : 'later';
-        if (enabled && !version) {
-            return showConfirm('Error', 'Enter a version name when update prompt is enabled.', null);
-        }
-        try {
-            await set(ref(db, 'settings/appUpdate'), {
-                enabled,
-                version,
-                apkUrl: apkUrl || '',
-                message,
-                mode,
-                updatedAt: Date.now()
-            });
-            const st = document.getElementById('updStatus');
-            if (st) {
-                st.style.color = 'var(--accent)';
-                st.textContent = enabled ? ('Saved · ' + mode.toUpperCase() + ' · version ' + version) : 'Saved. Update prompt is OFF.';
-            }
-            showConfirm('Successful', 'App update settings saved.', null);
-        } catch (e) {
-            showConfirm('Error', 'Save failed: ' + e.message, null);
-        }
-    };
-
-    window.clearAppUpdate = function() {
-        showConfirm('Clear update?', 'Disable update prompt and clear version/message?', async () => {
-            await set(ref(db, 'settings/appUpdate'), {
-                enabled: false,
-                version: '',
-                apkUrl: '',
-                message: '',
-                updatedAt: Date.now()
-            });
-            document.getElementById('updEnabled').checked = false;
-            document.getElementById('updVersion').value = '';
-            document.getElementById('updApkUrl').value = '';
-            document.getElementById('updMessage').value = '';
-            const st = document.getElementById('updStatus');
-            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Update cleared.'; }
-        });
-    };
-
-    // Load when opening tab / on start
-    onValue(ref(db, 'settings/appUpdate'), () => { loadAppUpdateUI(); });
-    setTimeout(loadAppUpdateUI, 800);
-
-
     window.resetDevice = async function() {
         const id = document.getElementById('resetIdInput').value.trim();
         if (!id) {
