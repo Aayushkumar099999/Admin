@@ -922,7 +922,7 @@
                 content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
                 finalName = "Hook.smali";
             } else if (fileId === 'gen_index') {
-                const response = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/index.html');
+                const response = await fetch('https://YourstyleXdg.github.io/DGXEN-KEY/index.html');
                 if (!response.ok) throw new Error("Generator index missing");
                 content = await response.text();
                 finalName = "index.html";
@@ -940,7 +940,7 @@
                     const response = await fetch('./' + fetchName);
                     if (!response.ok) {
                         if (fileId === 'steps') {
-                             const res2 = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/steps.html');
+                             const res2 = await fetch('https://YourstyleXdg.github.io/DGXEN-KEY/steps.html');
                              if(!res2.ok) throw new Error("File missing");
                              content = await res2.text();
                              finalName = fetchName;
@@ -1587,7 +1587,7 @@
         showConfirm("Ban Key?", `Ban the key "${keyStr}"? It will appear in Banned Normal Keys and stop working for everyone.`, async () => {
             try {
                 await set(ref(db, 'settings/bannedKeys/' + keyStr), {
-                    reason: 'Key was shared / used on another device',
+                    reason: 'Ban: generate a new key to continue.',
                     bannedAt: new Date().toISOString()
                 });
                 // Clear the key from any user record
@@ -1835,7 +1835,7 @@
         showConfirm("Ban Key?", `Ban the key belonging to this user?\n${keyStr}`, async () => {
             try {
                 await set(ref(db, 'settings/bannedKeys/' + keyStr), {
-                    reason: 'Banned from Active Users',
+                    reason: 'Ban: generate a new key to continue.',
                     bannedAt: new Date().toISOString()
                 });
                 // Clear the key from the user so it is no longer live
@@ -1849,7 +1849,7 @@
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
     window.confirmBan = async function() { 
-        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Ban: generate a new key to continue."; 
         closeModals(); 
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
