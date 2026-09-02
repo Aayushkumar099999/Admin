@@ -564,34 +564,48 @@
         <div id="update-app" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="color: var(--accent);">Update App</h2>
-                <p>Set the latest APK version. Users will see an update dialog on login when their app version is older.</p>
+                <p>Release a new version. Users see the dialog immediately on open. Strict = cannot enter app. Later = can skip.</p>
 
                 <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Enable update prompt</label>
-                <div class="input-group" style="margin-bottom:18px;">
+                <div class="input-group" style="margin-bottom:14px;">
                     <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;">
                         <input type="checkbox" id="updEnabled" style="width:20px;height:20px;accent-color:var(--accent);">
                         Show update dialog to users
                     </label>
                 </div>
 
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">New version name</label>
-                <div class="input-group">
-                    <input type="text" id="updVersion" placeholder="e.g. 2.1.0 or v2.1">
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Mode</label>
+                <div class="input-group" style="margin-bottom:18px;gap:12px;flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;padding:12px 16px;border-radius:14px;background:rgba(255,59,48,0.12);border:1px solid rgba(255,59,48,0.35);">
+                        <input type="radio" name="updMode" id="updModeStrict" value="strict" style="accent-color:var(--error);">
+                        Strict (cannot enter app)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;padding:12px 16px;border-radius:14px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);">
+                        <input type="radio" name="updMode" id="updModeLater" value="later" checked style="accent-color:var(--accent);">
+                        Later (can skip)
+                    </label>
                 </div>
 
-                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">APK download link (optional — skip if not ready)</label>
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">New version name</label>
                 <div class="input-group">
-                    <input type="text" id="updApkUrl" placeholder="https://.../app-release.apk (leave empty if not uploaded)">
+                    <input type="text" id="updVersion" placeholder="e.g. 2.1.0">
+                </div>
+
+                <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">APK download link (host file then paste URL — skip if not ready)</label>
+                <div class="input-group">
+                    <input type="text" id="updApkUrl" placeholder="https://.../DGXEN.apk">
                 </div>
 
                 <label style="display:block;font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:8px;">Message for users</label>
                 <div class="input-group" style="flex-direction:column;align-items:stretch;">
                     <select id="updPreset" style="padding:14px 18px;border-radius:14px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-weight:600;margin-bottom:10px;">
                         <option value="">— Choose preset —</option>
-                        <option value="A new version of DGXEN is available. Please update for the best experience.">New version available</option>
-                        <option value="Important security update. Please update your app now.">Security update</option>
-                        <option value="We fixed bugs and improved performance. Update recommended.">Bug fixes & performance</option>
-                        <option value="New features are ready! Update to try them.">New features</option>
+                        <option value="A new version is ready with improved stability and smoother performance. Please update.">Improved stability</option>
+                        <option value="We added new features and polished the experience. Update to try them.">New features</option>
+                        <option value="Bug fixes and performance improvements are included in this update. Recommended for everyone.">Bug fixes & performance</option>
+                        <option value="Important security and reliability improvements. Please update as soon as possible.">Security & reliability</option>
+                        <option value="This update improves login, keys, and overall app stability. Please update now.">Login & keys improvements</option>
+                        <option value="Fresh update with optimizations and a better overall experience. Update when you can.">General improvements</option>
                         <option value="New version will come soon. Stay tuned!">Coming soon (no APK yet)</option>
                     </select>
                     <textarea id="updMessage" rows="4" placeholder="Write a custom message for users..." style="width:100%;padding:16px 18px;border-radius:16px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-size:15px;font-weight:600;resize:vertical;font-family:inherit;"></textarea>
@@ -1799,6 +1813,7 @@
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div style="font-size:12px;font-weight:800;color:var(--text-dim);margin:-12px 0 14px;">App version: ${user.appVersion || 'unknown'}</div>
                         ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
@@ -1809,6 +1824,7 @@
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div style="font-size:12px;font-weight:800;color:var(--accent);margin:-18px 0 18px;padding:8px 12px;border-radius:10px;background:rgba(0,255,136,0.08);">App version: ${user.appVersion || 'unknown'}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
@@ -1892,6 +1908,13 @@
             if (ver) ver.value = d.version || '';
             if (url) url.value = d.apkUrl || '';
             if (msg) msg.value = d.message || '';
+            const mode = (d.mode === 'strict') ? 'strict' : 'later';
+            const rs = document.getElementById('updModeStrict');
+            const rl = document.getElementById('updModeLater');
+            if (rs && rl) {
+                rs.checked = mode === 'strict';
+                rl.checked = mode !== 'strict';
+            }
         }).catch(() => {});
     }
 
@@ -1899,7 +1922,8 @@
         const enabled = !!document.getElementById('updEnabled').checked;
         const version = document.getElementById('updVersion').value.trim();
         const apkUrl = document.getElementById('updApkUrl').value.trim();
-        const message = document.getElementById('updMessage').value.trim() || 'A new version of DGXEN is available.';
+        const message = document.getElementById('updMessage').value.trim() || 'A new version is ready with improved stability. Please update.';
+        const mode = (document.getElementById('updModeStrict') && document.getElementById('updModeStrict').checked) ? 'strict' : 'later';
         if (enabled && !version) {
             return showConfirm('Error', 'Enter a version name when update prompt is enabled.', null);
         }
@@ -1909,12 +1933,13 @@
                 version,
                 apkUrl: apkUrl || '',
                 message,
+                mode,
                 updatedAt: Date.now()
             });
             const st = document.getElementById('updStatus');
             if (st) {
                 st.style.color = 'var(--accent)';
-                st.textContent = enabled ? ('Saved. Users will see update for version: ' + version) : 'Saved. Update prompt is OFF.';
+                st.textContent = enabled ? ('Saved · ' + mode.toUpperCase() + ' · version ' + version) : 'Saved. Update prompt is OFF.';
             }
             showConfirm('Successful', 'App update settings saved.', null);
         } catch (e) {
