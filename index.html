@@ -354,6 +354,14 @@
         .dl-file-row:first-child { border-top: none; }
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
         .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid; text-transform: uppercase; }
+        
+        /* New CSS for the hidden device requests box */
+        .device-id-box { width:220px; height:120px; overflow-y:auto; border-radius:14px; padding:8px; background:rgba(150,150,150,0.05); border: 1px solid var(--glass-border); }
+        .device-id-item { padding:8px; cursor:pointer; font-family: monospace; font-size: 12px; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; word-break: break-all; }
+        .device-id-item:last-child { border-bottom: none; }
+        .device-id-item:hover { background: rgba(150,150,150,0.1); border-radius: 8px; }
+        .device-id-box::-webkit-scrollbar { width: 4px; }
+        .device-id-box::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -463,8 +471,19 @@
 
                 <!-- Extra field (shown only for limited / device) -->
                 <div id="mkExtraWrap" style="display:none;margin-bottom:14px;">
-                    <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
-                    <datalist id="knownDevicesList"></datalist>
+                    <div style="display: flex; gap: 15px; align-items: stretch; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
+                        </div>
+                        
+                        <!-- Device Requests Box (Right side) -->
+                        <div id="deviceRequestsWrapper" style="display: none;">
+                            <div style="font-size:11px;font-weight:800;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;">Recent Device IDs</div>
+                            <div class="device-id-box" id="deviceRequestsBox">
+                                <div style="font-size:11px; color:var(--text-dim); text-align:center; padding:10px;">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -787,20 +806,36 @@
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS ---
-    onValue(ref(db, 'settings/knownDevices'), (snap) => {
-        const dlist = document.getElementById('knownDevicesList');
-        if(!dlist) return;
-        dlist.innerHTML = '';
+    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS FROM DEVICEREQUESTS ---
+    onValue(ref(db, 'deviceRequests'), (snap) => {
+        const box = document.getElementById('deviceRequestsBox');
+        if(!box) return;
+        box.innerHTML = '';
         if(snap.exists()){
-            const devices = snap.val();
-            Object.keys(devices).forEach(devId => {
-                const opt = document.createElement('option');
-                const date = new Date(devices[devId].lastSeen).toLocaleString();
-                opt.value = devId;
-                opt.textContent = `Last seen: ${date}`;
-                dlist.appendChild(opt);
+            const reqs = snap.val();
+            const sorted = Object.values(reqs).sort((a,b) => b.time - a.time);
+            const seen = new Set();
+            
+            sorted.forEach(req => {
+                if (!seen.has(req.deviceId)) {
+                    seen.add(req.deviceId);
+                    const div = document.createElement('div');
+                    div.className = 'device-id-item';
+                    div.textContent = req.deviceId;
+                    div.title = "Requested: " + new Date(req.time).toLocaleString();
+                    div.onclick = () => {
+                        navigator.clipboard.writeText(req.deviceId);
+                        const input = document.getElementById('mkExtraInput');
+                        if(input) input.value = req.deviceId; // Auto-fill the input
+                        const old = div.textContent;
+                        div.textContent = 'Copied!';
+                        setTimeout(() => div.textContent = old, 1000);
+                    };
+                    box.appendChild(div);
+                }
             });
+        } else {
+            box.innerHTML = '<div style="font-size:11px; color:var(--text-dim); text-align:center; padding:20px 10px;">No requests yet</div>';
         }
     });
 
@@ -1221,15 +1256,14 @@
         if (type === 'pure') {
             wrap.style.display = 'none';
             input.value = '';
-            input.removeAttribute('list');
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
             input.type = 'text';
         } else if (type === 'limited') {
             wrap.style.display = 'block';
+            document.getElementById('deviceRequestsWrapper').style.display = 'none';
             input.placeholder = 'Max logins allowed (e.g. 10)';
             input.type = 'number';
-            input.removeAttribute('list');
             input.setAttribute('inputmode', 'numeric');
             input.setAttribute('pattern', '[0-9]*');
             input.setAttribute('min', '1');
@@ -1237,9 +1271,9 @@
             input.focus();
         } else if (type === 'device') {
             wrap.style.display = 'block';
-            input.placeholder = 'Select or type Device ID...';
+            document.getElementById('deviceRequestsWrapper').style.display = 'block';
+            input.placeholder = 'Paste Device ID (e.g. dev_...)';
             input.type = 'text';
-            input.setAttribute('list', 'knownDevicesList');
             input.removeAttribute('inputmode');
             input.removeAttribute('pattern');
             input.removeAttribute('min');
