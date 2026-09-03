@@ -428,13 +428,25 @@
   backdrop-filter:blur(40px) saturate(180%);
   -webkit-backdrop-filter:blur(40px) saturate(180%);
 }
-#securityPanel.open{display:block;animation:secPanelIn .35s cubic-bezier(.16,1,.3,1) forwards;}
-@keyframes secPanelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+#securityPanel.open{display:block;animation:secPanelIn .4s cubic-bezier(.16,1,.3,1) forwards;}
+#securityPanel.closing{display:block;animation:secPanelOut .4s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes secPanelIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes secPanelOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(48px)}}
 #securityPanelBackdrop{
   position:fixed;inset:0;z-index:119;display:none;
   background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
+  transition:opacity .35s ease;
 }
-#securityPanelBackdrop.open{display:block;}
+#securityPanelBackdrop.open{display:block;opacity:1;}
+#securityPanelBackdrop.closing{display:block;opacity:0;}
+#secCodeHoldBox{display:none;margin:10px 0 14px;padding:12px;border-radius:14px;border:1px dashed var(--glass-border);background:rgba(150,150,150,0.06);}
+#secCodeHoldBox.show{display:block;animation:slideUpFade .3s ease;}
+.sec-log-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 0;margin-top:16px;border-top:1px solid var(--glass-border);}
+.sec-log-header span{font-size:13px;font-weight:800;color:var(--text-dim);}
+.sec-log-arrow{transition:transform .25s;color:var(--text-dim);}
+.sec-log-header.open .sec-log-arrow{transform:rotate(180deg);}
+#adminLoginLogBody{display:none;max-height:220px;overflow:auto;margin-top:8px;}
+#adminLoginLogBody.open{display:block;}
 .sec-panel-close{
   position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;
   border:1px solid var(--glass-border);background:rgba(150,150,150,0.12);
@@ -674,25 +686,42 @@
 <div id="securityPanel" class="glass-panel">
   <button type="button" class="sec-panel-close" onclick="toggleSecurityPanel(false)" aria-label="Close">×</button>
   <h2 style="color:var(--accent);font-size:26px;margin:0 0 10px;font-weight:900;">Admin Security</h2>
-  <p style="font-size:14px;color:var(--text-dim);margin:0 0 22px;line-height:1.55;">IDs are view-only here. Delete only via Firebase. Face enroll: look straight at screen 1 second, eyes open, no side face.</p>
-  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
-  <div class="input-group" style="margin-bottom:14px;">
-    <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
-    <button class="btn" onclick="changeAdminCode()">SAVE</button>
-  </div>
+  <p style="font-size:14px;color:var(--text-dim);margin:0 0 22px;line-height:1.55;">Tap ADD / ENROLL = fingerprint check first. <b>Hold 10s</b> on those buttons to reveal code change box. IDs are view-only (delete only in Firebase).</p>
+
   <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
-  <div class="input-group" style="margin-bottom:10px;">
-    <button class="btn" style="background:var(--accent);color:#000;" onclick="registerAdminFingerprint()">ADD FINGERPRINT</button>
+  <div class="input-group" style="margin-bottom:10px;flex-wrap:wrap;">
+    <button class="btn" id="btnAddFp" type="button" style="background:var(--accent);color:#000;">ADD FINGERPRINT</button>
   </div>
   <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
+
   <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin:14px 0 6px;">Face (1s look ahead)</label>
-  <div class="input-group" style="margin-bottom:10px;">
-    <button class="btn" style="background:rgba(0,150,255,0.35);color:#fff;" onclick="enrollAdminFace()">ENROLL FACE</button>
+  <div class="input-group" style="margin-bottom:10px;flex-wrap:wrap;">
+    <button class="btn" id="btnEnrollFace" type="button" style="background:rgba(0,150,255,0.35);color:#fff;">ENROLL FACE</button>
   </div>
   <video id="secFaceVideo" playsinline muted style="display:none;width:100%;border-radius:14px;background:#000;margin-top:6px;"></video>
   <canvas id="secFaceCanvas" style="display:none;"></canvas>
   <div id="faceList" class="mk-list" style="margin-top:6px;"></div>
+
+  <!-- Revealed only after 10s hold on ADD FP or ENROLL FACE -->
+  <div id="secCodeHoldBox">
+    <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
+    <div class="input-group" style="margin-bottom:0;">
+      <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
+      <button class="btn" onclick="changeAdminCode()">SAVE</button>
+    </div>
+  </div>
+
   <p id="secStatus" style="font-size:12px;font-weight:700;color:var(--text-dim);margin-top:8px;"></p>
+
+  <!-- Admin login history -->
+  <div class="sec-log-header" id="adminLogToggle" onclick="toggleAdminLoginLog()">
+    <span>Admin login history</span>
+    <svg class="sec-log-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div id="adminLoginLogBody">
+    <div id="adminLoginLogList" class="mk-list"></div>
+    <button class="btn" type="button" style="margin-top:10px;background:var(--error);color:#fff;width:100%;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + FACE + CODE)</button>
+  </div>
 </div>
 
     <button class="info-btn" onclick="openGuideModal()">i</button>
@@ -761,15 +790,18 @@
 
                 <div class="acc-item" id="acc-man-auth">
                     <div class="acc-header" onclick="toggleAccordion('acc-man-auth')">
-                        Admin Login Secret (Code Entry)
+                        Admin Secrets & Security
                         <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> On the Admin Access screen, the code field is <b>hidden</b> by default.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Secret:</b> press and <b>hold the FINGERPRINT button for 10 seconds</b> — the admin code entry will appear.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> A short tap on FINGERPRINT still runs normal fingerprint unlock.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Prefer fingerprint / face when enrolled. Code is only a fallback.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Gate code field is <b>hidden</b>. Hold <b>FINGERPRINT 10s</b> on the login gate to reveal code entry.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Inside Security: short tap ADD FINGERPRINT / ENROLL FACE = must pass fingerprint first (if any exist).</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Secret:</b> hold ADD FINGERPRINT or ENROLL FACE for <b>10 seconds</b> → code change box appears beside those actions.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Face enroll needs 1s straight look, eyes open, no side face.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> FP / Face IDs are view-only in panel — delete only via Firebase.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Admin login history is listed in Security. Clearing it needs <b>FP + Face + Code</b>.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unbind / Factory reset ask for fingerprint when enrolled. Factory reset keeps adminGate data.</li>
                         </ul>
                     </div>
                 </div>
@@ -792,14 +824,17 @@
 
                 <div class="acc-item" id="acc-man-3">
                     <div class="acc-header" onclick="toggleAccordion('acc-man-3')">
-                        Master Keys Behaviour
+                        Master Keys & Types
                         <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
                     <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> First device binds the master key and increments usage once.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can reuse the master key without extra count.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Deleting a master key in admin also wipes its usage and device tracking.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Unlimited</b> — pure master key, usage tracked once per new device path.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Limited Uses</b> — set max logins; each login counts (same or different user) until limit, then blocked until admin removes key.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Device Locked</b> — only works on the assigned device ID.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Time Limited</b> — works until expiry date/time; unlimited logins inside the window.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Device + Time</b> — device locked and expires at set date/time.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Deleting a master key wipes usage + device tracking for that key.</li>
                         </ul>
                     </div>
                 </div>
@@ -814,6 +849,21 @@
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Active Users</b> = currently have a live (non-expired) key. Live countdown is shown on the right.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Registered Users</b> = all non-banned devices that ever registered.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click any name / ID / key to copy it instantly.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-ban">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-ban')">
+                        Banning Types
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>BAN KEY</b> (Active / Logs / Ban Key section) — only the key is blacklisted; user can generate a new key.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>BAN DEVICE</b> (Registered Users) — whole device/account banned; shows reason on login/key generator.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Banned keys appear under Banned Normal Keys; unban from there or Logs.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> You can set a custom reason; default is “Ban: generate a new key to continue.”</li>
                         </ul>
                     </div>
                 </div>
@@ -894,6 +944,23 @@
                             <span class="dl-file-name">Hook.smali (Invoke Trigger)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('hook_smali', this)">DL</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Category 4: Tools / Backup -->
+                <div class="acc-item" id="acc-tools">
+                    <div class="acc-header" onclick="toggleAccordion('acc-tools')">
+                        Tools (Backup)
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Upload a backup file to cloud (Firebase). Download anytime. Storage usage shown below.</p>
+                        <div class="input-group" style="margin-bottom:12px;">
+                            <input type="file" id="backupFileInput" style="flex:1;padding:12px;font-size:13px;">
+                            <button class="btn" type="button" onclick="uploadAdminBackup()">UPLOAD</button>
+                        </div>
+                        <div id="cloudStorageInfo" style="font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:10px;">Cloud storage: calculating…</div>
+                        <div id="backupFilesList" class="mk-list"></div>
                     </div>
                 </div>
 
@@ -990,15 +1057,121 @@ const db = getDatabase(app);
         el.textContent = msg || '';
     }
 
-    function unlockAdmin() {
+        function unlockAdmin(method) {
         adminUnlocked = true;
         sessionStorage.setItem('dgxen_admin_unlocked', '1');
         const g = document.getElementById('adminGate');
         if (g) g.classList.add('hidden');
         stopGateCamera();
+        try { logAdminLogin(method || 'unknown'); } catch(e) {}
         renderFpList();
         renderFaceList();
+        renderAdminLoginLog();
     }
+
+    async function logAdminLogin(method) {
+        try {
+            const entry = {
+                at: Date.now(),
+                method: method || 'unknown',
+                ua: (navigator.userAgent || '').slice(0, 100)
+            };
+            await push(ref(db, 'settings/adminGate/loginHistory'), entry);
+        } catch (e) { console.warn('login log', e); }
+    }
+
+    window.toggleAdminLoginLog = function() {
+        const body = document.getElementById('adminLoginLogBody');
+        const hdr = document.getElementById('adminLogToggle');
+        if (!body) return;
+        const open = body.classList.toggle('open');
+        if (hdr) hdr.classList.toggle('open', open);
+        if (open) renderAdminLoginLog();
+    };
+
+    async function renderAdminLoginLog() {
+        const list = document.getElementById('adminLoginLogList');
+        if (!list) return;
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/loginHistory'));
+            if (!snap.exists()) {
+                list.innerHTML = '<div style="color:var(--text-dim);padding:10px;font-size:13px;">No login history yet.</div>';
+                return;
+            }
+            const data = snap.val();
+            const rows = Object.keys(data).map(k => ({ id: k, ...data[k] }))
+                .sort((a,b) => (b.at||0) - (a.at||0)).slice(0, 50);
+            list.innerHTML = rows.map(r => {
+                const when = r.at ? new Date(r.at).toLocaleString() : '—';
+                return `<div class="mk-item"><div style="font-size:13px;font-weight:700;">${r.method || 'login'}
+                    <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">${when}</div>
+                </div></div>`;
+            }).join('');
+        } catch (e) {
+            list.innerHTML = '<div style="color:var(--error);padding:10px;">Could not load history.</div>';
+        }
+    }
+
+    window.clearAdminLoginHistory = async function() {
+        const st = document.getElementById('secStatus');
+        // 1) Fingerprint
+        if (getLocalFpIds().length) {
+            const okFp = await ensureFingerprintIfRequired();
+            if (!okFp) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'Fingerprint required (1/3).'; }
+                return;
+            }
+        } else {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Enroll fingerprint first to clear history.'; }
+            return;
+        }
+        // 2) Face
+        try {
+            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Face check (2/3) — look at camera 1s…'; }
+            const v = await startCamera('secFaceVideo');
+            await new Promise(r => setTimeout(r, 400));
+            const desc = await captureFaceDescriptor(v);
+            if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+            v.style.display = 'none';
+            const facesSnap = await get(ref(db, 'settings/adminGate/faces'));
+            if (!facesSnap.exists()) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'No face enrolled — enroll face first.'; }
+                return;
+            }
+            const faces = facesSnap.val() || {};
+            let best = 99;
+            for (const id in faces) {
+                const f = faces[id];
+                if (f && f.descriptor) best = Math.min(best, faceDistance(desc, f.descriptor));
+            }
+            if (best >= 0.22) {
+                if (st) { st.style.color = 'var(--error)'; st.textContent = 'Face not recognized (2/3 failed).'; }
+                return;
+            }
+        } catch (e) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = e.message || 'Face check failed.'; }
+            return;
+        }
+        // 3) Code
+        const code = prompt('Enter admin code (3/3) to clear login history:');
+        if (!code) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Code cancelled.'; }
+            return;
+        }
+        const real = await getAdminCodeFromDb();
+        if (code.trim() !== real) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Wrong code (3/3 failed).'; }
+            return;
+        }
+        try {
+            await set(ref(db, 'settings/adminGate/loginHistory'), null);
+            renderAdminLoginLog();
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Login history cleared.'; }
+        } catch (e) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Clear failed: ' + e.message; }
+        }
+    };
+
 
     function stopGateCamera() {
         const v = document.getElementById('gateFaceVideo');
@@ -1030,7 +1203,7 @@ const db = getDatabase(app);
                     allowCredentials: allow
                 }
             });
-            if (assertion) unlockAdmin();
+            if (assertion) unlockAdmin('fingerprint');
             else setGateStatus('Fingerprint failed.');
         } catch (e) {
             setGateStatus('Fingerprint cancelled or failed.');
@@ -1042,7 +1215,7 @@ const db = getDatabase(app);
         const code = (input && input.value || '').trim();
         if (!code) return setGateStatus('Enter admin code.');
         const real = await getAdminCodeFromDb();
-        if (code === real) unlockAdmin();
+        if (code === real) unlockAdmin('code');
         else setGateStatus('Wrong code.');
     }
 
@@ -1170,7 +1343,7 @@ const db = getDatabase(app);
             }
             stopGateCamera();
             // Threshold tuned for histogram embed
-            if (best < 0.22) unlockAdmin();
+            if (best < 0.22) unlockAdmin('face');
             else setGateStatus('Face not recognized. Try again or use code/fingerprint.');
         } catch (e) {
             stopGateCamera();
@@ -1359,14 +1532,57 @@ const db = getDatabase(app);
         const p = document.getElementById('securityPanel');
         const bd = document.getElementById('securityPanelBackdrop');
         if (!p) return;
+        const isOpen = p.classList.contains('open');
         let open;
         if (force === false) open = false;
         else if (force === true) open = true;
-        else open = !p.classList.contains('open');
-        p.classList.toggle('open', open);
-        if (bd) bd.classList.toggle('open', open);
-        if (open) { renderFpList(); renderFaceList(); }
+        else open = !isOpen;
+
+        if (open) {
+            p.classList.remove('closing');
+            if (bd) { bd.classList.remove('closing'); bd.classList.add('open'); }
+            p.classList.add('open');
+            renderFpList(); renderFaceList(); renderAdminLoginLog();
+            setupSecHoldButtons();
+        } else if (isOpen) {
+            p.classList.add('closing');
+            p.classList.remove('open');
+            if (bd) { bd.classList.add('closing'); }
+            setTimeout(() => {
+                p.classList.remove('closing');
+                if (bd) { bd.classList.remove('open', 'closing'); }
+            }, 400);
+        }
     };
+
+    function setupSecHoldButtons() {
+        const bindHold = (btn, onTap) => {
+            if (!btn || btn.dataset.holdBound === '1') return;
+            btn.dataset.holdBound = '1';
+            let holdTimer = null, holdFired = false;
+            const clear = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
+            btn.addEventListener('pointerdown', () => {
+                holdFired = false;
+                clear();
+                holdTimer = setTimeout(() => {
+                    holdFired = true;
+                    const box = document.getElementById('secCodeHoldBox');
+                    if (box) box.classList.add('show');
+                    const st = document.getElementById('secStatus');
+                    if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Code change unlocked (10s hold).'; }
+                }, 10000);
+            });
+            btn.addEventListener('pointerup', () => {
+                clear();
+                if (!holdFired && onTap) onTap();
+            });
+            btn.addEventListener('pointerleave', clear);
+            btn.addEventListener('pointercancel', clear);
+            btn.addEventListener('contextmenu', e => e.preventDefault());
+        };
+        bindHold(document.getElementById('btnAddFp'), () => registerAdminFingerprint());
+        bindHold(document.getElementById('btnEnrollFace'), () => enrollAdminFace());
+    }
 
     function initAdminGate() {
         const g = document.getElementById('adminGate');
