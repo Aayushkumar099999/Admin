@@ -2503,7 +2503,7 @@ const db = getDatabase(app);
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
     window.confirmBan = async function() { 
-        const reason = document.getElementById('banReasonInput').value.trim() || "Ban: generate a new key to continue."; 
+        const reason = document.getElementById('banReasonInput').value.trim() || "Ban: violations of terms."; 
         closeModals(); 
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
