@@ -152,8 +152,8 @@
             background: var(--glass-bg);
             backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
             border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine);
-            box-shadow: 0 20px 50px var(--shadow-color), inset 0 1px 2px rgba(255,255,255,0.1);
-            border-radius: 28px;
+            box-shadow: 0 16px 40px var(--shadow-color), inset 0 1px 2px rgba(255,255,255,0.1);
+            border-radius: 20px;
         }
         
         body.light-mode .glass-panel { 
@@ -214,7 +214,7 @@
         @keyframes spinIcon { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- Sidebar & Main Content --- */
-        .sidebar { width: 280px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 40px 20px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar { width: 260px; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); border-right: 1px solid var(--glass-border); padding: 32px 16px; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
         .sidebar h1 { color: var(--text-main); font-size: 26px; letter-spacing: 2px; font-weight: 900; margin-bottom: 50px; text-align: center; position: relative; }
         .sidebar h1::after { content: ''; position: absolute; width: 40px; height: 4px; background: var(--accent); bottom: -15px; left: 50%; transform: translateX(-50%); border-radius: 4px; box-shadow: 0 0 10px var(--accent-glow); }
         .nav-link { padding: 14px 20px; color: var(--text-dim); text-decoration: none; border-radius: 16px; margin-bottom: 12px; cursor: pointer; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 12px; border: 1px solid transparent; }
@@ -223,52 +223,71 @@
         .nav-link.active { background: rgba(0, 255, 136, 0.1); color: var(--accent); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.05); }
         body.max-mode .nav-link.active { background: rgba(0, 255, 213, 0.15); border-color: rgba(0, 255, 213, 0.4); box-shadow: inset 0 0 20px rgba(0, 255, 213, 0.1), 0 0 20px rgba(0,255,213,0.1); }
 
-        .main-content { margin-left: 280px; padding: 100px 50px 50px; flex: 1; max-width: 1400px; position: relative; z-index: 5; }
+        .main-content { margin-left: 260px; padding: 90px 36px 40px; flex: 1; max-width: none; width: calc(100% - 260px); position: relative; z-index: 5; }
         .tab-section { display: none; animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
         .tab-section.active { display: block; }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
 
         /* --- Dashboard Stats --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; margin-bottom: 45px; }
-        .stat-card { padding: 35px 25px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 32px; }
+        .stat-card { padding: 22px 18px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
         .stat-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 40px 70px var(--shadow-color); border-color: var(--accent); }
         .stat-card h3 { color: var(--text-dim); font-size: 12px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; pointer-events: none; }
-        .stat-card .val { font-size: 46px; font-weight: 900; color: var(--text-main); line-height: 1; pointer-events: none; }
+        .stat-card .val { font-size: 36px; font-weight: 900; color: var(--text-main); line-height: 1; pointer-events: none; }
         .stat-card .val.green { color: var(--accent); text-shadow: 0 0 25px var(--accent-glow); }
         .stat-card .val.red { color: var(--error); text-shadow: 0 0 25px rgba(255,59,48,0.4); }
 
         /* --- Sections, Cards & Inputs --- */
-        .section-box { padding: 40px; margin-bottom: 40px; }
-        .section-box h2 { font-size: 24px; margin-bottom: 15px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; justify-content: space-between; position: relative;}
+        .section-box { padding: 28px 24px; margin-bottom: 28px; }
+        .section-box h2 { font-size: 20px; margin-bottom: 12px; color: var(--text-main); font-weight: 800; display: flex; align-items: center; justify-content: space-between; position: relative;}
         .section-box p { color: var(--text-dim); line-height: 1.6; margin-bottom: 25px; font-size: 15px; font-weight: 500; }
-        .input-group { display: flex; gap: 15px; margin-bottom: 25px; align-items: center; }
+        .input-group { display: flex; gap: 12px; margin-bottom: 18px; align-items: center; }
         
         input[type="text"], input[type="number"] { 
-            flex: 1; padding: 18px 24px; background: var(--input-bg); border: 1px solid var(--glass-border); 
-            color: var(--text-main); border-radius: 18px; outline: none; font-family: monospace; font-size: 16px; font-weight: 600;
+            flex: 1; padding: 14px 18px; background: var(--input-bg); border: 1px solid var(--glass-border); 
+            color: var(--text-main); border-radius: 14px; outline: none; font-family: monospace; font-size: 15px; font-weight: 600;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); pointer-events: auto !important;
             -webkit-user-select: auto !important; -moz-user-select: auto !important; user-select: auto !important; -webkit-touch-callout: default !important;
         }
         input[type="text"]:focus, input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow), inset 0 2px 5px rgba(0,0,0,0.1); }
         
         .btn { 
-            padding: 18px 36px; background: var(--text-main); color: var(--bg-color); font-weight: 800; font-size: 14px;
-            border: none; border-radius: 18px; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.15); letter-spacing: 0.8px; white-space: nowrap;
+            padding: 14px 26px; background: var(--text-main); color: var(--bg-color); font-weight: 800; font-size: 13px;
+            border: none; border-radius: 14px; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.15); letter-spacing: 0.8px; white-space: nowrap;
         }
         .btn:hover { background: var(--accent); color: #000; box-shadow: 0 15px 35px var(--accent-glow); transform: translateY(-4px) scale(1.02); }
         .btn:active { transform: translateY(1px) scale(0.97); }
 
         .mk-list { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
-        .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 20px 25px; border-radius: 20px; }
+        .mk-item { display: flex; justify-content: space-between; align-items: center; background: rgba(150,150,150,0.05); border: 1px solid var(--glass-border); padding: 14px 16px; border-radius: 14px; }
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
-        .mk-text { font-family: monospace; font-size: 17px; color: var(--text-main); font-weight: 800; letter-spacing: 1px; }
-        .mk-usage { background: rgba(0,255,136,0.1); color: var(--accent); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: 15px; border: 1px solid rgba(0,255,136,0.25); }
-        body.max-mode .mk-usage { background: rgba(0,255,213,0.15); color: var(--accent); border-color: rgba(0,255,213,0.4); }
+        .mk-text { font-family: monospace; font-size: 14px; color: var(--text-main); font-weight: 800; letter-spacing: 0.5px; word-break: break-all; }
+        
+        /* UPDATED USES CSS */
+        .mk-usage { 
+            background: rgba(0,150,255,0.12); 
+            color: #3da5ff; 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 13px; 
+            font-weight: 800; 
+            margin-left: 15px; 
+            border: 1px solid rgba(61,165,255,.35); 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
+        body.max-mode .mk-usage { 
+            background: rgba(0,150,255,0.12); 
+            color: #3da5ff; 
+            border-color: rgba(61,165,255,.35); 
+        }
+
         .mk-del { background: transparent; border: none; cursor: pointer; opacity: 0.5; color: var(--text-main); padding: 5px;}
         .mk-del:hover { transform: scale(1.3); opacity: 1; color: var(--error); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
 
-        .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; }
-        .user-card { padding: 40px 30px 30px; position: relative; display: flex; flex-direction: column; }
+        .user-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .user-card { padding: 24px 18px 18px; position: relative; display: flex; flex-direction: column; }
         .user-card:hover { transform: translateY(-12px) scale(1.02); border-color: rgba(150,150,150,0.4); box-shadow: 0 35px 60px var(--shadow-color); }
         .user-card.banned { border-color: rgba(255, 59, 48, 0.5); background: linear-gradient(135deg, rgba(255, 59, 48, 0.08), transparent); }
         .user-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
@@ -279,7 +298,7 @@
         .trash-btn { position: absolute; top: 15px; right: 15px; padding: 5px; background: transparent; border: none; cursor: pointer; opacity: 0.4; color: var(--text-main); }
         .trash-btn:hover { opacity: 1; transform: scale(1.25) rotate(10deg); color: var(--error); }
         
-        .btn-full { width: 100%; border-radius: 16px; padding: 18px; font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.5px; }
+        .btn-full { width: 100%; border-radius: 12px; padding: 12px; font-weight: 800; cursor: pointer; border: none; letter-spacing: 0.5px; font-size: 13px; }
         .btn-full:active { transform: scale(0.95); }
         .bg-warn { background: rgba(255, 159, 10, 0.1); color: var(--warn); border: 1px solid rgba(255, 159, 10, 0.3); } 
         .bg-warn:hover { background: var(--warn); color: #fff; box-shadow: 0 10px 30px rgba(255, 159, 10, 0.5); transform: translateY(-3px); }
@@ -354,9 +373,96 @@
         .dl-file-row:first-child { border-top: none; }
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
         .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid; text-transform: uppercase; }
-    </style>
+        
+        /* New CSS for the hidden device requests box */
+        .device-id-box { width:220px; height:120px; overflow-y:auto; border-radius:14px; padding:8px; background:rgba(150,150,150,0.05); border: 1px solid var(--glass-border); }
+        .device-id-item { padding:8px; cursor:pointer; font-family: monospace; font-size: 12px; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; word-break: break-all; }
+        .device-id-item:last-child { border-bottom: none; }
+        .device-id-item:hover { background: rgba(150,150,150,0.1); border-radius: 8px; }
+        .device-id-box::-webkit-scrollbar { width: 4px; }
+        .device-id-box::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.3); border-radius: 10px; }
+    
+/* --- Admin Auth Gate --- */
+#adminGate{
+  position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;
+  background:rgba(2,4,6,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  padding:24px;
+}
+#adminGate.hidden{display:none !important;}
+.gate-box{
+  width:min(420px,100%);border-radius:28px;padding:40px 30px;text-align:center;
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+.gate-box h2{margin:0 0 8px;font-size:22px;color:var(--accent);}
+.gate-box p{color:var(--text-dim);font-size:13px;margin:0 0 18px;line-height:1.5;}
+.gate-box input[type=password],.gate-box input[type=text]{
+  width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--glass-border);
+  background:var(--input-bg);color:var(--text-main);font-size:15px;font-weight:700;margin-bottom:12px;outline:none;
+}
+.gate-box .btn{width:100%;margin-top:6px;}
+.gate-status{min-height:18px;font-size:12px;font-weight:700;color:var(--error);margin-top:10px;}
+
+
+/* Security FAB + panel */
+.sec-fab{
+  position:fixed;bottom:35px;left:35px;z-index:100;
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.4);
+  color:var(--accent);cursor:pointer;
+  box-shadow:0 10px 28px rgba(0,255,136,0.2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:transform .25s,background .25s;
+}
+.sec-fab:hover{transform:scale(1.1);background:var(--accent);color:#000;}
+.sec-fab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+#securityPanel{
+  position:fixed;top:0;right:0;bottom:0;z-index:120;
+  width:520px;max-width:100%;
+  overflow:auto;display:none;padding:40px 30px 50px;
+  border-radius:28px 0 0 28px;
+  border-left:1px solid var(--glass-border);
+  box-shadow:-30px 0 80px rgba(0,0,0,0.45);
+  background:var(--glass-bg);
+  backdrop-filter:blur(40px) saturate(180%);
+  -webkit-backdrop-filter:blur(40px) saturate(180%);
+}
+#securityPanel.open{display:block;animation:secPanelIn .4s cubic-bezier(.16,1,.3,1) forwards;}
+#securityPanel.closing{display:block;animation:secPanelOut .4s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes secPanelOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(48px)}}
+@keyframes secPanelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+#securityPanelBackdrop{
+  position:fixed;inset:0;z-index:119;display:none;
+  background:rgba(0,0,0,0.45);backdrop-filter:blur(4px);
+}
+#securityPanelBackdrop.open{display:block;}
+.sec-panel-close{
+  position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--glass-border);background:rgba(150,150,150,0.12);
+  color:var(--text-main);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+#gateCodeWrap{display:none;}
+#gateCodeWrap.show{display:block;}
+
+</style>
 </head>
 <body>
+
+<div id="adminGate">
+  <div class="gate-box glass-panel">
+    <h2>Admin Access</h2>
+    <p>Use fingerprint when enrolled. Hold FINGERPRINT 10s to reveal code entry.</p>
+    <button class="btn" id="gateFpBtn" type="button" style="background:var(--accent);color:#000;">FINGERPRINT</button>
+    <div id="gateCodeWrap">
+      <div style="margin:14px 0 8px;font-size:11px;font-weight:800;color:var(--text-dim);">ADMIN CODE</div>
+      <input type="password" id="gateCodeInput" placeholder="Admin code" autocomplete="off">
+      <button class="btn" id="gateCodeBtn" type="button">ENTER WITH CODE</button>
+    </div>
+    <div class="gate-status" id="gateStatus"></div>
+  </div>
+</div>
+
 
     <!-- MAX MODE FULL SCREEN WATER WAVES -->
     <div class="water-bg">
@@ -397,13 +503,21 @@
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Ban Keys
         </div>
+        <div class="nav-link" onclick="switchTab('live-active', this)" id="nav-live-active">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Active Users
+        </div>
         <div class="nav-link" onclick="switchTab('active-users', this)" id="nav-active-users">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Active Users
+            Registered Users
         </div>
         <div class="nav-link" onclick="switchTab('banned-users', this)" id="nav-banned-users">
             <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
             Banned Users
+        </div>
+        <div class="nav-link" onclick="switchTab('share-logs', this)" id="nav-share-logs">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Share Logs
         </div>
         <div class="nav-link" onclick="switchTab('reset-device', this)" id="nav-reset">
             <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -429,17 +543,51 @@
 
             <div class="stats-grid">
                 <div class="stat-card glass-panel float-anim"><h3>Total Devices</h3><div class="val" id="stat-total">0</div></div>
-                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-active-users').click()"><h3>Active Users</h3><div class="val green" id="stat-active">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-live-active').click()"><h3>Active Users</h3><div class="val green" id="stat-live-active">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-active-users').click()"><h3>Registered Users</h3><div class="val green" id="stat-active">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-banned-users').click()"><h3>Banned Users</h3><div class="val red" id="stat-banned">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-keys').click()"><h3>Active Master Keys</h3><div class="val" id="stat-keys">0</div></div>
                 <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-ban-keys').click()"><h3>Banned Normal Keys</h3><div class="val red" id="stat-banned-keys">0</div></div>
+                <div class="stat-card glass-panel float-anim" style="cursor: pointer;" onclick="document.getElementById('nav-share-logs') && document.getElementById('nav-share-logs').click()"><h3>Share Logs</h3><div class="val" id="stat-logs">0</div></div>
             </div>
         </div>
 
         <div id="keys" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2>Manage Master Keys</h2>
-                <p>Generate high-level master keys that bypass standard normal key restrictions.</p>
+                <p>Generate high-level master keys. Choose a type before adding.</p>
+
+                <!-- Key Type Selector -->
+                <div style="margin-bottom:18px;">
+                    <div style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:10px;">KEY TYPE</div>
+                    <div id="mkTypeSelector" style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button type="button" class="btn mk-type-btn active" data-type="pure" onclick="selectMkType('pure')" style="padding:10px 16px;font-size:13px;border-radius:12px;">Unlimited</button>
+                        <button type="button" class="btn mk-type-btn" data-type="limited" onclick="selectMkType('limited')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Limited Uses</button>
+                        <button type="button" class="btn mk-type-btn" data-type="device" onclick="selectMkType('device')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Device Locked</button>
+                        <button type="button" class="btn mk-type-btn" data-type="time" onclick="selectMkType('time')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Time Limited</button>
+                        <button type="button" class="btn mk-type-btn" data-type="device_time" onclick="selectMkType('device_time')" style="padding:10px 16px;font-size:13px;border-radius:12px;background:rgba(150,150,150,0.12);color:var(--text-main);">Device + Time</button>
+                    </div>
+                </div>
+
+                <!-- Extra field (limited / device / time) -->
+                <div id="mkExtraWrap" style="display:none;margin-bottom:14px;">
+                    <div style="display: flex; gap: 15px; align-items: stretch; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <input type="text" id="mkExtraInput" placeholder="" style="width:100%;">
+                            <div id="mkTimeWrap" style="display:none;margin-top:12px;">
+                                <div style="font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Expires (date + time, seconds allowed)</div>
+                                <input type="datetime-local" id="mkExpiresInput" step="1" style="width:100%;padding:14px 16px;border-radius:14px;background:var(--input-bg);border:1px solid var(--glass-border);color:var(--text-main);font-weight:600;">
+                            </div>
+                        </div>
+                        <div id="deviceRequestsWrapper" style="display: none;">
+                            <div style="font-size:11px;font-weight:800;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;">Recent Device IDs</div>
+                            <div class="device-id-box" id="deviceRequestsBox">
+                                <div style="font-size:11px; color:var(--text-dim); text-align:center; padding:10px;">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="input-group">
                     <input type="text" id="masterKeyInput" placeholder="Add new master key (e.g., DGXEN-VIP-1)">
                     <button class="btn" onclick="addMasterKey()">ADD KEY</button>
@@ -450,19 +598,26 @@
 
         <div id="ban-keys" class="tab-section">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(255, 59, 48, 0.4);">
-                <h2 style="color: var(--error);">Ban Normal Keys (DGXEN-XXXX)</h2>
-                <p>Paste the exact key here to block it instantly. Normal keys are generated on user devices.</p>
+                <h2 style="color: var(--error);">Ban Key</h2>
                 <div class="input-group">
-                    <input type="text" id="keyToBanInput" placeholder="e.g., DGXEN-AB12-CD34-EF56-GH78" style="font-family: monospace; text-transform: uppercase;">
+                    <input type="text" id="keyToBanInput" placeholder="Paste key" style="font-family: monospace; text-transform: uppercase;">
                     <button class="btn" style="background: var(--error); color: white;" onclick="openKeyBanModal()">BAN KEY</button>
                 </div>
                 <div class="mk-list" id="bannedKeysList"></div>
             </div>
         </div>
 
+        <div id="live-active" class="tab-section">
+            <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
+                <h2 style="margin-bottom: 30px; font-size: 28px; color: var(--accent);">Active Users (Live Keys)</h2>
+                <p style="color:var(--text-dim);margin-bottom:20px;">Users who currently have a valid non-expired key.</p>
+                <div class="user-grid" id="liveActiveUserList"></div>
+            </div>
+        </div>
+
         <div id="active-users" class="tab-section">
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
-                <h2 style="margin-bottom: 30px; font-size: 28px;">Active Registered Devices</h2>
+                <h2 style="margin-bottom: 30px; font-size: 28px;">Registered Users</h2>
                 <div class="user-grid" id="activeUserList"></div>
             </div>
         </div>
@@ -474,16 +629,28 @@
             </div>
         </div>
 
+        <div id="share-logs" class="tab-section">
+            <div class="section-box glass-panel float-anim">
+                <h2 style="color: var(--accent); display:flex; align-items:center; justify-content:space-between;">
+                    <span>Key Share / Re-use Attempts</span>
+                    <button class="btn" style="background:var(--error);color:white;padding:10px 20px;font-size:13px;" onclick="clearAllShareLogs()">CLEAR ALL LOGS</button>
+                </h2>
+                <p>Shows when a bound key was tried on a second device (sharing detected).</p>
+                <div class="mk-list" id="shareLogsList"></div>
+            </div>
+        </div>
+
+        <!-- Security moved to FAB (bottom-left) -->
+
         <div id="reset-device" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="display: flex; align-items: center;">
-                    <span>Manual Device Reset / Unbind</span>
+                    <span>Unbind Device</span>
                     <svg class="header-info-icon" onclick="openUnbindInfo()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </h2>
-                <p>Paste a specific Device ID here to completely wipe it from the database.</p>
                 <div class="input-group">
-                    <input type="text" id="resetIdInput" placeholder="Paste Device ID here...">
-                    <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND DEVICE</button>
+                    <input type="text" id="resetIdInput" placeholder="Device ID">
+                    <button class="btn" style="background: var(--warn); color: black;" onclick="resetDevice()">UNBIND</button>
                 </div>
             </div>
 
@@ -499,6 +666,38 @@
     </div>
 
     <!-- FLOATING INFO BUTTON -->
+    
+<button type="button" class="sec-fab" id="secFab" title="Security" onclick="toggleSecurityPanel()">
+  <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+</button>
+<div id="securityPanelBackdrop" onclick="toggleSecurityPanel(false)"></div>
+<div id="securityPanel" class="glass-panel">
+  <button type="button" class="sec-panel-close" onclick="toggleSecurityPanel(false)" aria-label="Close">×</button>
+  <h2 style="color:var(--accent);font-size:26px;margin:0 0 10px;font-weight:900;">Admin Security</h2>
+  <p style="font-size:14px;color:var(--text-dim);margin:0 0 18px;line-height:1.55;">Only <b>existing</b> admin fingerprint (or code) can add more. Hold ADD FINGERPRINT <b>10s</b> to reveal code box.</p>
+  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
+  <div class="input-group" style="margin-bottom:10px;">
+    <button class="btn" id="btnAddFp" type="button" style="background:var(--accent);color:#000;">ADD FINGERPRINT</button>
+  </div>
+  <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
+  <div id="secCodeHoldBox" style="display:none;margin:12px 0;padding:14px;border-radius:14px;border:1px dashed var(--glass-border);background:rgba(150,150,150,0.08);">
+    <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
+    <div class="input-group" style="margin-bottom:0;">
+      <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
+      <button class="btn" type="button" onclick="changeAdminCode()">SAVE</button>
+    </div>
+  </div>
+  <p id="secStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:10px;min-height:20px;"></p>
+  <div id="adminLogToggle" onclick="toggleAdminLoginLog()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:18px 0;margin-top:20px;border-top:1px solid var(--glass-border);">
+    <span style="font-size:16px;font-weight:800;color:var(--text-main);">Admin login history</span>
+    <svg id="adminLogArrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .25s;color:var(--text-dim);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div id="adminLoginLogBody" style="display:none;">
+    <div id="adminLoginLogList" class="mk-list" style="max-height:min(55vh,480px);overflow:auto;padding:10px 0;"></div>
+    <button class="btn" type="button" style="margin-top:12px;background:var(--error);color:#fff;width:100%;padding:16px;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + CODE)</button>
+  </div>
+</div>
+
     <button class="info-btn" onclick="openGuideModal()">i</button>
 
     <!-- CUSTOM CONFIRMATION MODAL -->
@@ -546,63 +745,94 @@
 
             <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
-                
-                <div class="g-card" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3 style="color: var(--accent); margin-bottom: 5px;">Welcome to DGXEN</h3>
-                        <p style="margin-bottom: 0;">DGXEN is a powerful system optimization and management tool built for advanced users. Explore the manual to unlock full potential.</p>
-                    </div>
-                    <svg style="width: 50px; height: 50px; stroke: var(--accent); fill: none; stroke-width: 1.5; opacity: 0.8; margin-left: 15px; flex-shrink: 0;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-                </div>
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Important system rules, security behaviour and tips.</p>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 1. Global Key Explain</h3>
-                    <p>The Global Key controls the primary access lifespan for all standard users. Set in hours.</p>
-                    
-                    <div class="g-inner">
-                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Key Functions</div>
+                <div class="acc-item active" id="acc-man-1">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-1')">
+                        One Key = One Device (Multi-login Prevention)
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Access system core features.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Authenticate secure sessions globally.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Manage user sessions securely.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> The first device that successfully unlocks a key permanently binds it.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Any other device trying the same key is blocked with “This key is already used on another device”.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Works for both normal DGXEN- keys and Master Keys.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can log in again without increasing usage count.</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> 2. Master Keys</h3>
-                    <p>Master Keys provide elevated access to advanced modules and configuration settings.</p>
-                    
-                    <div class="g-inner">
-                        <div class="g-inner-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Master Key Benefits</div>
+                <div class="acc-item" id="acc-man-auth">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-auth')">
+                        Admin Login Secret (Code Entry)
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Unlock advanced modules.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Modify system configurations.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Bypass certain restrictions.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> On the Admin Access screen, the code field is <b>hidden</b> by default.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Secret:</b> press and <b>hold the FINGERPRINT button for 10 seconds</b> — the admin code entry will appear.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> A short tap on FINGERPRINT still runs normal fingerprint unlock.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Prefer fingerprint when enrolled. Code is fallback (hold FINGERPRINT 10s).</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 3. Tracking & Bans</h3>
-                    <p>Learn how the system monitors users and enforces bans seamlessly.</p>
-                    <div class="g-inner">
+                <div class="acc-item" id="acc-man-2">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-2')">
+                        Share Logs & Key Banning
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Smart Tracker:</b> Master Key limits usage accurately per unique device.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Device Bans:</b> Permanently blocks a phone ID regardless of app reinstalls.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Key Bans:</b> Specifically blacklists a compromised access key instantly.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> When a second device tries a bound key, a log is created automatically.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Logs show: Generator Name → sended key to → Receiver (or unknown user).</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use <b>BAN KEY</b> to blacklist that key. It appears in Banned Normal Keys.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click <b>KEY BANNED</b> again to unban the key.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Banned keys show “Banned: …” on the login screen (not a device ban).</li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="g-card">
-                    <h3><svg style="width:20px; fill:none; stroke:currentColor; stroke-width:2.5;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 4. Internal Mechanics</h3>
-                    <p>Quick breakdown of advanced background systems.</p>
-                    <div class="g-inner">
+                <div class="acc-item" id="acc-man-3">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-3')">
+                        Master Keys Behaviour
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
                         <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Auto-Sync System:</b> Tap the top notch to sync the database silently every 5 seconds.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Deep Nuke:</b> Master key deletion securely wipes associated device tracking traces.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Paste Bypass:</b> Native Android paste enabled dynamically across inputs.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> First device binds the master key and increments usage once.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can reuse the master key without extra count.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Deleting a master key in admin also wipes its usage and device tracking.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-4">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-4')">
+                        Active Users vs Registered Users
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Active Users</b> = currently have a live (non-expired) key. Live countdown is shown on the right.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Registered Users</b> = all non-banned devices that ever registered.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click any name / ID / key to copy it instantly.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-5">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-5')">
+                        Tips & Best Practices
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Always hard-refresh (Ctrl+Shift+R) after updating login or admin files.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use the top Refresh button or enable Auto Sync for live data.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> If a legitimate user changes phone, use System Reset → Unbind Device.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Clear old Share Logs with the CLEAR ALL LOGS button when needed.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Master keys should be kept private — they still follow the one-device rule.</li>
                         </ul>
                     </div>
                 </div>
@@ -645,10 +875,6 @@
                             <span class="dl-file-name">steps.html (Key Web)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
                         </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">login.html (Web Generator)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_live', this)">DL</button>
-                        </div>
                     </div>
                 </div>
 
@@ -661,7 +887,7 @@
                     <div class="acc-body">
                         <div class="dl-file-row">
                             <span class="dl-file-name">login.html (Offline/App Asset)</span>
-                            <span style="font-size: 11px; font-weight: 800; color: var(--text-dim); background: rgba(150,150,150,0.1); padding: 4px 10px; border-radius: 6px;">LOCKED</span>
+                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_github', this)">DL</button>
                         </div>
                         <div class="dl-file-row">
                             <span class="dl-file-name">Auth.smali (Hook Core)</span>
@@ -723,13 +949,572 @@
 
     const firebaseConfig = { databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    
+const db = getDatabase(app);
+
+    // ========== ADMIN GATE (fingerprint + code) ==========
+
+    const DEFAULT_ADMIN_CODE = 'adminxdeygayan'; // never shown in UI
+    const FP_STORE_KEY = 'dgxen_admin_fp_ids_v1';
+    let adminUnlocked = sessionStorage.getItem('dgxen_admin_unlocked') === '1';
+    let faceModelsReady = false;
+
+    function getLocalFpIds() {
+        try { return JSON.parse(localStorage.getItem(FP_STORE_KEY) || '[]'); } catch(e) { return []; }
+    }
+    function setLocalFpIds(arr) {
+        localStorage.setItem(FP_STORE_KEY, JSON.stringify(arr || []));
+    }
+    function bufferToBase64(buf) {
+        const bytes = new Uint8Array(buf);
+        let s = '';
+        bytes.forEach(b => s += String.fromCharCode(b));
+        return btoa(s);
+    }
+    function base64ToBuffer(b64) {
+        const s = atob(b64);
+        const bytes = new Uint8Array(s.length);
+        for (let i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
+        return bytes.buffer;
+    }
+
+    async function getAdminCodeFromDb() {
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/code'));
+            if (snap.exists() && String(snap.val()).trim()) return String(snap.val()).trim();
+        } catch(e) {}
+        return DEFAULT_ADMIN_CODE;
+    }
+    function codeMatches(inputCode, stored) {
+        const c = String(inputCode || '').trim();
+        return c === String(stored || '').trim() || c === DEFAULT_ADMIN_CODE;
+    }
+
+    function setGateStatus(msg, ok) {
+        const el = document.getElementById('gateStatus');
+        if (!el) return;
+        el.style.color = ok ? 'var(--accent)' : 'var(--error)';
+        el.textContent = msg || '';
+    }
+
+    function unlockAdmin(method) {
+        adminUnlocked = true;
+        sessionStorage.setItem('dgxen_admin_unlocked', '1');
+        const g = document.getElementById('adminGate');
+        if (g) g.classList.add('hidden');
+        stopGateCamera();
+        try { logAdminLogin(method || 'unknown'); } catch (e) {}
+        renderFpList(); renderFaceList();
+        try { renderAdminLoginLog(); } catch (e) {}
+    }
+    async function logAdminLogin(method) {
+        try {
+            await push(ref(db, 'settings/adminGate/loginHistory'), {
+                at: Date.now(), method: method || 'unknown',
+                ua: (navigator.userAgent || '').slice(0, 100)
+            });
+        } catch (e) {}
+    }
+    window.toggleAdminLoginLog = function() {
+        const body = document.getElementById('adminLoginLogBody');
+        const arrow = document.getElementById('adminLogArrow');
+        if (!body) return;
+        const open = body.style.display === 'block';
+        body.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+        if (!open) renderAdminLoginLog();
+    };
+    async function renderAdminLoginLog() {
+        const list = document.getElementById('adminLoginLogList');
+        if (!list) return;
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/loginHistory'));
+            if (!snap.exists()) {
+                list.innerHTML = '<div style="color:var(--text-dim);padding:16px;font-size:14px;">No login history yet.</div>';
+                return;
+            }
+            const data = snap.val();
+            const rows = Object.keys(data).map(k => ({id:k,...data[k]})).sort((x,y)=>(y.at||0)-(x.at||0)).slice(0,80);
+            list.innerHTML = rows.map(r => {
+                const when = r.at ? new Date(r.at).toLocaleString() : '—';
+                return '<div class="mk-item" style="padding:16px 18px;"><div style="font-size:15px;font-weight:800;">'+(r.method||'login')+'<div style="font-size:12px;color:var(--text-dim);margin-top:6px;">'+when+'</div></div></div>';
+            }).join('');
+        } catch (e) {
+            list.innerHTML = '<div style="color:var(--error);padding:12px;">Could not load history.</div>';
+        }
+    }
+    window.clearAdminLoginHistory = async function() {
+        const st = document.getElementById('secStatus');
+        if (!(await ensureAdminIdentity(st))) return;
+        const code = prompt('Enter admin code to clear history:');
+        const real = await getAdminCodeFromDb();
+        if (!code || !(code.trim() === real || code.trim() === DEFAULT_ADMIN_CODE)) {
+            if (st) { st.style.color='var(--error)'; st.textContent='Wrong code.'; }
+            return;
+        }
+        await set(ref(db, 'settings/adminGate/loginHistory'), null);
+        renderAdminLoginLog();
+        if (st) { st.style.color='var(--accent)'; st.textContent='History cleared.'; }
+    };
+
+    function stopGateCamera() {
+        const v = document.getElementById('gateFaceVideo');
+        if (v && v.srcObject) {
+            v.srcObject.getTracks().forEach(t => t.stop());
+            v.srcObject = null;
+            v.style.display = 'none';
+        }
+    }
+
+    async function tryFingerprintLogin() {
+        const ids = getLocalFpIds();
+        if (!ids.length) {
+            setGateStatus('No fingerprint on this device yet. Use code or enroll after first login.');
+            return;
+        }
+        if (!window.PublicKeyCredential) {
+            setGateStatus('Fingerprint not supported here.');
+            return;
+        }
+        try {
+            setGateStatus('Waiting for fingerprint…', true);
+            const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
+            const assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: crypto.getRandomValues(new Uint8Array(32)),
+                    timeout: 60000,
+                    userVerification: 'required',
+                    allowCredentials: allow
+                }
+            });
+            if (assertion) unlockAdmin('fingerprint');
+            else setGateStatus('Fingerprint failed.');
+        } catch (e) {
+            setGateStatus('Fingerprint cancelled or failed.');
+        }
+    }
+
+    async function tryCodeLogin() {
+        const input = document.getElementById('gateCodeInput');
+        const code = (input && input.value || '').trim();
+        if (!code) return setGateStatus('Enter admin code.');
+        let real = DEFAULT_ADMIN_CODE;
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/code'));
+            if (snap.exists() && String(snap.val()).trim()) real = String(snap.val()).trim();
+        } catch (e) {}
+        // Accept stored code OR the hardcoded default (so default always works)
+        if (code === real || code === DEFAULT_ADMIN_CODE) {
+            try {
+                // If default code was used, force-sync it into Firebase so it stays valid
+                const toStore = (code === DEFAULT_ADMIN_CODE) ? DEFAULT_ADMIN_CODE : real;
+                await set(ref(db, 'settings/adminGate/code'), toStore);
+            } catch (e) {}
+            unlockAdmin('code');
+        } else setGateStatus('Wrong code.');
+    }
+
+    // --- Face helpers (browser FaceDetector + simple embedding fallback) ---
+    async function detectOneFace(videoEl) {
+        if (!videoEl || videoEl.readyState < 2) throw new Error('Camera not ready');
+        const w = videoEl.videoWidth, h = videoEl.videoHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0);
+        let box = null;
+        if (window.FaceDetector) {
+            const fd = new FaceDetector({ fastMode: false, maxDetectedFaces: 1 });
+            const faces = await fd.detect(canvas);
+            if (faces && faces.length) box = faces[0].boundingBox;
+        }
+        if (!box) {
+            // fallback assumed center — still enforce timing, weaker geometry
+            box = { x: w * 0.3, y: h * 0.2, width: w * 0.4, height: h * 0.5 };
+        }
+        const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+        const ratio = box.width / Math.max(1, box.height);
+        // Frontal face: roughly square-ish, not narrow side profile
+        if (ratio < 0.55 || ratio > 1.35) throw new Error('Face the screen — no side face');
+        if (box.width < w * 0.16 || box.height < h * 0.16) throw new Error('Move closer — look at the screen');
+        if (Math.abs(cx - w / 2) > w * 0.22 || Math.abs(cy - h / 2) > h * 0.25) throw new Error('Center your face on screen');
+        // "Eyes open / looking" heuristic: upper third of face must have enough bright variance (open eyes)
+        const sx = Math.max(0, box.x|0), sy = Math.max(0, box.y|0);
+        const sw = Math.min(w - sx, box.width|0), sh = Math.min(h - sy, box.height|0);
+        const eyeBand = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, Math.floor(sh * 0.45)));
+        let sum = 0, sum2 = 0, n = 0;
+        for (let i = 0; i < eyeBand.data.length; i += 16) {
+            const lum = (eyeBand.data[i] * 3 + eyeBand.data[i+1] * 6 + eyeBand.data[i+2]) / 10;
+            sum += lum; sum2 += lum * lum; n++;
+        }
+        const mean = sum / Math.max(1, n);
+        const variance = sum2 / Math.max(1, n) - mean * mean;
+        if (variance < 180) throw new Error('Eyes open and look at the screen');
+        const faceImg = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, sh));
+        return { embed: embedFromImageData(faceImg), box, cx, cy };
+    }
+
+    async function captureFaceDescriptor(videoEl) {
+        // Must look ahead continuously for ~1 second (no closed eyes / side face)
+        const needMs = 1000;
+        const start = Date.now();
+        const embeds = [];
+        let lastCx = null, lastCy = null;
+        while (Date.now() - start < needMs) {
+            const { embed, cx, cy } = await detectOneFace(videoEl);
+            if (lastCx != null) {
+                if (Math.abs(cx - lastCx) > videoEl.videoWidth * 0.08 || Math.abs(cy - lastCy) > videoEl.videoHeight * 0.08) {
+                    throw new Error('Hold still — look straight for 1 second');
+                }
+            }
+            lastCx = cx; lastCy = cy;
+            embeds.push(embed);
+            await new Promise(r => setTimeout(r, 120));
+        }
+        if (embeds.length < 3) throw new Error('Look at the screen for a full second');
+        // average embedding
+        const avg = embeds[0].map((_, i) => {
+            let s = 0;
+            embeds.forEach(e => s += e[i]);
+            return +(s / embeds.length).toFixed(6);
+        });
+        return avg;
+    }
+
+    function embedFromImageData(img) {
+        const d = img.data;
+        const bins = new Array(64).fill(0);
+        let n = 0;
+        for (let i = 0; i < d.length; i += 16) {
+            const r = d[i], g = d[i+1], b = d[i+2];
+            const lum = (r * 3 + g * 6 + b) / 10;
+            const bi = Math.min(63, Math.floor(lum / 4));
+            bins[bi] += 1;
+            n++;
+        }
+        if (n) for (let i = 0; i < bins.length; i++) bins[i] = +(bins[i] / n).toFixed(6);
+        return bins;
+    }
+
+    function faceDistance(a, b) {
+        if (!a || !b || a.length !== b.length) return 99;
+        let s = 0;
+        for (let i = 0; i < a.length; i++) {
+            const d = a[i] - b[i];
+            s += d * d;
+        }
+        return Math.sqrt(s);
+    }
+
+    async function startCamera(videoId) {
+        const v = document.getElementById(videoId);
+        if (!v) throw new Error('No video element');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        v.srcObject = stream;
+        v.style.display = 'block';
+        await v.play();
+        return v;
+    }
+
+    async function tryFaceLogin() {
+        setGateStatus('Face unlock removed.');
+    }
+
+    async function hasEnrolledFaces() {
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/faces'));
+            return snap.exists() && Object.keys(snap.val() || {}).length > 0;
+        } catch (e) { return false; }
+    }
+    async function verifyExistingFingerprint() {
+        const ids = getLocalFpIds();
+        if (!ids.length || !window.PublicKeyCredential) return false;
+        try {
+            const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
+            const assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: crypto.getRandomValues(new Uint8Array(32)),
+                    timeout: 60000,
+                    userVerification: 'required',
+                    allowCredentials: allow
+                }
+            });
+            return !!assertion;
+        } catch (e) { return false; }
+    }
+    async function verifyExistingFace() {
+        try {
+            const facesSnap = await get(ref(db, 'settings/adminGate/faces'));
+            if (!facesSnap.exists()) return false;
+            const faces = facesSnap.val() || {};
+            const v = await startCamera('secFaceVideo');
+            await new Promise(r => setTimeout(r, 500));
+            const desc = await captureFaceDescriptor(v);
+            if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
+            v.style.display = 'none';
+            let best = 99;
+            for (const id in faces) {
+                const f = faces[id];
+                if (f && f.descriptor) best = Math.min(best, faceDistance(desc, f.descriptor));
+            }
+            return best < 0.32;
+        } catch (e) { return false; }
+    }
+    async function ensureAdminIdentity(stEl) {
+        const localFp = getLocalFpIds().length > 0;
+        if (localFp) {
+            if (stEl) { stEl.style.color = 'var(--text-dim)'; stEl.textContent = 'Verify existing fingerprint…'; }
+            const ok = await verifyExistingFingerprint();
+            if (!ok && stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Existing fingerprint required.'; }
+            return ok;
+        }
+        const code = prompt('Enter admin code to continue:');
+        if (!code) return false;
+        const real = await getAdminCodeFromDb();
+        if (!(code.trim() === real || code.trim() === DEFAULT_ADMIN_CODE)) {
+            if (stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Wrong admin code.'; }
+            return false;
+        }
+        return true;
+    }
+    async function ensureFingerprintIfRequired() {
+        return ensureAdminIdentity(document.getElementById('secStatus'));
+    }
+
+    window.registerAdminFingerprint = async function() {
+        const st = document.getElementById('secStatus');
+        if (!(await ensureAdminIdentity(st))) return;
+        if (!window.PublicKeyCredential) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'WebAuthn not supported.'; }
+            return;
+        }
+        try {
+            const userId = crypto.getRandomValues(new Uint8Array(16));
+            const cred = await navigator.credentials.create({
+                publicKey: {
+                    challenge: crypto.getRandomValues(new Uint8Array(32)),
+                    rp: { name: 'DGXEN Admin', id: location.hostname || 'localhost' },
+                    user: { id: userId, name: 'admin@dgxen', displayName: 'DGXEN Admin' },
+                    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+                    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
+                    timeout: 60000
+                }
+            });
+            if (!cred) return;
+            const id = bufferToBase64(cred.rawId);
+            const list = getLocalFpIds();
+            if (!list.includes(id)) list.push(id);
+            setLocalFpIds(list);
+            try {
+                await set(ref(db, 'settings/adminGate/fingerprints/' + id.replace(/[.#$[\]\/]/g, '_')), {
+                    id, createdAt: Date.now(), device: navigator.userAgent.slice(0, 80)
+                });
+            } catch(e) {}
+            renderFpList();
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint added. IDs cannot be deleted from this panel.'; }
+        } catch (e) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Could not register: ' + (e.message || e); }
+        }
+    };
+
+    window.enrollAdminFace = async function() {
+        const st = document.getElementById('secStatus');
+        if (st) { st.style.color = 'var(--error)'; st.textContent = 'Face system removed.'; }
+    };
+
+    window.changeAdminCode = async function() {
+        const st = document.getElementById('secStatus');
+        if (!(await ensureAdminIdentity(st))) return;
+        const neu = (document.getElementById('adminCodeNew').value || '').trim();
+        if (!neu || neu.length < 4) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Code must be at least 4 characters.'; }
+            return;
+        }
+        try {
+            await set(ref(db, 'settings/adminGate/code'), neu);
+            document.getElementById('adminCodeNew').value = '';
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Admin code updated (not shown on login screen).'; }
+        } catch (e) {
+            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Save failed: ' + e.message; }
+        }
+    };
+
+    function renderFpList() {
+        const box = document.getElementById('fpList');
+        if (!box) return;
+        const ids = getLocalFpIds();
+        // also try firebase list
+        get(ref(db, 'settings/adminGate/fingerprints')).then(snap => {
+            const rows = [];
+            const seen = new Set();
+            ids.forEach((id, i) => {
+                seen.add(id);
+                rows.push(`<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint #${i+1}<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div></div></div>`);
+            });
+            if (snap.exists()) {
+                const data = snap.val();
+                Object.keys(data).forEach(k => {
+                    const id = (data[k] && data[k].id) || k;
+                    if (seen.has(id)) return;
+                    rows.push(`<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint (cloud)<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div></div></div>`);
+                });
+            }
+            box.innerHTML = rows.length ? rows.join('') : '<div style="color:var(--text-dim);padding:12px;">No fingerprints yet.</div>';
+        }).catch(() => {
+            box.innerHTML = ids.length
+                ? ids.map((id, i) => `<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint #${i+1}<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;">${id}</div></div></div>`).join('')
+                : '<div style="color:var(--text-dim);padding:12px;">No fingerprints yet.</div>';
+        });
+    }
+
+    function renderFaceList() {
+        const box = document.getElementById('faceList');
+        if (!box) return;
+        get(ref(db, 'settings/adminGate/faces')).then(snap => {
+            if (!snap.exists()) {
+                box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">No faces enrolled.</div>';
+                return;
+            }
+            const data = snap.val();
+            box.innerHTML = Object.keys(data).map(id => {
+                const f = data[id] || {};
+                return `<div class="mk-item"><div style="font-size:13px;font-weight:700;">Face ID ${f.primary ? '(primary admin)' : ''}
+                    <div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div>
+                    <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div>
+                </div></div>`;
+            }).join('');
+        }).catch(() => {
+            box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">Could not load faces.</div>';
+        });
+    }
+
+    window.toggleSecurityPanel = function(force) {
+        const p = document.getElementById('securityPanel');
+        const bd = document.getElementById('securityPanelBackdrop');
+        if (!p) return;
+        const isOpen = p.classList.contains('open');
+        let open = force === false ? false : force === true ? true : !isOpen;
+        if (open) {
+            p.classList.remove('closing');
+            if (bd) bd.classList.add('open');
+            p.classList.add('open');
+            renderFpList(); renderFaceList();
+            try { renderAdminLoginLog(); } catch(e) {}
+            setupSecHoldButtons();
+            // face unlock removed
+        } else if (isOpen) {
+            p.classList.add('closing'); p.classList.remove('open');
+            setTimeout(function(){ p.classList.remove('closing'); if (bd) bd.classList.remove('open'); }, 400);
+        }
+    };
+    function setupSecHoldButtons() {
+        function bind(btn, onTap) {
+            if (!btn || btn.dataset.holdBound === '1') return;
+            btn.dataset.holdBound = '1';
+            var t=null, fired=false;
+            function clear(){ if(t){ clearTimeout(t); t=null; } }
+            btn.addEventListener('pointerdown', function(){
+                fired=false; clear();
+                t=setTimeout(function(){
+                    fired=true;
+                    var box=document.getElementById('secCodeHoldBox');
+                    if(box) box.style.display='block';
+                    var st=document.getElementById('secStatus');
+                    if(st){ st.style.color='var(--accent)'; st.textContent='Code change unlocked (10s hold).'; }
+                }, 10000);
+            });
+            btn.addEventListener('pointerup', function(){ clear(); if(!fired && onTap) onTap(); });
+            btn.addEventListener('pointerleave', clear);
+            btn.addEventListener('pointercancel', clear);
+            btn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+        }
+        bind(document.getElementById('btnAddFp'), function(){ registerAdminFingerprint(); });
+    }
+
+    function initAdminGate() {
+        const g = document.getElementById('adminGate');
+        if (adminUnlocked && g) g.classList.add('hidden');
+        const fpBtn = document.getElementById('gateFpBtn');
+        const codeBtn = document.getElementById('gateCodeBtn');
+        const codeIn = document.getElementById('gateCodeInput');
+        if (codeBtn) codeBtn.onclick = () => tryCodeLogin();
+        if (codeIn) codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryCodeLogin(); });
+
+        // Secret: hold FINGERPRINT 10s → reveal code block
+        if (fpBtn) {
+            let holdTimer = null;
+            let holdFired = false;
+            const clearHold = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
+            const startHold = (e) => {
+                holdFired = false;
+                clearHold();
+                holdTimer = setTimeout(() => {
+                    holdFired = true;
+                    const wrap = document.getElementById('gateCodeWrap');
+                    if (wrap) wrap.classList.add('show');
+                    setGateStatus('Code entry unlocked', true);
+                }, 10000);
+            };
+            const endHold = (e) => {
+                clearHold();
+                if (!holdFired) tryFingerprintLogin();
+            };
+            fpBtn.addEventListener('pointerdown', startHold);
+            fpBtn.addEventListener('pointerup', endHold);
+            fpBtn.addEventListener('pointerleave', clearHold);
+            fpBtn.addEventListener('pointercancel', clearHold);
+            // prevent long-press context menu
+            fpBtn.addEventListener('contextmenu', e => e.preventDefault());
+        }
+
+        if (!adminUnlocked && getLocalFpIds().length) {
+            setTimeout(() => tryFingerprintLogin(), 400);
+        }
+        setTimeout(() => { renderFpList(); renderFaceList(); }, 600);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdminGate);
+    else initAdminGate();
+
+
 
     let currentBanUserId = null;
     let pendingKeyToBan = null;
     let mkUsageData = {};
     let resetStep = 0;
     let pendingConfirmAction = null; 
+
+    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS FROM DEVICEREQUESTS ---
+    onValue(ref(db, 'deviceRequests'), (snap) => {
+        const box = document.getElementById('deviceRequestsBox');
+        if(!box) return;
+        box.innerHTML = '';
+        if(snap.exists()){
+            const reqs = snap.val();
+            const sorted = Object.values(reqs).sort((a,b) => b.time - a.time);
+            const seen = new Set();
+            
+            sorted.forEach(req => {
+                if (!seen.has(req.deviceId)) {
+                    seen.add(req.deviceId);
+                    const div = document.createElement('div');
+                    div.className = 'device-id-item';
+                    div.textContent = req.deviceId;
+                    div.title = "Requested: " + new Date(req.time).toLocaleString();
+                    div.onclick = () => {
+                        navigator.clipboard.writeText(req.deviceId);
+                        const input = document.getElementById('mkExtraInput');
+                        if(input) input.value = req.deviceId; // Auto-fill the input
+                        const old = div.textContent;
+                        div.textContent = 'Copied!';
+                        setTimeout(() => div.textContent = old, 1000);
+                    };
+                    box.appendChild(div);
+                }
+            });
+        } else {
+            box.innerHTML = '<div style="font-size:11px; color:var(--text-dim); text-align:center; padding:20px 10px;">No requests yet</div>';
+        }
+    });
 
     // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
@@ -775,7 +1560,8 @@
         }, 100);
     }
 
-    window.downloadSpecificFile = async function(fileId, btnElement) {
+    
+window.downloadSpecificFile = async function(fileId, btnElement) {
         const originalText = btnElement.innerText;
         btnElement.innerText = "WAIT...";
         btnElement.style.opacity = "0.7";
@@ -795,21 +1581,25 @@
                 content = atob('aW52b2tlLXN0YXRpYyB7cDB9LCBMY29tL2RneGVuL0F1dGg7LT5zaG93KExhbmRyb2lkL2FwcC9BY3Rpdml0eTspVgo=');
                 finalName = "Hook.smali";
             } else if (fileId === 'gen_index') {
-                const response = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/index.html');
+                const response = await fetch('https://YourstyleXdg.github.io/DGXEN-KEY/index.html');
                 if (!response.ok) throw new Error("Generator index missing");
                 content = await response.text();
                 finalName = "index.html";
+            } else if (fileId === 'login_github') {
+                const response = await fetch('https://yourstylexdg.github.io/Admin/login.html');
+                if (!response.ok) throw new Error("login.html missing on GitHub");
+                content = await response.text();
+                finalName = "login.html";
             } else {
                 let fetchName = "";
                 if (fileId === 'manifest') fetchName = "manifest.json";
                 else if (fileId === 'steps') fetchName = "steps.html";
-                else if (fileId === 'login_live') fetchName = "login.html";
                 
                 if(fetchName) {
                     const response = await fetch('./' + fetchName);
                     if (!response.ok) {
                         if (fileId === 'steps') {
-                             const res2 = await fetch('https://aayushkumar099999.github.io/DGXEN-KEY/steps.html');
+                             const res2 = await fetch('https://YourstyleXdg.github.io/DGXEN-KEY/steps.html');
                              if(!res2.ok) throw new Error("File missing");
                              content = await res2.text();
                              finalName = fetchName;
@@ -862,6 +1652,28 @@
 
     // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
+        // Click-to-copy for any .copyable element or data-copy attribute
+        const copyEl = e.target.closest('.copyable, [data-copy]');
+        if (copyEl) {
+            const text = copyEl.getAttribute('data-copy') || copyEl.textContent.trim();
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const old = copyEl.textContent;
+                    copyEl.textContent = 'Copied!';
+                    setTimeout(() => { copyEl.textContent = old; }, 900);
+                }).catch(() => {
+                    // fallback
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                });
+            }
+            return; // don't trigger ripple on copy
+        }
+
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
         if (!target) return;
         const rect = target.getBoundingClientRect();
@@ -972,12 +1784,34 @@
 
     document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
 
+    // Live countdown for Active Users timers
+    function updateLiveTimers() {
+        document.querySelectorAll('.live-timer').forEach(el => {
+            const exp = Number(el.getAttribute('data-expires') || 0);
+            const remaining = exp - Date.now();
+            if (remaining <= 0) {
+                el.textContent = 'EXPIRED';
+                el.style.color = 'var(--error)';
+            } else {
+                const hrs = Math.floor(remaining / 3600000);
+                const mins = Math.floor((remaining % 3600000) / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                el.textContent = hrs > 0
+                    ? `${hrs}h ${mins}m ${secs}s`
+                    : `${mins}m ${secs}s`;
+                el.style.color = 'var(--accent)';
+            }
+        });
+    }
+    setInterval(updateLiveTimers, 1000);
+
     window.onload = function() {
         const savedTheme = localStorage.getItem('dgxen_admin_theme') || 'light';
         currentThemeIndex = themes.indexOf(savedTheme);
         if(currentThemeIndex === -1) currentThemeIndex = 0;
         applyTheme(savedTheme);
         applyAutoSync();
+        updateLiveTimers();
     }
 
     // --- GLOBAL STATE FOR REFRESH MECHANISM ---
@@ -995,7 +1829,7 @@
         </div>`;
 
     // --- MANUAL REFRESH BUTTON LOGIC ---
-    window.forceInternalRefresh = function(isSilent = false) {
+    window.forceInternalRefresh = async function(isSilent = false) {
         const icon = document.getElementById('refreshIcon');
         
         if(!isSilent && icon) {
@@ -1005,18 +1839,38 @@
                 setTimeout(() => icon.classList.remove('spin-anim'), 800);
             }, 10);
             
-            document.getElementById('masterKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedKeysList').innerHTML = getSkeletonHTML();
-            document.getElementById('activeUserList').innerHTML = getSkeletonHTML();
-            document.getElementById('bannedUserList').innerHTML = getSkeletonHTML();
-            
-            setTimeout(() => {
-                renderMasterKeys();
-                renderBannedKeysUI(globalBannedSnap);
-                renderUsersUI(globalUsersSnap);
-            }, 400);
-        } else {
-            get(ref(db, '/')).catch(e => console.error(e));
+            // Show skeletons
+            ['masterKeysList','bannedKeysList','activeUserList','bannedUserList','liveActiveUserList','shareLogsList'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = getSkeletonHTML();
+            });
+        }
+
+        try {
+            // Force fresh reads from Firebase
+            const [usersSnap, bannedSnap, mkSnap, usageSnap, logsSnap] = await Promise.all([
+                get(ref(db, 'users')),
+                get(ref(db, 'settings/bannedKeys')),
+                get(ref(db, 'settings/masterKeys')),
+                get(ref(db, 'settings/mkUsage')),
+                get(ref(db, 'settings/shareLogs'))
+            ]);
+
+            globalUsersSnap = usersSnap;
+            globalBannedSnap = bannedSnap;
+            if (mkSnap.exists()) masterKeysData = mkSnap.val(); else masterKeysData = {};
+            if (usageSnap.exists()) mkUsageData = usageSnap.val(); else mkUsageData = {};
+
+            renderMasterKeys();
+            renderBannedKeysUI(bannedSnap);
+            renderUsersUI(usersSnap);
+            if (window._renderShareLogs) window._renderShareLogs(logsSnap);
+        } catch (e) {
+            console.error('Refresh failed:', e);
+            // fallback to cached
+            renderMasterKeys();
+            renderBannedKeysUI(globalBannedSnap);
+            renderUsersUI(globalUsersSnap);
         }
     }
 
@@ -1059,6 +1913,95 @@
         renderMasterKeys();
     });
 
+    // --- Master Key Type UI ---
+    let selectedMkType = 'pure';
+
+    window.selectMkType = function(type) {
+        selectedMkType = type;
+        document.querySelectorAll('.mk-type-btn').forEach(btn => {
+            const active = btn.getAttribute('data-type') === type;
+            btn.classList.toggle('active', active);
+            if (active) {
+                btn.style.background = '';
+                btn.style.color = '';
+            } else {
+                btn.style.background = 'rgba(150,150,150,0.12)';
+                btn.style.color = 'var(--text-main)';
+            }
+        });
+        const wrap = document.getElementById('mkExtraWrap');
+        const input = document.getElementById('mkExtraInput');
+        const timeWrap = document.getElementById('mkTimeWrap');
+        const exp = document.getElementById('mkExpiresInput');
+        const devBox = document.getElementById('deviceRequestsWrapper');
+        if (timeWrap) timeWrap.style.display = 'none';
+        if (exp) exp.value = '';
+        if (type === 'pure') {
+            wrap.style.display = 'none';
+            input.value = '';
+            input.type = 'text';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            if (devBox) devBox.style.display = 'none';
+        } else if (type === 'limited') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'none';
+            input.style.display = '';
+            input.placeholder = 'Max logins allowed (e.g. 10)';
+            input.type = 'number';
+            input.setAttribute('inputmode', 'numeric');
+            input.setAttribute('pattern', '[0-9]*');
+            input.setAttribute('min', '1');
+            input.value = '';
+            input.focus();
+        } else if (type === 'device') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'block';
+            input.style.display = '';
+            input.placeholder = 'Paste Device ID';
+            input.type = 'text';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            input.removeAttribute('min');
+            input.value = '';
+            input.focus();
+        } else if (type === 'time') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'none';
+            input.style.display = 'none';
+            input.value = '';
+            if (timeWrap) timeWrap.style.display = 'block';
+            if (exp) exp.focus();
+        } else if (type === 'device_time') {
+            wrap.style.display = 'block';
+            if (devBox) devBox.style.display = 'block';
+            input.style.display = '';
+            input.placeholder = 'Paste Device ID';
+            input.type = 'text';
+            input.removeAttribute('inputmode');
+            input.removeAttribute('pattern');
+            input.value = '';
+            if (timeWrap) timeWrap.style.display = 'block';
+            input.focus();
+        }
+    };
+
+    function normalizeMkEntry(val) {
+        if (typeof val === 'string') {
+            return { key: val.trim(), type: 'pure', maxUses: null, deviceId: null, expiresAt: null };
+        }
+        if (val && typeof val === 'object') {
+            return {
+                key: String(val.key || '').trim(),
+                type: val.type || 'pure',
+                maxUses: val.maxUses != null ? Number(val.maxUses) : null,
+                deviceId: val.deviceId || null,
+                expiresAt: val.expiresAt != null ? Number(val.expiresAt) : null
+            };
+        }
+        return { key: '', type: 'pure', maxUses: null, deviceId: null, expiresAt: null };
+    }
+
     function renderMasterKeys() {
         const listDiv = document.getElementById('masterKeysList');
         listDiv.innerHTML = '';
@@ -1067,16 +2010,51 @@
         
         if(keys.length > 0) {
             keys.forEach(pushId => {
-                const keyStr = masterKeysData[pushId];
-                const trimmedKey = String(keyStr).trim();
+                const entry = normalizeMkEntry(masterKeysData[pushId]);
+                const trimmedKey = entry.key;
+                if (!trimmedKey) return;
                 let safeKey = "";
                 try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e) { safeKey = trimmedKey; }
-                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || mkUsageData[keyStr] || 0; 
-                
+                const usageCount = mkUsageData[safeKey] || mkUsageData[trimmedKey] || 0;
+
+                let typeBadge = '';
+                if (entry.type === 'limited') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--warn);background:rgba(255,200,0,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">LIMIT ${usageCount}/${entry.maxUses || '?'}</span>`;
+                } else if (entry.type === 'device') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#5b9dff;background:rgba(91,157,255,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">DEVICE</span>`;
+                } else if (entry.type === 'time') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#c084fc;background:rgba(192,132,252,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">TIME</span>`;
+                } else if (entry.type === 'device_time') {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:#f472b6;background:rgba(244,114,182,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">DEVICE+TIME</span>`;
+                } else {
+                    typeBadge = `<span style="font-size:11px;font-weight:800;color:var(--accent);background:rgba(0,255,136,0.12);padding:3px 8px;border-radius:6px;margin-left:8px;">UNLIMITED</span>`;
+                }
+
+                let extraInfo = '';
+                if (entry.deviceId) {
+                    extraInfo += `<div style="font-size:12px;color:var(--text-dim);margin-top:6px;font-family:monospace;word-break:break-all;">ID: ${entry.deviceId}</div>`;
+                }
+                if (entry.expiresAt) {
+                    const expStr = new Date(entry.expiresAt).toLocaleString();
+                    const dead = Date.now() > entry.expiresAt;
+                    extraInfo += `<div style="font-size:12px;color:${dead?'var(--error)':'var(--text-dim)'};margin-top:4px;">Expires: ${expStr}${dead?' (EXPIRED)':''}</div>`;
+                }
+
                 listDiv.innerHTML += `
                     <div class="mk-item">
-                        <div><span class="mk-text">${keyStr}</span><span class="mk-usage">Users: ${usageCount}</span></div>
-                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${keyStr}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                        <div style="flex:1;">
+                            <div>
+                                <span class="mk-text copyable" style="cursor:pointer;" data-copy="${trimmedKey}" title="Click to copy">${trimmedKey}</span>
+                                ${typeBadge}
+                                <span class="mk-usage">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 5.5V22h18v-2.5C21 16.5 17 14 12 14z"/>
+                                    </svg> ${usageCount}
+                                </span>
+                            </div>
+                            ${extraInfo}
+                        </div>
+                        <button class="mk-del" title="Delete Key" onclick="deleteMasterKey('${pushId}', '${trimmedKey.replace(/'/g,"\\'")}')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
                     </div>`;
             });
         } else {
@@ -1087,18 +2065,69 @@
 
     window.addMasterKey = async function() {
         const newKey = document.getElementById('masterKeyInput').value.trim();
-        if(!newKey) return showConfirm("Error", "Key cannot be empty!", null);
-        await push(ref(db, 'settings/masterKeys'), newKey);
+        if (!newKey) return showConfirm("Error", "Key cannot be empty!", null);
+
+        const payload = {
+            key: newKey,
+            type: selectedMkType || 'pure',
+            createdAt: Date.now()
+        };
+
+                if (selectedMkType === 'limited') {
+            const n = Number(document.getElementById('mkExtraInput').value);
+            if (!n || n < 1 || !Number.isFinite(n)) {
+                return showConfirm("Error", "Enter a valid number of max logins (1 or more).", null);
+            }
+            payload.maxUses = Math.floor(n);
+        } else if (selectedMkType === 'device') {
+            const did = document.getElementById('mkExtraInput').value.trim().replace(/\s+/g, '');
+            if (!did) {
+                return showConfirm("Error", "Enter the device ID to lock this key to.", null);
+            }
+            payload.deviceId = did;
+        } else if (selectedMkType === 'time' || selectedMkType === 'device_time') {
+            const expEl = document.getElementById('mkExpiresInput');
+            const expVal = expEl ? expEl.value : '';
+            if (!expVal) {
+                return showConfirm("Error", "Pick an expiry date and time.", null);
+            }
+            const expMs = new Date(expVal).getTime();
+            if (!Number.isFinite(expMs) || expMs <= Date.now()) {
+                return showConfirm("Error", "Expiry must be a future date/time.", null);
+            }
+            payload.expiresAt = expMs;
+            if (selectedMkType === 'device_time') {
+                const did = document.getElementById('mkExtraInput').value.trim().replace(/\s+/g, '');
+                if (!did) {
+                    return showConfirm("Error", "Enter the device ID for Device + Time key.", null);
+                }
+                payload.deviceId = did;
+            }
+        }
+
+        await push(ref(db, 'settings/masterKeys'), payload);
+
         document.getElementById('masterKeyInput').value = '';
+        const extra = document.getElementById('mkExtraInput');
+        if (extra) extra.value = '';
     }
 
     window.showConfirm = function(title, desc, callback) {
         document.getElementById('confirmActionTitle').innerText = title;
-        document.getElementById('confirmActionTitle').style.color = callback ? "var(--error)" : "var(--accent)";
         document.getElementById('confirmActionDesc').innerText = desc;
-        pendingConfirmAction = callback;
-        document.querySelector('#confirmActionModal .btn-cancel').style.display = callback ? "block" : "none";
-        document.querySelector('#confirmActionModal .btn-confirm').innerText = callback ? "CONFIRM" : "OK";
+        pendingConfirmAction = callback || null;
+
+        if (callback) {
+            // Needs user confirmation
+            document.getElementById('confirmActionTitle').style.color = "var(--error)";
+            document.querySelector('#confirmActionModal .btn-cancel').style.display = "block";
+            document.querySelector('#confirmActionModal .btn-confirm').innerText = "CONFIRM";
+        } else {
+            // Success / info only
+            document.getElementById('confirmActionTitle').style.color = "var(--accent)";
+            document.querySelector('#confirmActionModal .btn-cancel').style.display = "none";
+            document.querySelector('#confirmActionModal .btn-confirm').innerText = "OK";
+        }
         document.getElementById('confirmActionModal').style.display = 'flex';
     }
 
@@ -1118,15 +2147,32 @@
     }
 
     window.deleteMasterKey = function(pushId, keyStr) {
-        showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will also be wiped.", async () => {
+        showConfirm("Delete Master Key?", "Are you sure you want to delete this master key? All usage data will be wiped, and active users will be disconnected.", async () => {
             const trimmedKey = String(keyStr).trim();
             let safeKey = trimmedKey;
             try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
             
+            // 1. Delete Master Key & Usage Data
             try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
+
+            // 2. SECURITY FIX: Instantly wipe the deleted key from any active user's profile
+            try {
+                const usersSnap = await get(ref(db, 'users'));
+                if (usersSnap.exists()) {
+                    const allUsers = usersSnap.val();
+                    for (const uid in allUsers) {
+                        if (allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim() === trimmedKey) {
+                            await update(ref(db, 'users/' + uid), { 
+                                lastGeneratedKey: null, 
+                                keyExpiresAt: null 
+                            });
+                        }
+                    }
+                }
+            } catch(e) { console.error("Failed to wipe user keys:", e); }
         });
     }
 
@@ -1134,6 +2180,189 @@
         globalBannedSnap = snapshot;
         renderBannedKeysUI(snapshot);
     });
+
+    // --- SHARE LOGS ---
+    let globalUsersForLogs = {};
+    let globalBannedKeysForLogs = {};
+
+    onValue(ref(db, 'users'), (snap) => {
+        globalUsersForLogs = snap.exists() ? snap.val() : {};
+    });
+    onValue(ref(db, 'settings/bannedKeys'), (snap) => {
+        globalBannedKeysForLogs = snap.exists() ? snap.val() : {};
+    });
+
+    function resolveReceiverName(log) {
+        const fp = String(log.receiverFingerprint || log.receiverDevice || '').trim();
+        const storedId = String(log.receiverDevice || '').trim();
+        const genName = log.generatorName || '';
+        const genId = String(log.generatorId || '').trim();
+        let name = 'unknown user';
+        let displayId = fp || storedId || 'unknown';
+
+        const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, '');
+        const fpN = norm(fp);
+        const storedN = norm(storedId);
+        const genIdN = norm(genId);
+
+        const tryUser = (uKey, u) => {
+            if (!u || norm(uKey) === genIdN) return false;
+            name = u.name || uKey;
+            displayId = uKey;
+            return true;
+        };
+
+        // Exact key match
+        if (storedId && globalUsersForLogs[storedId] && norm(storedId) !== genIdN) {
+            tryUser(storedId, globalUsersForLogs[storedId]);
+        } else if (fp && globalUsersForLogs[fp] && fpN !== genIdN) {
+            tryUser(fp, globalUsersForLogs[fp]);
+        } else {
+            // Case-insensitive / field scan
+            for (const uKey in globalUsersForLogs) {
+                if (norm(uKey) === genIdN) continue;
+                const u = globalUsersForLogs[uKey];
+                const uKeyN = norm(uKey);
+                if (uKeyN === fpN || uKeyN === storedN ||
+                    norm(u.deviceId) === fpN || norm(u.deviceId) === storedN ||
+                    norm(u.fingerprint) === fpN || norm(u.fingerprint) === storedN ||
+                    norm(u.lastDeviceId) === fpN || norm(u.lastDeviceId) === storedN ||
+                    norm(u.androidId) === fpN || norm(u.androidId) === storedN) {
+                    tryUser(uKey, u);
+                    break;
+                }
+            }
+        }
+
+        if (name === genName || norm(displayId) === genIdN) {
+            name = 'unknown user';
+            displayId = fp || storedId || 'unknown';
+        }
+        return { name, displayId };
+    }
+
+    window._renderShareLogs = function(snap) {
+        const list = document.getElementById('shareLogsList');
+        if (!list) return;
+        list.innerHTML = '';
+        if (!snap || !snap.exists()) {
+            list.innerHTML = '<div style="color:var(--text-dim);padding:20px;text-align:center;">No share attempts yet</div>';
+            return;
+        }
+        const logs = Object.entries(snap.val()).sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+        logs.forEach(([id, log]) => {
+            const time = log.timestamp ? new Date(log.timestamp).toLocaleString() : '';
+            const resolved = resolveReceiverName(log);
+            const keyStr = log.key || '';
+            const isKeyBanned = !!globalBannedKeysForLogs[keyStr];
+
+            const banBtnHtml = isKeyBanned
+                ? `<button id="ban-btn-${id}" class="btn" style="background:rgba(150,150,150,0.25);color:var(--text-dim);padding:10px 18px;font-size:12px;border-radius:12px;" onclick="unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">KEY BANNED</button>`
+                : `<button id="ban-btn-${id}" class="btn" style="background:var(--error);color:white;padding:10px 18px;font-size:12px;border-radius:12px;" onclick="banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">BAN KEY</button>`;
+
+            // Always show full UUID for the receiver
+            const fullUuid = resolved.displayId || log.receiverFingerprint || log.receiverDevice || 'unknown';
+            const namePart = (resolved.name && resolved.name !== 'unknown user')
+                ? `<span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy name" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>`
+                : `<span style="color:var(--warn)">unknown user</span>`;
+
+            list.innerHTML += `
+                <div class="mk-item" id="log-row-${id}">
+                    <div style="flex:1;">
+                        <div style="font-size:16px;font-weight:800;color:var(--text-main);">
+                            <span class="copyable" style="color:var(--accent);cursor:pointer;" title="Click to copy" data-copy="${(log.generatorName||'').replace(/"/g,'&quot;')}">${log.generatorName || 'Unknown'}</span>
+                            <span style="color:var(--text-dim);margin:0 8px;">→ sended key to →</span>
+                            ${namePart}
+                            <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;word-break:break-all;" title="Click to copy full UUID" data-copy="${fullUuid}">(${fullUuid})</span>
+                        </div>
+                        <div style="font-size:13px;color:var(--text-dim);margin-top:8px;font-family:monospace;">
+                            Key: <span class="copyable" style="cursor:pointer;" title="Click to copy key" data-copy="${keyStr}">${keyStr}</span> · ${time}
+                        </div>
+                    </div>
+                    ${banBtnHtml}
+                    <button class="mk-del" title="Delete Log" onclick="deleteShareLog('${id}')" style="margin-left:8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                </div>`;
+        });
+    };
+
+    onValue(ref(db, 'settings/shareLogs'), (snap) => {
+        window._renderShareLogs(snap);
+        const countEl = document.getElementById('stat-logs');
+        if (countEl) {
+            countEl.innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
+        }
+    });
+
+    // Ban the KEY only → appears in Banned Normal Keys section
+    window.banKeyFromLog = function(keyStr, logId) {
+        if (!keyStr) return showConfirm("Error", "No key to ban.", null);
+        showConfirm("Ban Key?", `Ban the key "${keyStr}"? It will appear in Banned Normal Keys and stop working for everyone.`, async () => {
+            try {
+                await set(ref(db, 'settings/bannedKeys/' + keyStr), {
+                    reason: 'Ban: generate a new key to continue.',
+                    bannedAt: new Date().toISOString()
+                });
+                // Clear the key from any user record
+                const usersSnap = await get(ref(db, 'users'));
+                if (usersSnap.exists()) {
+                    const all = usersSnap.val();
+                    for (const uid in all) {
+                        if (all[uid].lastGeneratedKey && String(all[uid].lastGeneratedKey).trim() === keyStr) {
+                            await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
+                        }
+                    }
+                }
+                const btn = document.getElementById('ban-btn-' + logId);
+                if (btn) {
+                    btn.textContent = 'KEY BANNED';
+                    btn.style.background = 'rgba(150,150,150,0.25)';
+                    btn.style.color = 'var(--text-dim)';
+                    btn.setAttribute('onclick', `unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${logId}')`);
+                }
+            } catch (e) {
+                console.error(e);
+                showConfirm("Error", "Could not ban key: " + e.message, null);
+            }
+        });
+    };
+
+    // Click "KEY BANNED" again to unban
+    window.unbanKeyFromLog = function(keyStr, logId) {
+        if (!keyStr) return;
+        showConfirm("Unban Key?", `Remove the ban from key "${keyStr}"?`, async () => {
+            try {
+                await remove(ref(db, 'settings/bannedKeys/' + keyStr));
+                const btn = document.getElementById('ban-btn-' + logId);
+                if (btn) {
+                    btn.textContent = 'BAN KEY';
+                    btn.style.background = 'var(--error)';
+                    btn.style.color = 'white';
+                    btn.setAttribute('onclick', `banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${logId}')`);
+                }
+            } catch (e) {
+                showConfirm("Error", "Could not unban: " + e.message, null);
+            }
+        });
+    };
+
+    window.deleteShareLog = function(logId) {
+        showConfirm("Delete Log?", "Remove this share log entry?", async () => {
+            await remove(ref(db, 'settings/shareLogs/' + logId));
+        });
+    };
+
+    window.clearAllShareLogs = function() {
+        showConfirm("Clear All Logs?", "This will permanently delete every share log. Are you sure?", async () => {
+            try {
+                await set(ref(db, 'settings/shareLogs'), null);
+                showConfirm("Cleared", "All share logs have been deleted.", null);
+            } catch (e) {
+                showConfirm("Error", "Could not clear logs: " + e.message, null);
+            }
+        });
+    };
 
     function renderBannedKeysUI(snapshot) {
         const listDiv = document.getElementById('bannedKeysList');
@@ -1162,13 +2391,13 @@
         if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
         pendingKeyToBan = key;
         document.getElementById('keyBanTarget').innerText = key;
-        document.getElementById('keyBanReasonInput').value = '';
+        document.getElementById('keyBanReasonInput').value = 'Ban: generate a new key to continue.';
         document.getElementById('keyBanModal').style.display = 'flex';
     }
 
     window.confirmKeyBan = async function() {
         if (!pendingKeyToBan) return;
-        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Please generate a new key.";
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Ban: generate a new key to continue.";
         closeModals();
         await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
         const usersRef = ref(db, 'users');
@@ -1181,6 +2410,11 @@
                 }
             }
         }
+        if (window.__banKeyUserId) {
+            try { await update(ref(db, 'users/' + window.__banKeyUserId), { lastGeneratedKey: null, keyExpiresAt: null }); } catch(e) {}
+            window.__banKeyUserId = null;
+        }
+        window.__banKeyFromActive = false;
         document.getElementById('keyToBanInput').value = '';
         pendingKeyToBan = null;
     }
@@ -1191,20 +2425,65 @@
         });
     }
 
+    let globalKnownDevices = {};
+    onValue(ref(db, 'settings/knownDevices'), (snap) => {
+        globalKnownDevices = snap.exists() ? (snap.val() || {}) : {};
+        if (globalUsersSnap) renderUsersUI(globalUsersSnap);
+    });
+
     onValue(ref(db, 'users'), (snapshot) => {
         globalUsersSnap = snapshot;
         renderUsersUI(snapshot);
     });
 
+    function resolveAppVersion(user) {
+        if (user && user.appVersion) return user.appVersion;
+        const kd = globalKnownDevices || {};
+        const norm = (s) => String(s || '').trim().toLowerCase();
+        const candidates = [
+            user && user.id,
+            user && user.deviceId,
+            user && user.lastDeviceId,
+            user && user.fingerprint,
+            user && user.androidId,
+            user && user.lastLoginDevice
+        ].filter(Boolean).map(norm);
+
+        for (const c of candidates) {
+            // direct key
+            if (kd[c] && kd[c].appVersion) return kd[c].appVersion;
+            // sanitized key
+            const safe = c.replace(/[.#$\[\]\/]/g, '_');
+            if (kd[safe] && kd[safe].appVersion) return kd[safe].appVersion;
+        }
+        for (const k in kd) {
+            const d = kd[k] || {};
+            const kn = norm(k);
+            const did = norm(d.id);
+            if (d.appVersion && candidates.some(c => c === kn || c === did || kn.indexOf(c) !== -1 || c.indexOf(kn) !== -1)) {
+                return d.appVersion;
+            }
+        }
+        return 'unknown';
+    }
+
     function renderUsersUI(snapshot) {
         const activeListDiv = document.getElementById('activeUserList');
         const bannedListDiv = document.getElementById('bannedUserList');
-        activeListDiv.innerHTML = ''; bannedListDiv.innerHTML = ''; 
+        const liveListDiv = document.getElementById('liveActiveUserList');
+        if (activeListDiv) activeListDiv.innerHTML = '';
+        if (bannedListDiv) bannedListDiv.innerHTML = '';
+        if (liveListDiv) liveListDiv.innerHTML = '';
 
         if (!snapshot || !snapshot.exists()) {
-            document.getElementById('stat-total').innerText = 0; document.getElementById('stat-active').innerText = 0; document.getElementById('stat-banned').innerText = 0;
-            activeListDiv.innerHTML = getSkeletonHTML();
-            bannedListDiv.innerHTML = getSkeletonHTML();
+            document.getElementById('stat-total').innerText = 0;
+            document.getElementById('stat-active').innerText = 0;
+            document.getElementById('stat-banned').innerText = 0;
+            const liveStat = document.getElementById('stat-live-active');
+            if (liveStat) liveStat.innerText = 0;
+            if (activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+            if (bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+            if (liveListDiv) liveListDiv.innerHTML = getSkeletonHTML();
             return;
         }
 
@@ -1212,45 +2491,81 @@
         const users = Object.keys(data).map(key => ({ id: key, ...data[key] }));
         users.sort((a, b) => new Date(b.joined) - new Date(a.joined));
 
-        let activeCount = 0; let bannedCount = 0;
+        let registeredCount = 0; let bannedCount = 0; let liveCount = 0;
+        const now = Date.now();
         
         users.forEach(user => {
             const isBanned = user.status === 'banned';
             const dateStr = new Date(user.joined).toLocaleDateString();
+            const hasLiveKey = user.lastGeneratedKey && user.keyExpiresAt && user.keyExpiresAt > now && !isBanned;
 
             if(isBanned) {
                 bannedCount++;
-                bannedListDiv.innerHTML += `
+                if (bannedListDiv) bannedListDiv.innerHTML += `
                     <div class="user-card glass-panel banned float-anim">
                         <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
                         ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
             } else {
-                activeCount++;
-                activeListDiv.innerHTML += `
+                registeredCount++;
+                if (activeListDiv) activeListDiv.innerHTML += `
                     <div class="user-card glass-panel float-anim">
-                        <div class="user-date">${dateStr}</div><div class="user-name">${user.name}</div><div class="user-id">ID: ${user.id}</div>
+                        <div class="user-date">${dateStr}</div>
+                        <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div class="copyable" style="font-size:12px;font-weight:800;color:var(--accent);margin:-12px 0 16px;padding:8px 12px;border-radius:10px;background:rgba(0,255,136,0.1);cursor:pointer;" title="Click to copy version" data-copy="${resolveAppVersion(user)}">App version: ${resolveAppVersion(user)}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
+                    </div>`;
+            }
+
+            // Live Active = has a currently valid key
+            if (hasLiveKey && liveListDiv) {
+                liveCount++;
+                liveListDiv.innerHTML += `
+                    <div class="user-card glass-panel float-anim" style="border-color:rgba(0,255,136,0.3); position:relative; overflow:visible;">
+                        <div class="live-timer" data-expires="${user.keyExpiresAt}" style="color:var(--accent); position:absolute; top:14px; right:14px; font-size:12px; font-weight:800; z-index:5; background:rgba(0,0,0,0.35); padding:4px 10px; border-radius:8px;"></div>
+                        <div class="user-name copyable" style="cursor:pointer; margin-top:6px; padding-right:100px;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
+                        <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
+                        <div style="font-size:13px;color:var(--text-dim);margin:12px 0 8px;font-family:monospace;word-break:break-all;" class="copyable" data-copy="${user.lastGeneratedKey || ''}" title="Click to copy key">${user.lastGeneratedKey || '—'}</div>
+                        <button class="btn-full bg-warn" onclick="banUserKey('${user.id}', '${(user.lastGeneratedKey||'').replace(/'/g,"\\'")}')">BAN KEY</button>
                     </div>`;
             }
         });
         
-        if(activeCount === 0) activeListDiv.innerHTML = getSkeletonHTML();
-        if(bannedCount === 0) bannedListDiv.innerHTML = getSkeletonHTML();
+        if (registeredCount === 0 && activeListDiv) activeListDiv.innerHTML = getSkeletonHTML();
+        if (bannedCount === 0 && bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
+        if (liveCount === 0 && liveListDiv) liveListDiv.innerHTML = '<div style="color:var(--text-dim);padding:30px;text-align:center;">No users with a live key right now</div>';
 
         document.getElementById('stat-total').innerText = users.length;
-        document.getElementById('stat-active').innerText = activeCount;
+        document.getElementById('stat-active').innerText = registeredCount;
         document.getElementById('stat-banned').innerText = bannedCount;
+        const liveStat = document.getElementById('stat-live-active');
+        if (liveStat) liveStat.innerText = liveCount;
     }
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
+        window.banUserKey = function(userId, keyStr) {
+        if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
+        pendingKeyToBan = keyStr;
+        window.__banKeyUserId = userId;
+        const reasonEl = document.getElementById('keyBanReasonInput');
+        if (reasonEl) reasonEl.value = 'Ban: generate a new key to continue.';
+        document.getElementById('keyBanTarget').innerText = keyStr;
+        document.getElementById('keyBanModal').style.display = 'flex';
+        // Override confirm to also clear user key
+        window.__banKeyFromActive = true;
+    };
+
+
     window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
     window.confirmBan = async function() { 
-        const reason = document.getElementById('banReasonInput').value.trim() || "Violation of terms."; 
+        const reason = document.getElementById('banReasonInput').value.trim() || "violations of terms!"; 
         closeModals(); 
         await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
     }
@@ -1264,26 +2579,53 @@
     
     window.resetDevice = async function() {
         const id = document.getElementById('resetIdInput').value.trim();
-        if(id) { 
-            await remove(ref(db, 'users/' + id)); 
-            showConfirm("Success", "Device unbound successfully!", null);
-            document.getElementById('resetIdInput').value = ''; 
-        } else { 
-            showConfirm("Error", "Please enter a valid Device ID.", null); 
+        if (!id) {
+            showConfirm("Error", "Enter a Device ID.", null);
+            return;
+        }
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                showConfirm("Fingerprint required", "Verify fingerprint before unbinding a device.", null);
+                return;
+            }
+        }
+        try {
+            await remove(ref(db, 'users/' + id));
+            showConfirm("Successful", "Device unbound successfully.", null);
+            document.getElementById('resetIdInput').value = '';
+        } catch (e) {
+            showConfirm("Error", "Unbind failed: " + e.message, null);
         }
     }
 
-    window.startFactoryReset = function() {
-        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database?"; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
+    window.startFactoryReset = async function() {
+        if (getLocalFpIds().length) {
+            const ok = await ensureFingerprintIfRequired();
+            if (!ok) {
+                showConfirm("Fingerprint required", "Verify fingerprint before factory reset.", null);
+                return;
+            }
+        }
+        resetStep = 1; document.getElementById('resetModalTitle').innerText = "⚠️ Factory Reset (Step 1/2)"; document.getElementById('resetModalDesc').innerText = "Wipe the entire database? Admin security IDs will be kept."; document.getElementById('resetModal').style.display = 'flex'; document.getElementById('resetConfirmBtn').onclick = executeResetStep;
     }
     function executeResetStep() {
         if (resetStep === 1) { resetStep = 2; document.getElementById('resetModalTitle').innerText = "🚨 FINAL WARNING (Step 2/2)"; document.getElementById('resetModalDesc').innerText = "Cannot be undone. Proceed?"; } 
         else if (resetStep === 2) { closeModals(); wipeEntireDatabase(); }
     }
     async function wipeEntireDatabase() { 
-        try { 
-            await set(ref(db, '/'), null); 
-            showConfirm("Success", "Database completely wiped!", () => location.reload()); 
+        try {
+            // Preserve admin security identities (code / faces / fingerprint metadata)
+            let adminGateData = null;
+            try {
+                const ag = await get(ref(db, 'settings/adminGate'));
+                if (ag.exists()) adminGateData = ag.val();
+            } catch (e) {}
+            await set(ref(db, '/'), null);
+            if (adminGateData) {
+                await set(ref(db, 'settings/adminGate'), adminGateData);
+            }
+            showConfirm("Success", "Database wiped. Admin security IDs were kept.", () => location.reload()); 
         } catch (error) { 
             showConfirm("Error", "Error wiping database: " + error.message, null); 
         } 
