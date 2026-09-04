@@ -533,6 +533,43 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
 .cat-mode-row label:hover{border-color:var(--accent)}
 .cat-mode-row input{width:18px;height:18px;accent-color:var(--accent)}
 
+
+/* Notice control (dashboard) */
+.notice-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;position:relative}
+.notice-chip{
+  flex:none;width:52px;height:52px;border-radius:16px;border:1px solid var(--glass-border);
+  background:var(--glass-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;user-select:none;transition:transform .15s,border-color .2s,box-shadow .2s;
+  color:var(--text-main);font-weight:900;font-size:10px;letter-spacing:.4px;text-transform:uppercase;
+}
+.notice-chip:hover{border-color:var(--accent);box-shadow:0 0 18px var(--accent-glow)}
+.notice-chip.active{border-color:var(--accent);background:rgba(0,255,136,.12);color:var(--accent)}
+.notice-chip svg{width:20px;height:20px;margin-bottom:2px;stroke:currentColor;fill:none;stroke-width:2.2}
+.notice-panel{
+  display:none;position:absolute;left:66px;top:0;z-index:40;width:min(420px,calc(100vw - 100px));
+  padding:18px 16px;border-radius:18px;border:1px solid var(--glass-border);
+  background:var(--glass-bg);backdrop-filter:blur(24px);box-shadow:0 20px 50px var(--shadow-color);
+  animation:noticeIn .28s cubic-bezier(.22,1,.36,1);
+}
+.notice-panel.open{display:block}
+@keyframes noticeIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+.notice-panel h3{margin:0 0 12px;font-size:15px;color:var(--accent)}
+.notice-panel .np-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:13px;font-weight:700}
+.notice-panel label.switch{position:relative;width:46px;height:26px;flex:none}
+.notice-panel label.switch input{opacity:0;width:0;height:0}
+.notice-panel label.switch span{position:absolute;inset:0;border-radius:26px;background:#444;transition:.2s}
+.notice-panel label.switch span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}
+.notice-panel label.switch input:checked+span{background:var(--accent)}
+.notice-panel label.switch input:checked+span:before{transform:translateX(20px)}
+.notice-panel textarea,.notice-panel input[type=number],.notice-panel input[type=text]{
+  width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--glass-border);
+  background:var(--input-bg);color:var(--text-main);font-size:13px;margin-bottom:10px;outline:none;
+}
+.notice-panel textarea{min-height:72px;resize:vertical}
+.notice-panel .np-actions{display:flex;gap:8px;flex-wrap:wrap}
+.notice-panel .np-actions .btn{flex:1;min-width:100px;padding:10px 12px;font-size:12px}
+.dash-expiry-wrap{flex:1;min-width:0}
+
 </style>
 </head>
 <body>
@@ -616,6 +653,39 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
     <!-- Main Content -->
     <div class="main-content">
         <div id="dashboard" class="tab-section active">
+            <div class="notice-row">
+              <button type="button" class="notice-chip" id="noticeChip" title="Notice" onclick="toggleNoticePanel()">
+                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                Notice
+              </button>
+              <div class="notice-panel" id="noticePanel">
+                <h3>📢 Login Notice Controls</h3>
+                <div class="np-row">
+                  <span>JOIN finger pointer ☝</span>
+                  <label class="switch"><input type="checkbox" id="noticeFingerToggle"><span></span></label>
+                </div>
+                <p style="font-size:12px;color:var(--text-dim);margin:0 0 12px;">Shows a bouncing finger above the JOIN button on the login page.</p>
+                <div class="np-row"><span>Broadcast popup (bottom)</span>
+                  <label class="switch"><input type="checkbox" id="noticeBroadcastToggle"><span></span></label>
+                </div>
+                <textarea id="noticeMessage" placeholder="Message shown at bottom of login screen..."></textarea>
+                <div class="np-row" style="margin-bottom:8px;">
+                  <span style="font-size:12px;color:var(--text-dim);">Duration (seconds)</span>
+                  <input type="number" id="noticeSeconds" min="1" max="300" value="10" style="width:90px;margin:0;">
+                </div>
+                <div class="np-actions">
+                  <button class="btn" style="background:var(--accent);color:#000;" onclick="publishNotice()">UPDATE / SEND</button>
+                  <button class="btn" style="background:transparent;border:1px solid var(--glass-border);color:var(--text-main);" onclick="clearBroadcast()">CLEAR POPUP</button>
+                </div>
+                <hr style="border:none;border-top:1px solid var(--glass-border);margin:14px 0;">
+                <div class="np-row">
+                  <span>Login tagline override</span>
+                  <label class="switch"><input type="checkbox" id="noticeTaglineToggle"><span></span></label>
+                </div>
+                <input type="text" id="noticeTagline" placeholder="Custom tagline under DGXEN VIP">
+                <p style="font-size:11px;color:var(--text-dim);margin:0;">Optional: replace “Enter your access key…” on login.</p>
+              </div>
+              <div class="dash-expiry-wrap">
             <div class="section-box glass-panel float-anim" style="border-color: rgba(0, 255, 136, 0.4); box-shadow: inset 0 0 40px rgba(0, 255, 136, 0.05), 0 25px 60px var(--shadow-color);">
                 <h2 style="color: var(--accent);">
                     <svg style="width:28px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -627,6 +697,8 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
                     <button class="btn" style="background: var(--accent); color: #000;" onclick="updateExpiryHours()">UPDATE EXPIRY</button>
                 </div>
                 <p style="margin-bottom: 0; font-size: 17px; font-weight: 700;">Current Expiry Time: <strong id="currentExpiryDisplay" style="color: var(--accent); font-size: 26px; margin: 0 10px;">...</strong> <strong style="color: var(--text-main);">Hours</strong></p>
+            </div>
+              </div>
             </div>
 
             <div class="stats-grid">
@@ -3050,6 +3122,85 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
     bindLogoHold(); bindModeRadios(); listenFirebaseMode();
   }
 })();
+
+
+
+// ===== NOTICE PANEL =====
+window.toggleNoticePanel = function(){
+  const p=document.getElementById('noticePanel');
+  const c=document.getElementById('noticeChip');
+  if(!p) return;
+  const open=p.classList.toggle('open');
+  if(c) c.classList.toggle('active', open);
+};
+document.addEventListener('click', (e)=>{
+  const p=document.getElementById('noticePanel');
+  const c=document.getElementById('noticeChip');
+  if(!p||!p.classList.contains('open')) return;
+  if(p.contains(e.target)||(c&&c.contains(e.target))) return;
+  p.classList.remove('open');
+  if(c) c.classList.remove('active');
+});
+
+async function loadNoticeSettings(){
+  try{
+    const snap=await get(ref(db,'settings/notice'));
+    const v=snap.exists()?(snap.val()||{}):{};
+    const ft=document.getElementById('noticeFingerToggle');
+    const bt=document.getElementById('noticeBroadcastToggle');
+    const msg=document.getElementById('noticeMessage');
+    const sec=document.getElementById('noticeSeconds');
+    const tt=document.getElementById('noticeTaglineToggle');
+    const tl=document.getElementById('noticeTagline');
+    if(ft) ft.checked=!!(v.fingerHint===true||v.fingerHint==='on');
+    const bc=v.broadcast||{};
+    if(bt) bt.checked=!!(bc.enabled);
+    if(msg) msg.value=bc.message||'';
+    if(sec) sec.value=bc.seconds!=null?bc.seconds:10;
+    if(tt) tt.checked=!!(v.taglineEnabled);
+    if(tl) tl.value=v.tagline||'';
+  }catch(e){ console.warn('notice load', e); }
+}
+try{ onValue(ref(db,'settings/notice'), ()=>loadNoticeSettings()); }catch(e){}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', loadNoticeSettings);
+else loadNoticeSettings();
+
+window.publishNotice = async function(){
+  const finger=!!(document.getElementById('noticeFingerToggle')&&document.getElementById('noticeFingerToggle').checked);
+  const enabled=!!(document.getElementById('noticeBroadcastToggle')&&document.getElementById('noticeBroadcastToggle').checked);
+  const message=(document.getElementById('noticeMessage')&&document.getElementById('noticeMessage').value||'').trim();
+  let seconds=Number(document.getElementById('noticeSeconds')&&document.getElementById('noticeSeconds').value);
+  if(!seconds||seconds<1) seconds=10;
+  const tagOn=!!(document.getElementById('noticeTaglineToggle')&&document.getElementById('noticeTaglineToggle').checked);
+  const tagline=(document.getElementById('noticeTagline')&&document.getElementById('noticeTagline').value||'').trim();
+  try{
+    await set(ref(db,'settings/notice'), {
+      fingerHint: finger,
+      taglineEnabled: tagOn,
+      tagline: tagline,
+      broadcast: {
+        enabled: enabled,
+        message: message,
+        seconds: seconds,
+        updatedAt: Date.now(),
+        id: Date.now()
+      }
+    });
+    showConfirm('Notice updated', enabled && message ? 'Popup will show on login for '+seconds+'s.' : 'Settings saved.', null);
+  }catch(e){
+    showConfirm('Error', e.message||String(e), null);
+  }
+};
+window.clearBroadcast = async function(){
+  try{
+    const snap=await get(ref(db,'settings/notice'));
+    const v=snap.exists()?(snap.val()||{}):{};
+    v.broadcast={ enabled:false, message:'', seconds:10, updatedAt:Date.now(), id:Date.now() };
+    if(document.getElementById('noticeBroadcastToggle')) document.getElementById('noticeBroadcastToggle').checked=false;
+    await set(ref(db,'settings/notice'), v);
+    showConfirm('Cleared', 'Broadcast popup disabled.', null);
+  }catch(e){ showConfirm('Error', e.message||String(e), null); }
+};
 
 </script>
 </body>
