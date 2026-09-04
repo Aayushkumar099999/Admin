@@ -2606,6 +2606,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             const isBanned = user.status === 'banned';
             const dateStr = new Date(user.joined).toLocaleDateString();
             const hasLiveKey = user.lastGeneratedKey && user.keyExpiresAt && user.keyExpiresAt > now && !isBanned;
+            const nativeId = (user.lastDeviceId || user.deviceId || user.fingerprint || user.androidId || user.lastLoginDevice || '').trim();
 
             if(isBanned) {
                 bannedCount++;
@@ -2615,7 +2616,8 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
-                        ${user.banReason ? `<p style="font-size:13px; color:var(--error); margin-bottom:25px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
+                        ${nativeId ? `<div class="copyable" style="font-size:10px;color:var(--text-dim);margin:0 0 8px;font-family:monospace;cursor:pointer;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Click to copy native id" data-copy="${String(nativeId).replace(/"/g,'&quot;')}">Dev: ${nativeId}</div>` : ''}
+                        ${user.banReason ? `<p style="font-size:12px; color:var(--error); margin-bottom:14px; font-weight:700;">Reason: "${user.banReason}"</p>` : ''}
                         <button class="btn-full bg-green" onclick="unbanUser('${user.id}')">UNBAN DEVICE</button>
                     </div>`;
             } else {
@@ -2625,7 +2627,8 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                         <div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
-                        <div class="copyable" style="font-size:12px;font-weight:800;color:var(--accent);margin:-12px 0 16px;padding:8px 12px;border-radius:10px;background:rgba(0,255,136,0.1);cursor:pointer;" title="Click to copy version" data-copy="${resolveAppVersion(user)}">App version: ${resolveAppVersion(user)}</div>
+                        ${nativeId ? `<div class="copyable" style="font-size:10px;color:var(--text-dim);margin:0 0 8px;font-family:monospace;cursor:pointer;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Click to copy native id" data-copy="${String(nativeId).replace(/"/g,'&quot;')}">Dev: ${nativeId}</div>` : ''}
+                        <div class="copyable" style="font-size:11px;font-weight:800;color:var(--accent);margin:0 0 12px;padding:6px 10px;border-radius:8px;background:rgba(0,255,136,0.1);cursor:pointer;" title="Click to copy version" data-copy="${resolveAppVersion(user)}">v ${resolveAppVersion(user)}</div>
                         <button class="btn-full bg-warn" onclick="openBanModal('${user.id}')">BAN DEVICE</button>
                     </div>`;
             }
