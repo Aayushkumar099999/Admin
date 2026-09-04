@@ -631,11 +631,22 @@
 
         <div id="share-logs" class="tab-section">
             <div class="section-box glass-panel float-anim">
-                <h2 style="color: var(--accent); display:flex; align-items:center; justify-content:space-between;">
+                <h2 style="color: var(--accent); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
                     <span>Key Share / Re-use Attempts</span>
-                    <button class="btn" style="background:var(--error);color:white;padding:10px 20px;font-size:13px;" onclick="clearAllShareLogs()">CLEAR ALL LOGS</button>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <button class="btn" style="background:var(--accent);color:#000;padding:10px 18px;font-size:13px;" onclick="toggleUserSearchBox()">SEARCH USER</button>
+                        <button class="btn" style="background:var(--error);color:white;padding:10px 20px;font-size:13px;" onclick="clearAllShareLogs()">CLEAR ALL LOGS</button>
+                    </div>
                 </h2>
                 <p>Shows when a bound key was tried on a second device (sharing detected).</p>
+                <div id="userSearchBox" style="display:none;margin:0 0 18px;padding:16px 18px;border-radius:16px;border:1px solid var(--glass-border);background:rgba(150,150,150,0.06);">
+                    <div style="font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:10px;">Enter device ID (native / fingerprint ID — not app UUID)</div>
+                    <div class="input-group" style="margin-bottom:12px;">
+                        <input type="text" id="userSearchDeviceInput" placeholder="Paste device ID here..." autocomplete="off" spellcheck="false">
+                        <button class="btn" style="padding:14px 22px;font-size:13px;" onclick="searchUserByDeviceId()">FIND</button>
+                    </div>
+                    <div id="userSearchResult" style="font-size:14px;font-weight:700;min-height:22px;color:var(--text-main);"></div>
+                </div>
                 <div class="mk-list" id="shareLogsList"></div>
             </div>
         </div>
@@ -2356,6 +2367,98 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         showConfirm("Delete Log?", "Remove this share log entry?", async () => {
             await remove(ref(db, 'settings/shareLogs/' + logId));
         });
+    };
+
+    window.toggleUserSearchBox = function() {
+        const box = document.getElementById('userSearchBox');
+        if (!box) return;
+        const open = box.style.display === 'none' || !box.style.display;
+        box.style.display = open ? 'block' : 'none';
+        if (open) {
+            const inp = document.getElementById('userSearchDeviceInput');
+            const res = document.getElementById('userSearchResult');
+            if (res) res.textContent = '';
+            if (inp) { inp.value = ''; setTimeout(() => inp.focus(), 50); }
+        }
+    };
+
+    window.searchUserByDeviceId = async function() {
+        const inp = document.getElementById('userSearchDeviceInput');
+        const res = document.getElementById('userSearchResult');
+        if (!inp || !res) return;
+        const raw = (inp.value || '').trim();
+        if (!raw) {
+            res.style.color = 'var(--error)';
+            res.textContent = 'Enter a device ID first.';
+            return;
+        }
+        res.style.color = 'var(--text-dim)';
+        res.textContent = 'Searching...';
+        const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, '');
+        const q = norm(raw);
+        try {
+            let foundName = null;
+            let foundId = null;
+            // 1) Direct users/{deviceId}
+            try {
+                const direct = await get(ref(db, 'users/' + raw));
+                if (direct.exists()) {
+                    const u = direct.val() || {};
+                    if (u.name && String(u.name).trim()) {
+                        foundName = String(u.name).trim();
+                        foundId = raw;
+                    }
+                }
+            } catch (e) {}
+            // 2) Scan users for matching device fields
+            if (!foundName) {
+                const usersSnap = await get(ref(db, 'users'));
+                if (usersSnap.exists()) {
+                    const data = usersSnap.val() || {};
+                    for (const uid in data) {
+                        const u = data[uid] || {};
+                        const fields = [uid, u.deviceId, u.fingerprint, u.lastDeviceId, u.androidId, u.lastLoginDevice];
+                        if (fields.some(f => norm(f) === q || (f && String(f).indexOf(raw) !== -1) || (raw && String(f||'').toLowerCase().indexOf(q) !== -1))) {
+                            if (u.name && String(u.name).trim()) {
+                                foundName = String(u.name).trim();
+                                foundId = uid;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            if (foundName) {
+                res.style.color = 'var(--accent)';
+                res.innerHTML = 'Registered: <span class="copyable" style="cursor:pointer;" title="Click to copy" data-copy="'+foundName.replace(/"/g,'&quot;')+'">'+foundName.replace(/</g,'&lt;')+'</span>'
+                    + (foundId ? ' <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;" title="Click to copy id" data-copy="'+String(foundId).replace(/"/g,'&quot;')+'">('+String(foundId).replace(/</g,'&lt;')+')</span>' : '');
+                return;
+            }
+            // 3) Clicked Get Key but not registered → deviceRequests
+            let requested = false;
+            try {
+                const dr = await get(ref(db, 'deviceRequests/' + raw));
+                if (dr.exists()) requested = true;
+            } catch (e) {}
+            if (!requested) {
+                try {
+                    const allDr = await get(ref(db, 'deviceRequests'));
+                    if (allDr.exists()) {
+                        const d = allDr.val() || {};
+                        for (const k in d) {
+                            const item = d[k] || {};
+                            if (norm(k) === q || norm(item.deviceId) === q) { requested = true; break; }
+                        }
+                    }
+                } catch (e) {}
+            }
+            // 4) knownDevices presence still counts as unknown if no name
+            res.style.color = 'var(--warn)';
+            res.textContent = 'unknown';
+        } catch (e) {
+            res.style.color = 'var(--error)';
+            res.textContent = 'Search failed: ' + (e.message || e);
+        }
     };
 
     window.clearAllShareLogs = function() {
