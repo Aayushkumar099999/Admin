@@ -445,6 +445,40 @@
 #gateCodeWrap{display:none;}
 #gateCodeWrap.show{display:block;}
 
+
+        /* Global Kill sad / paused overlay — sits on top of any theme */
+        body.global-kill-mode {
+            filter: grayscale(1) contrast(0.92) brightness(0.78);
+        }
+        body.global-kill-mode::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9997;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 20%, rgba(0,0,0,0.15), transparent 55%),
+                linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+            mix-blend-mode: multiply;
+            animation: killPulse 4.5s ease-in-out infinite;
+        }
+        @keyframes killPulse {
+            0%, 100% { opacity: 0.55; }
+            50% { opacity: 0.85; }
+        }
+        body.global-kill-mode .float-anim {
+            animation-play-state: paused !important;
+        }
+        body.global-kill-mode .water-wave {
+            animation-play-state: paused !important;
+            opacity: 0.25 !important;
+        }
+        body.global-kill-mode .auto-notch,
+        body.global-kill-mode .dynamic-island,
+        body.global-kill-mode .manual-refresh-btn {
+            filter: grayscale(1);
+        }
+
 </style>
 </head>
 <body>
@@ -2630,8 +2664,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                 bannedCount++;
                 if (bannedListDiv) bannedListDiv.innerHTML += `
                     <div class="user-card glass-panel banned float-anim">
-                        <button class="trash-btn" title="Permanently Delete" onclick="deleteUser('${user.id}')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                        <div class="user-date">${dateStr}</div>
+<div class="user-date">${dateStr}</div>
                         <div class="user-name copyable" style="cursor:pointer;" title="Click to copy" data-copy="${(user.name||'').replace(/"/g,'&quot;')}">${user.name}</div>
                         <div class="user-id copyable" style="cursor:pointer;" title="Click to copy ID" data-copy="${user.id}">ID: ${user.id}</div>
                         ${nativeId ? `<div class="copyable" style="font-size:10px;color:var(--text-dim);margin:0 0 8px;font-family:monospace;cursor:pointer;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="Click to copy native id" data-copy="${String(nativeId).replace(/"/g,'&quot;')}">Dev: ${nativeId}</div>` : ''}
@@ -2738,6 +2771,10 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         if (slider) slider.style.background = on ? 'var(--error)' : '#444';
         if (knob) knob.style.transform = on ? 'translateX(24px)' : 'translateX(0)';
         if (box) box.checked = !!on;
+        // Sad / paused B&W overlay — independent of theme (theme change does not clear it)
+        try {
+            document.body.classList.toggle('global-kill-mode', !!on);
+        } catch (e) {}
     }
 
     window.__globalKillApplying = false;
