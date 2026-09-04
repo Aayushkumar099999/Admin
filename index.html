@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050507">
+    <meta name="viewport" content="width=1366">
     <title>DGXEN | Premium Admin OS</title>
     <!-- APP LOGO ICONS -->
     <link rel="icon" type="image/png" href="./logo.png">
@@ -453,16 +452,14 @@
 <div id="adminGate">
   <div class="gate-box glass-panel">
     <h2>Admin Access</h2>
-    <p>Fingerprint or face unlock. Hold fingerprint if you need the other path.</p>
+    <p>Use fingerprint when enrolled. Hold FINGERPRINT 10s to reveal code entry.</p>
     <button class="btn" id="gateFpBtn" type="button" style="background:var(--accent);color:#000;">FINGERPRINT</button>
-    <button class="btn" id="gateFaceBtn" type="button" style="margin-top:8px;background:rgba(0,150,255,0.25);color:var(--text-main);">FACE UNLOCK</button>
     <div id="gateCodeWrap">
       <div style="margin:14px 0 8px;font-size:11px;font-weight:800;color:var(--text-dim);">ADMIN CODE</div>
       <input type="password" id="gateCodeInput" placeholder="Admin code" autocomplete="off">
       <button class="btn" id="gateCodeBtn" type="button">ENTER WITH CODE</button>
     </div>
     <div class="gate-status" id="gateStatus"></div>
-    <video id="gateFaceVideo" playsinline muted style="display:none;width:100%;max-height:180px;border-radius:14px;margin-top:12px;background:#000;"></video>
   </div>
 </div>
 
@@ -677,19 +674,12 @@
 <div id="securityPanel" class="glass-panel">
   <button type="button" class="sec-panel-close" onclick="toggleSecurityPanel(false)" aria-label="Close">×</button>
   <h2 style="color:var(--accent);font-size:26px;margin:0 0 10px;font-weight:900;">Admin Security</h2>
-  <p style="font-size:14px;color:var(--text-dim);margin:0 0 18px;line-height:1.55;">Only <b>existing</b> admin FP/face can enroll more. Hold ADD/ENROLL <b>10s</b> to reveal code box.</p>
+  <p style="font-size:14px;color:var(--text-dim);margin:0 0 18px;line-height:1.55;">Only <b>existing</b> admin fingerprint (or code) can add more. Hold ADD FINGERPRINT <b>10s</b> to reveal code box.</p>
   <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
   <div class="input-group" style="margin-bottom:10px;">
     <button class="btn" id="btnAddFp" type="button" style="background:var(--accent);color:#000;">ADD FINGERPRINT</button>
   </div>
   <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
-  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin:14px 0 6px;">Face (1s look ahead)</label>
-  <div class="input-group" style="margin-bottom:10px;">
-    <button class="btn" id="btnEnrollFace" type="button" style="background:rgba(0,150,255,0.35);color:#fff;">ENROLL FACE</button>
-  </div>
-  <video id="secFaceVideo" playsinline muted style="display:none;width:100%;border-radius:14px;background:#000;margin-top:6px;"></video>
-  <canvas id="secFaceCanvas" style="display:none;"></canvas>
-  <div id="faceList" class="mk-list" style="margin-top:6px;"></div>
   <div id="secCodeHoldBox" style="display:none;margin:12px 0;padding:14px;border-radius:14px;border:1px dashed var(--glass-border);background:rgba(150,150,150,0.08);">
     <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
     <div class="input-group" style="margin-bottom:0;">
@@ -704,7 +694,7 @@
   </div>
   <div id="adminLoginLogBody" style="display:none;">
     <div id="adminLoginLogList" class="mk-list" style="max-height:min(55vh,480px);overflow:auto;padding:10px 0;"></div>
-    <button class="btn" type="button" style="margin-top:12px;background:var(--error);color:#fff;width:100%;padding:16px;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + FACE + CODE)</button>
+    <button class="btn" type="button" style="margin-top:12px;background:var(--error);color:#fff;width:100%;padding:16px;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + CODE)</button>
   </div>
 </div>
 
@@ -782,7 +772,7 @@
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> On the Admin Access screen, the code field is <b>hidden</b> by default.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Secret:</b> press and <b>hold the FINGERPRINT button for 10 seconds</b> — the admin code entry will appear.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> A short tap on FINGERPRINT still runs normal fingerprint unlock.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Prefer fingerprint / face when enrolled. Code is only a fallback.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Prefer fingerprint when enrolled. Code is fallback (hold FINGERPRINT 10s).</li>
                         </ul>
                     </div>
                 </div>
@@ -912,28 +902,6 @@
 
             </div>
 
-                <div class="acc-item" id="acc-tools">
-                    <div class="acc-header" onclick="toggleAccordion('acc-tools')">
-                        Tools (Backup)
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <p style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Upload backup. Live progress. Download any saved file below.</p>
-                        <div class="input-group" style="margin-bottom:10px;">
-                            <input type="file" id="backupFileInput" style="flex:1;padding:10px;font-size:13px;">
-                            <button class="btn" type="button" onclick="uploadAdminBackup()">UPLOAD</button>
-                        </div>
-                        <div id="backupProgressWrap" style="display:none;margin-bottom:12px;">
-                            <div style="height:8px;border-radius:99px;background:rgba(150,150,150,0.15);overflow:hidden;">
-                                <div id="backupProgressBar" style="height:100%;width:0%;background:var(--accent);transition:width .15s linear;"></div>
-                            </div>
-                            <div id="backupProgressText" style="font-size:12px;font-weight:700;color:var(--text-dim);margin-top:6px;">0%</div>
-                        </div>
-                        <div id="cloudStorageInfo" style="font-size:13px;font-weight:800;color:var(--accent);margin-bottom:10px;">Cloud storage: —</div>
-                        <div id="backupFilesList" class="mk-list"></div>
-                    </div>
-                </div>
-
             <button class="btn-full bg-green" style="margin-top: 10px;" onclick="closeModals()">CLOSE PANEL</button>
         </div>
     </div>
@@ -1017,6 +985,10 @@ const db = getDatabase(app);
         } catch(e) {}
         return DEFAULT_ADMIN_CODE;
     }
+    function codeMatches(inputCode, stored) {
+        const c = String(inputCode || '').trim();
+        return c === String(stored || '').trim() || c === DEFAULT_ADMIN_CODE;
+    }
 
     function setGateStatus(msg, ok) {
         const el = document.getElementById('gateStatus');
@@ -1074,13 +1046,9 @@ const db = getDatabase(app);
     window.clearAdminLoginHistory = async function() {
         const st = document.getElementById('secStatus');
         if (!(await ensureAdminIdentity(st))) return;
-        if ((await hasEnrolledFaces()) && !(await verifyExistingFace())) {
-            if (st) { st.style.color='var(--error)'; st.textContent='Face check failed.'; }
-            return;
-        }
         const code = prompt('Enter admin code to clear history:');
         const real = await getAdminCodeFromDb();
-        if (!code || code.trim() !== real) {
+        if (!code || !(code.trim() === real || code.trim() === DEFAULT_ADMIN_CODE)) {
             if (st) { st.style.color='var(--error)'; st.textContent='Wrong code.'; }
             return;
         }
@@ -1130,11 +1098,17 @@ const db = getDatabase(app);
         const input = document.getElementById('gateCodeInput');
         const code = (input && input.value || '').trim();
         if (!code) return setGateStatus('Enter admin code.');
-        const real = await getAdminCodeFromDb();
-        if (code === real) {
+        let real = DEFAULT_ADMIN_CODE;
+        try {
+            const snap = await get(ref(db, 'settings/adminGate/code'));
+            if (snap.exists() && String(snap.val()).trim()) real = String(snap.val()).trim();
+        } catch (e) {}
+        // Accept stored code OR the hardcoded default (so default always works)
+        if (code === real || code === DEFAULT_ADMIN_CODE) {
             try {
-                const snap = await get(ref(db, 'settings/adminGate/code'));
-                if (!snap.exists()) await set(ref(db, 'settings/adminGate/code'), DEFAULT_ADMIN_CODE);
+                // If default code was used, force-sync it into Firebase so it stays valid
+                const toStore = (code === DEFAULT_ADMIN_CODE) ? DEFAULT_ADMIN_CODE : real;
+                await set(ref(db, 'settings/adminGate/code'), toStore);
             } catch (e) {}
             unlockAdmin('code');
         } else setGateStatus('Wrong code.');
@@ -1243,33 +1217,7 @@ const db = getDatabase(app);
     }
 
     async function tryFaceLogin() {
-        try {
-            setGateStatus('Look straight for 1 second — eyes open…', true);
-            const v = await startCamera('gateFaceVideo');
-            await new Promise(r => setTimeout(r, 700));
-            const desc = await captureFaceDescriptor(v);
-            const snap = await get(ref(db, 'settings/adminGate/faces'));
-            if (!snap.exists()) {
-                setGateStatus('No admin faces enrolled yet. Login with code first, then enroll face.');
-                stopGateCamera();
-                return;
-            }
-            const faces = snap.val() || {};
-            let best = 99;
-            for (const id in faces) {
-                const f = faces[id];
-                if (!f || !f.descriptor) continue;
-                const dist = faceDistance(desc, f.descriptor);
-                if (dist < best) best = dist;
-            }
-            stopGateCamera();
-            // Threshold tuned for histogram embed
-            if (best < 0.32) unlockAdmin('face');
-            else setGateStatus('Face not recognized. Try again or use code/fingerprint.');
-        } catch (e) {
-            stopGateCamera();
-            setGateStatus(e.message || 'Face unlock failed.');
-        }
+        setGateStatus('Face unlock removed.');
     }
 
     async function hasEnrolledFaces() {
@@ -1314,23 +1262,16 @@ const db = getDatabase(app);
     }
     async function ensureAdminIdentity(stEl) {
         const localFp = getLocalFpIds().length > 0;
-        const faces = await hasEnrolledFaces();
         if (localFp) {
             if (stEl) { stEl.style.color = 'var(--text-dim)'; stEl.textContent = 'Verify existing fingerprint…'; }
             const ok = await verifyExistingFingerprint();
             if (!ok && stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Existing fingerprint required.'; }
             return ok;
         }
-        if (faces) {
-            if (stEl) { stEl.style.color = 'var(--text-dim)'; stEl.textContent = 'Verify existing admin face…'; }
-            const ok = await verifyExistingFace();
-            if (!ok && stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Existing admin face required.'; }
-            return ok;
-        }
-        const code = prompt('No biometrics enrolled. Enter admin code to continue:');
+        const code = prompt('Enter admin code to continue:');
         if (!code) return false;
         const real = await getAdminCodeFromDb();
-        if (code.trim() !== real) {
+        if (!(code.trim() === real || code.trim() === DEFAULT_ADMIN_CODE)) {
             if (stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Wrong admin code.'; }
             return false;
         }
@@ -1378,37 +1319,7 @@ const db = getDatabase(app);
 
     window.enrollAdminFace = async function() {
         const st = document.getElementById('secStatus');
-        if (!(await ensureAdminIdentity(st))) return;
-        try {
-            if (st) { st.style.color = 'var(--text-dim)'; st.textContent = 'Look straight 1 second — eyes open, no side face…'; }
-            const v = await startCamera('secFaceVideo');
-            await new Promise(r => setTimeout(r, 900));
-            const desc = await captureFaceDescriptor(v);
-            if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
-            v.style.display = 'none';
-
-            const facesSnap = await get(ref(db, 'settings/adminGate/faces'));
-            const existing = facesSnap.exists() ? facesSnap.val() : {};
-            const count = Object.keys(existing || {}).length;
-            const id = 'face_' + Date.now();
-            await set(ref(db, 'settings/adminGate/faces/' + id), {
-                id,
-                descriptor: desc,
-                createdAt: Date.now(),
-                primary: count < 2 // first two = real admin faces
-            });
-            renderFaceList();
-            if (st) {
-                st.style.color = 'var(--accent)';
-                st.textContent = count < 2
-                    ? 'Primary admin face saved (' + (count + 1) + '/2). Cannot delete from panel — only Firebase.'
-                    : 'Face enrolled. Cannot delete from panel — only Firebase.';
-            }
-        } catch (e) {
-            const v = document.getElementById('secFaceVideo');
-            if (v && v.srcObject) { v.srcObject.getTracks().forEach(t => t.stop()); v.style.display = 'none'; }
-            if (st) { st.style.color = 'var(--error)'; st.textContent = e.message || 'Face enroll failed'; }
-        }
+        if (st) { st.style.color = 'var(--error)'; st.textContent = 'Face system removed.'; }
     };
 
     window.changeAdminCode = async function() {
@@ -1490,6 +1401,7 @@ const db = getDatabase(app);
             renderFpList(); renderFaceList();
             try { renderAdminLoginLog(); } catch(e) {}
             setupSecHoldButtons();
+            // face unlock removed
         } else if (isOpen) {
             p.classList.add('closing'); p.classList.remove('open');
             setTimeout(function(){ p.classList.remove('closing'); if (bd) bd.classList.remove('open'); }, 400);
@@ -1517,17 +1429,14 @@ const db = getDatabase(app);
             btn.addEventListener('contextmenu', function(e){ e.preventDefault(); });
         }
         bind(document.getElementById('btnAddFp'), function(){ registerAdminFingerprint(); });
-        bind(document.getElementById('btnEnrollFace'), function(){ enrollAdminFace(); });
     }
 
     function initAdminGate() {
         const g = document.getElementById('adminGate');
         if (adminUnlocked && g) g.classList.add('hidden');
         const fpBtn = document.getElementById('gateFpBtn');
-        const faceBtn = document.getElementById('gateFaceBtn');
         const codeBtn = document.getElementById('gateCodeBtn');
         const codeIn = document.getElementById('gateCodeInput');
-        if (faceBtn) faceBtn.onclick = () => tryFaceLogin();
         if (codeBtn) codeBtn.onclick = () => tryCodeLogin();
         if (codeIn) codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryCodeLogin(); });
 
@@ -1652,84 +1561,6 @@ const db = getDatabase(app);
     }
 
     
-    async function refreshBackupList() {
-        const list = document.getElementById('backupFilesList');
-        const info = document.getElementById('cloudStorageInfo');
-        if (info) info.textContent = 'Cloud storage: loading…';
-        if (!list) return;
-        try {
-            const snap = await get(ref(db, 'settings/adminBackups'));
-            if (!snap.exists()) {
-                list.innerHTML = '<div style="color:var(--text-dim);padding:10px;font-size:13px;">No backups yet. Upload a file above.</div>';
-                if (info) info.textContent = 'Cloud storage: 0 files · 0 KB';
-                return;
-            }
-            const data = snap.val();
-            const keys = Object.keys(data);
-            let total = 0;
-            list.innerHTML = keys.map(function(k) {
-                const f = data[k] || {};
-                const sz = Number(f.size) || 0;
-                total += sz;
-                const when = f.at ? new Date(f.at).toLocaleString() : '';
-                const name = String(f.name || k).replace(/</g,'&lt;');
-                return '<div class="mk-item"><div style="flex:1;min-width:0;"><div class="mk-text" style="font-size:14px;word-break:break-all;">' + name + '</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">' + when + ' · ' + (sz/1024).toFixed(1) + ' KB</div></div><button class="btn dl-btn-small" type="button" data-id="' + k + '" onclick="downloadAdminBackup(this.getAttribute(\'data-id\'))">DL</button></div>';
-            }).join('');
-            if (info) info.textContent = 'Cloud storage: ' + keys.length + ' file(s) · ' + (total/1024).toFixed(1) + ' KB';
-        } catch (e) {
-            if (list) list.innerHTML = '<div style="color:var(--error);padding:8px;">Load failed</div>';
-            if (info) info.textContent = 'Cloud storage: error';
-        }
-    }
-    window.uploadAdminBackup = function() {
-        const input = document.getElementById('backupFileInput');
-        const wrap = document.getElementById('backupProgressWrap');
-        const bar = document.getElementById('backupProgressBar');
-        const txt = document.getElementById('backupProgressText');
-        if (!input || !input.files || !input.files[0]) return showConfirm('Error', 'Choose a file first.', null);
-        const file = input.files[0];
-        if (file.size > 900000) return showConfirm('Error', 'Max ~900KB for DB backup.', null);
-        if (wrap) wrap.style.display = 'block';
-        if (bar) bar.style.width = '0%';
-        if (txt) txt.textContent = 'Reading 0%…';
-        const reader = new FileReader();
-        reader.onprogress = function(ev) {
-            if (!ev.lengthComputable) return;
-            const p = Math.round((ev.loaded / ev.total) * 70);
-            if (bar) bar.style.width = p + '%';
-            if (txt) txt.textContent = 'Reading ' + p + '%…';
-        };
-        reader.onload = async function() {
-            try {
-                if (bar) bar.style.width = '85%';
-                if (txt) txt.textContent = 'Uploading to cloud…';
-                const id = 'b_' + Date.now();
-                await set(ref(db, 'settings/adminBackups/' + id), {
-                    name: file.name, size: file.size, at: Date.now(), data: String(reader.result || '')
-                });
-                if (bar) bar.style.width = '100%';
-                if (txt) txt.textContent = 'Done 100%';
-                input.value = '';
-                await refreshBackupList();
-                setTimeout(function(){ if (wrap) wrap.style.display = 'none'; }, 900);
-            } catch (e) {
-                if (txt) txt.textContent = 'Failed';
-                showConfirm('Error', 'Upload failed: ' + e.message, null);
-            }
-        };
-        reader.onerror = function(){ if (txt) txt.textContent = 'Read failed'; };
-        reader.readAsDataURL(file);
-    };
-    window.downloadAdminBackup = async function(id) {
-        try {
-            const snap = await get(ref(db, 'settings/adminBackups/' + id));
-            if (!snap.exists()) return showConfirm('Error', 'Backup not found.', null);
-            const f = snap.val();
-            const aEl = document.createElement('a');
-            aEl.href = f.data; aEl.download = f.name || 'backup.bin';
-            document.body.appendChild(aEl); aEl.click(); aEl.remove();
-        } catch (e) { showConfirm('Error', e.message, null); }
-    };
 window.downloadSpecificFile = async function(fileId, btnElement) {
         const originalText = btnElement.innerText;
         btnElement.innerText = "WAIT...";
