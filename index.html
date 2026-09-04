@@ -287,13 +287,13 @@
         .mk-del:hover { transform: scale(1.3); opacity: 1; color: var(--error); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
 
         .user-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .user-card { padding: 24px 18px 18px; position: relative; display: flex; flex-direction: column; }
+        .user-card { padding: 28px 16px 16px; position: relative; display: flex; flex-direction: column; min-height: 0; }
         .user-card:hover { transform: translateY(-12px) scale(1.02); border-color: rgba(150,150,150,0.4); box-shadow: 0 35px 60px var(--shadow-color); }
         .user-card.banned { border-color: rgba(255, 59, 48, 0.5); background: linear-gradient(135deg, rgba(255, 59, 48, 0.08), transparent); }
-        .user-name { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+        .user-name { font-size: 16px; font-weight: 800; margin: 0 0 6px; padding-right: 72px; color: var(--text-main); line-height: 1.25; }
         .banned .user-name { color: var(--error); }
-        .user-id { font-size: 13px; color: var(--text-dim); font-family: monospace; word-break: break-all; margin-bottom: 30px; background: rgba(150,150,150,0.1); padding: 12px 16px; border-radius: 12px; font-weight: 600; }
-        .user-date { font-size: 12px; font-weight: 800; color: var(--accent); position: absolute; top: 22px; left: 30px; letter-spacing: 1px; }
+        .user-id { font-size: 11px; color: var(--text-dim); font-family: monospace; margin-bottom: 12px; word-break: break-all; line-height: 1.35; }
+        .user-date { font-size: 10px; font-weight: 800; color: var(--accent); position: absolute; top: 12px; right: 14px; left: auto; letter-spacing: 0.4px; opacity: 0.9; white-space: nowrap; }
         .banned .user-date { color: var(--error); }
         .trash-btn { position: absolute; top: 15px; right: 15px; padding: 5px; background: transparent; border: none; cursor: pointer; opacity: 0.4; color: var(--text-main); }
         .trash-btn:hover { opacity: 1; transform: scale(1.25) rotate(10deg); color: var(--error); }
@@ -2187,6 +2187,10 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
 
     onValue(ref(db, 'users'), (snap) => {
         globalUsersForLogs = snap.exists() ? snap.val() : {};
+        // Refresh share logs so unknown → name when user registers later
+        try {
+            if (window.__lastShareLogsSnap) window._renderShareLogs(window.__lastShareLogsSnap);
+        } catch (e) {}
     });
     onValue(ref(db, 'settings/bannedKeys'), (snap) => {
         globalBannedKeysForLogs = snap.exists() ? snap.val() : {};
@@ -2260,20 +2264,20 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                 ? `<button id="ban-btn-${id}" class="btn" style="background:rgba(150,150,150,0.25);color:var(--text-dim);padding:10px 18px;font-size:12px;border-radius:12px;" onclick="unbanKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">KEY BANNED</button>`
                 : `<button id="ban-btn-${id}" class="btn" style="background:var(--error);color:white;padding:10px 18px;font-size:12px;border-radius:12px;" onclick="banKeyFromLog('${keyStr.replace(/'/g,"\\'")}', '${id}')">BAN KEY</button>`;
 
-            // Always show full UUID for the receiver
-            const fullUuid = resolved.displayId || log.receiverFingerprint || log.receiverDevice || 'unknown';
-            const namePart = (resolved.name && resolved.name !== 'unknown user')
+            const deviceIdShow = log.receiverFingerprint || log.receiverDevice || resolved.displayId || 'unknown';
+            const isNamed = resolved.name && resolved.name !== 'unknown user';
+            // Registered → name only. Unknown → unknown user + device id
+            const receiverPart = isNamed
                 ? `<span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy name" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>`
-                : `<span style="color:var(--warn)">unknown user</span>`;
+                : `<span style="color:var(--warn)">unknown user</span> <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;word-break:break-all;" title="Click to copy device id" data-copy="${String(deviceIdShow).replace(/"/g,'&quot;')}">(${deviceIdShow})</span>`;
 
             list.innerHTML += `
                 <div class="mk-item" id="log-row-${id}">
                     <div style="flex:1;">
-                        <div style="font-size:16px;font-weight:800;color:var(--text-main);">
+                        <div style="font-size:14px;font-weight:800;color:var(--text-main);line-height:1.45;">
                             <span class="copyable" style="color:var(--accent);cursor:pointer;" title="Click to copy" data-copy="${(log.generatorName||'').replace(/"/g,'&quot;')}">${log.generatorName || 'Unknown'}</span>
-                            <span style="color:var(--text-dim);margin:0 8px;">→ sended key to →</span>
-                            ${namePart}
-                            <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;word-break:break-all;" title="Click to copy full UUID" data-copy="${fullUuid}">(${fullUuid})</span>
+                            <span style="color:var(--text-dim);margin:0 6px;">→ sended key to →</span>
+                            ${receiverPart}
                         </div>
                         <div style="font-size:13px;color:var(--text-dim);margin-top:8px;font-family:monospace;">
                             Key: <span class="copyable" style="cursor:pointer;" title="Click to copy key" data-copy="${keyStr}">${keyStr}</span> · ${time}
@@ -2288,6 +2292,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
     };
 
     onValue(ref(db, 'settings/shareLogs'), (snap) => {
+        window.__lastShareLogsSnap = snap;
         window._renderShareLogs(snap);
         const countEl = document.getElementById('stat-logs');
         if (countEl) {
