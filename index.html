@@ -68,6 +68,19 @@
             --float-amount: -12px;
         }
 
+        /* 🍃 ANOTHER WORLD: CUTE LEAF THEME 🍃 */
+        body.theme-cute {
+            --bg-color: #f1f8e9 !important; 
+            --accent: #81c784 !important; 
+            --accent-glow: rgba(129, 199, 132, 0.5) !important;
+            --text-main: #2e7d32 !important;
+            --glass-bg: rgba(255, 255, 255, 0.7) !important;
+            background-image: radial-gradient(circle at 10% 20%, rgba(129, 199, 132, 0.2) 0%, transparent 20%) !important;
+        }
+        body.theme-cute * { font-family: "Comic Sans MS", cursive, sans-serif !important; }
+        .leaf { position: fixed; font-size: 30px; opacity: 0; pointer-events: none; z-index: 9999; animation: fall 4s linear forwards; }
+        @keyframes fall { 0% { transform: translateY(-50px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -263,25 +276,10 @@
         .mk-item:hover { background: rgba(150,150,150,0.1); border-color: rgba(150,150,150,0.3); transform: scale(1.01); }
         .mk-text { font-family: monospace; font-size: 14px; color: var(--text-main); font-weight: 800; letter-spacing: 0.5px; word-break: break-all; }
         
-        /* UPDATED USES CSS */
         .mk-usage { 
-            background: rgba(0,150,255,0.12); 
-            color: #3da5ff; 
-            padding: 6px 14px; 
-            border-radius: 20px; 
-            font-size: 13px; 
-            font-weight: 800; 
-            margin-left: 15px; 
-            border: 1px solid rgba(61,165,255,.35); 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 6px; 
+            background: rgba(0,150,255,0.12); color: #3da5ff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; margin-left: 15px; border: 1px solid rgba(61,165,255,.35); display: inline-flex; align-items: center; gap: 6px; 
         }
-        body.max-mode .mk-usage { 
-            background: rgba(0,150,255,0.12); 
-            color: #3da5ff; 
-            border-color: rgba(61,165,255,.35); 
-        }
+        body.max-mode .mk-usage { border-color: rgba(61,165,255,.35); }
 
         .mk-del { background: transparent; border: none; cursor: pointer; opacity: 0.5; color: var(--text-main); padding: 5px;}
         .mk-del:hover { transform: scale(1.3); opacity: 1; color: var(--error); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
@@ -374,7 +372,6 @@
         .dl-file-name { font-size: 13px; font-family: monospace; color: var(--text-dim); }
         .dl-btn-small { background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border-style: solid; text-transform: uppercase; }
         
-        /* New CSS for the hidden device requests box */
         .device-id-box { width:220px; height:120px; overflow-y:auto; border-radius:14px; padding:8px; background:rgba(150,150,150,0.05); border: 1px solid var(--glass-border); }
         .device-id-item { padding:8px; cursor:pointer; font-family: monospace; font-size: 12px; color: var(--accent); border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.3s; word-break: break-all; }
         .device-id-item:last-child { border-bottom: none; }
@@ -524,7 +521,8 @@
 
     <!-- Sidebar with Premium SVGs -->
     <div class="sidebar glass-panel" style="border-radius: 0 35px 35px 0; border-left: none;">
-        <h1>DGXEN</h1>
+        <!-- TRIGGER ADDED TO THIS H1 -->
+        <h1 id="dgxenLogoTitle" style="cursor:pointer;">DGXEN</h1>
         <div class="nav-link active" onclick="switchTab('dashboard', this)" id="nav-dashboard">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             Dashboard
@@ -685,8 +683,6 @@
             </div>
         </div>
 
-        <!-- Security moved to FAB (bottom-left) -->
-
         <div id="reset-device" class="tab-section">
             <div class="section-box glass-panel float-anim">
                 <h2 style="display: flex; align-items: center;">
@@ -724,40 +720,61 @@
                 <button class="btn" style="background: var(--error); color: white; width: 100%; margin-top: 15px;" onclick="startFactoryReset()">WIPE ENTIRE DATABASE (FACTORY RESET)</button>
             </div>
         </div>
+
+        <!-- 🐱 ANOTHER WORLD: CAT CONFIGURATION TAB -->
+        <div id="cat-world" class="tab-section">
+            <div class="section-box glass-panel float-anim" style="border-color: #81c784; background: rgba(129,199,132,0.1);">
+                <h2 style="color: #2e7d32;">🐾 The Secret Cat World</h2>
+                <p style="color: #43a047;">Control how the 3D Cat behaves on the login page.</p>
+                
+                <div style="background: rgba(255,255,255,0.4); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <b style="color: #2e7d32; display:block; margin-bottom:10px;">Dance Mode:</b>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:8px; color:#1b5e20; font-weight:bold;">
+                        <input type="radio" name="catMode" value="manual" id="modeManual" onchange="updateCatMode()" style="width:18px; height:18px;"> 
+                        Manual Choreography (Cinematic 67s Timeline)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:#1b5e20; font-weight:bold;">
+                        <input type="radio" name="catMode" value="auto" id="modeAuto" onchange="updateCatMode()" style="width:18px; height:18px;"> 
+                        Auto-Beat Detection (Live Music Bass Bounce)
+                    </label>
+                </div>
+                
+                <p style="font-size:12px; color:#66bb6a;"><i>Note: Changes are saved to Firebase immediately.</i></p>
+            </div>
+        </div>
     </div>
 
     <!-- FLOATING INFO BUTTON -->
-    
-<button type="button" class="sec-fab" id="secFab" title="Security" onclick="toggleSecurityPanel()">
-  <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-</button>
-<div id="securityPanelBackdrop" onclick="toggleSecurityPanel(false)"></div>
-<div id="securityPanel" class="glass-panel">
-  <button type="button" class="sec-panel-close" onclick="toggleSecurityPanel(false)" aria-label="Close">×</button>
-  <h2 style="color:var(--accent);font-size:26px;margin:0 0 10px;font-weight:900;">Admin Security</h2>
-  <p style="font-size:14px;color:var(--text-dim);margin:0 0 18px;line-height:1.55;">Only <b>existing</b> admin fingerprint (or code) can add more. Hold ADD FINGERPRINT <b>10s</b> to reveal code box.</p>
-  <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
-  <div class="input-group" style="margin-bottom:10px;">
-    <button class="btn" id="btnAddFp" type="button" style="background:var(--accent);color:#000;">ADD FINGERPRINT</button>
-  </div>
-  <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
-  <div id="secCodeHoldBox" style="display:none;margin:12px 0;padding:14px;border-radius:14px;border:1px dashed var(--glass-border);background:rgba(150,150,150,0.08);">
-    <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
-    <div class="input-group" style="margin-bottom:0;">
-      <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
-      <button class="btn" type="button" onclick="changeAdminCode()">SAVE</button>
+    <button type="button" class="sec-fab" id="secFab" title="Security" onclick="toggleSecurityPanel()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </button>
+    <div id="securityPanelBackdrop" onclick="toggleSecurityPanel(false)"></div>
+    <div id="securityPanel" class="glass-panel">
+      <button type="button" class="sec-panel-close" onclick="toggleSecurityPanel(false)" aria-label="Close">×</button>
+      <h2 style="color:var(--accent);font-size:26px;margin:0 0 10px;font-weight:900;">Admin Security</h2>
+      <p style="font-size:14px;color:var(--text-dim);margin:0 0 18px;line-height:1.55;">Only <b>existing</b> admin fingerprint (or code) can add more. Hold ADD FINGERPRINT <b>10s</b> to reveal code box.</p>
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Fingerprint</label>
+      <div class="input-group" style="margin-bottom:10px;">
+        <button class="btn" id="btnAddFp" type="button" style="background:var(--accent);color:#000;">ADD FINGERPRINT</button>
+      </div>
+      <div id="fpList" class="mk-list" style="margin-top:6px;"></div>
+      <div id="secCodeHoldBox" style="display:none;margin:12px 0;padding:14px;border-radius:14px;border:1px dashed var(--glass-border);background:rgba(150,150,150,0.08);">
+        <label style="display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Change admin code</label>
+        <div class="input-group" style="margin-bottom:0;">
+          <input type="text" id="adminCodeNew" placeholder="New admin code" autocomplete="off">
+          <button class="btn" type="button" onclick="changeAdminCode()">SAVE</button>
+        </div>
+      </div>
+      <p id="secStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:10px;min-height:20px;"></p>
+      <div id="adminLogToggle" onclick="toggleAdminLoginLog()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:18px 0;margin-top:20px;border-top:1px solid var(--glass-border);">
+        <span style="font-size:16px;font-weight:800;color:var(--text-main);">Admin login history</span>
+        <svg id="adminLogArrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .25s;color:var(--text-dim);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <div id="adminLoginLogBody" style="display:none;">
+        <div id="adminLoginLogList" class="mk-list" style="max-height:min(55vh,480px);overflow:auto;padding:10px 0;"></div>
+        <button class="btn" type="button" style="margin-top:12px;background:var(--error);color:#fff;width:100%;padding:16px;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + CODE)</button>
+      </div>
     </div>
-  </div>
-  <p id="secStatus" style="font-size:13px;font-weight:700;color:var(--text-dim);margin-top:10px;min-height:20px;"></p>
-  <div id="adminLogToggle" onclick="toggleAdminLoginLog()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:18px 0;margin-top:20px;border-top:1px solid var(--glass-border);">
-    <span style="font-size:16px;font-weight:800;color:var(--text-main);">Admin login history</span>
-    <svg id="adminLogArrow" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .25s;color:var(--text-dim);"><polyline points="6 9 12 15 18 9"></polyline></svg>
-  </div>
-  <div id="adminLoginLogBody" style="display:none;">
-    <div id="adminLoginLogList" class="mk-list" style="max-height:min(55vh,480px);overflow:auto;padding:10px 0;"></div>
-    <button class="btn" type="button" style="margin-top:12px;background:var(--error);color:#fff;width:100%;padding:16px;" onclick="clearAdminLoginHistory()">CLEAR HISTORY (FP + CODE)</button>
-  </div>
-</div>
 
     <button class="info-btn" onclick="openGuideModal()">i</button>
 
@@ -786,13 +803,11 @@
     <!-- MODERN DESIGNED GUIDE / DOWNLOAD MODAL -->
     <div class="modal-overlay" id="guideModal">
         <div class="modal guide-modal">
-            
             <div style="text-align: center; margin-bottom: 25px;">
                 <h2 style="color: var(--accent); margin-bottom: 5px; font-size: 26px; letter-spacing: 1px;">DGXEN</h2>
                 <div style="color: var(--text-dim); font-size: 14px;">System Control Panel</div>
             </div>
 
-            <!-- TABS -->
             <div class="modal-tabs">
                 <div class="m-tab active" onclick="switchGuideTab('manual', this)">
                     <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> 
@@ -804,7 +819,6 @@
                 </div>
             </div>
 
-            <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Important system rules, security behaviour and tips.</p>
 
@@ -817,8 +831,6 @@
                         <ul class="check-list">
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> The first device that successfully unlocks a key permanently binds it.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Any other device trying the same key is blocked with “This key is already used on another device”.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Works for both normal DGXEN- keys and Master Keys.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can log in again without increasing usage count.</li>
                         </ul>
                     </div>
                 </div>
@@ -832,80 +844,13 @@
                         <ul class="check-list">
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> On the Admin Access screen, the code field is <b>hidden</b> by default.</li>
                             <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Secret:</b> press and <b>hold the FINGERPRINT button for 10 seconds</b> — the admin code entry will appear.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> A short tap on FINGERPRINT still runs normal fingerprint unlock.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Prefer fingerprint when enrolled. Code is fallback (hold FINGERPRINT 10s).</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="acc-item" id="acc-man-2">
-                    <div class="acc-header" onclick="toggleAccordion('acc-man-2')">
-                        Share Logs & Key Banning
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> When a second device tries a bound key, a log is created automatically.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Logs show: Generator Name → sended key to → Receiver (or unknown user).</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use <b>BAN KEY</b> to blacklist that key. It appears in Banned Normal Keys.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click <b>KEY BANNED</b> again to unban the key.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Banned keys show “Banned: …” on the login screen (not a device ban).</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="acc-item" id="acc-man-3">
-                    <div class="acc-header" onclick="toggleAccordion('acc-man-3')">
-                        Master Keys Behaviour
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> First device binds the master key and increments usage once.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Same device can reuse the master key without extra count.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Deleting a master key in admin also wipes its usage and device tracking.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="acc-item" id="acc-man-4">
-                    <div class="acc-header" onclick="toggleAccordion('acc-man-4')">
-                        Active Users vs Registered Users
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Active Users</b> = currently have a live (non-expired) key. Live countdown is shown on the right.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Registered Users</b> = all non-banned devices that ever registered.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Click any name / ID / key to copy it instantly.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="acc-item" id="acc-man-5">
-                    <div class="acc-header" onclick="toggleAccordion('acc-man-5')">
-                        Tips & Best Practices
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <ul class="check-list">
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Always hard-refresh (Ctrl+Shift+R) after updating login or admin files.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Use the top Refresh button or enable Auto Sync for live data.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> If a legitimate user changes phone, use System Reset → Unbind Device.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Clear old Share Logs with the CLEAR ALL LOGS button when needed.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <strong>Key device track auto-cleanup:</strong> when a user generates a new key on the same account, the old key’s device-track entry is deleted automatically so Firebase does not fill with expired keys.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <strong>Global Kill</strong> (System Reset tab): turns on a network-wide critical shutdown — all online apps show “Critical shutdown” and close in 10s. Needs double confirm + fingerprint.</li>
-                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Master keys should be kept private — they still follow the one-device rule.</li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB CONTENT: DOWNLOADS (ACCORDION STYLE) -->
             <div id="tab-downloads" class="m-content">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Download core module components for local integration. Offline bundles are fully updated.</p>
-                
-                <!-- Category 1: Admin Panel -->
                 <div class="acc-item" id="acc-admin">
                     <div class="acc-header" onclick="toggleAccordion('acc-admin')">
                         Admin Panel System
@@ -916,55 +861,9 @@
                             <span class="dl-file-name">index.html (Current Web)</span>
                             <button class="btn dl-btn-small" onclick="downloadSpecificFile('index', this)">DL</button>
                         </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">manifest.json</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('manifest', this)">DL</button>
-                        </div>
                     </div>
                 </div>
-
-                <!-- Category 2: Generator Logic -->
-                <div class="acc-item" id="acc-gen">
-                    <div class="acc-header" onclick="toggleAccordion('acc-gen')">
-                        Key Generator Logic
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">index.html (Generator Core)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('gen_index', this)">DL</button>
-                        </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">steps.html (Key Web)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('steps', this)">DL</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Category 3: Auth System (Injected/App Assets) -->
-                <div class="acc-item" id="acc-auth">
-                    <div class="acc-header" onclick="toggleAccordion('acc-auth')">
-                        Authentication Module
-                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </div>
-                    <div class="acc-body">
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">login.html (Offline/App Asset)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('login_github', this)">DL</button>
-                        </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">Auth.smali (Hook Core)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('auth_smali', this)">DL</button>
-                        </div>
-                        <div class="dl-file-row">
-                            <span class="dl-file-name">Hook.smali (Invoke Trigger)</span>
-                            <button class="btn dl-btn-small" onclick="downloadSpecificFile('hook_smali', this)">DL</button>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-
             <button class="btn-full bg-green" style="margin-top: 10px;" onclick="closeModals()">CLOSE PANEL</button>
         </div>
     </div>
@@ -1012,34 +911,63 @@
 
     const firebaseConfig = { databaseURL: "https://login-pass-1a196-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
-    
-const db = getDatabase(app);
+    const db = getDatabase(app);
+
+    // --- 🐱 ANOTHER WORLD: THE CAT TRIGGER LOGIC ---
+    const logoTitle = document.getElementById('dgxenLogoTitle');
+    let dgxenHoldTimer;
+
+    logoTitle.addEventListener('pointerdown', () => {
+        dgxenHoldTimer = setTimeout(() => {
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            
+            // Switch Theme to Cute
+            document.body.classList.add('theme-cute');
+            document.getElementById('themeText').innerText = "CUTE MODE";
+            
+            // Leaves Animation
+            for(let i=0; i<20; i++) {
+                let leaf = document.createElement('div');
+                leaf.className = 'leaf';
+                leaf.innerText = ['🍃', '🌿', '🌸', '✨'][Math.floor(Math.random()*4)];
+                leaf.style.left = Math.random() * 100 + 'vw';
+                leaf.style.animationDelay = (Math.random() * 2) + 's';
+                document.body.appendChild(leaf);
+                setTimeout(() => leaf.remove(), 4000);
+            }
+            
+            // Open Cat World Tab
+            window.switchTab('cat-world', document.createElement('div')); // fake element to avoid null
+        }, 1500); // 1.5 Seconds Hold required
+    });
+    logoTitle.addEventListener('pointerup', () => clearTimeout(dgxenHoldTimer));
+    logoTitle.addEventListener('pointerleave', () => clearTimeout(dgxenHoldTimer));
+
+    // --- CAT DANCE MODE TOGGLE ---
+    onValue(ref(db, 'settings/catDanceMode'), (snap) => {
+        const mode = snap.exists() ? snap.val() : 'manual';
+        if(mode === 'auto') document.getElementById('modeAuto').checked = true;
+        else document.getElementById('modeManual').checked = true;
+    });
+
+    window.updateCatMode = async function() {
+        const isAuto = document.getElementById('modeAuto').checked;
+        const mode = isAuto ? 'auto' : 'manual';
+        try {
+            await set(ref(db, 'settings/catDanceMode'), mode);
+        } catch(e) { console.error("Failed to save cat mode", e); }
+    }
+
 
     // ========== ADMIN GATE (fingerprint + code) ==========
-
     const DEFAULT_ADMIN_CODE = 'adminxdeygayan'; // never shown in UI
     const FP_STORE_KEY = 'dgxen_admin_fp_ids_v1';
     let adminUnlocked = sessionStorage.getItem('dgxen_admin_unlocked') === '1';
-    let faceModelsReady = false;
 
-    function getLocalFpIds() {
-        try { return JSON.parse(localStorage.getItem(FP_STORE_KEY) || '[]'); } catch(e) { return []; }
-    }
-    function setLocalFpIds(arr) {
-        localStorage.setItem(FP_STORE_KEY, JSON.stringify(arr || []));
-    }
-    function bufferToBase64(buf) {
-        const bytes = new Uint8Array(buf);
-        let s = '';
-        bytes.forEach(b => s += String.fromCharCode(b));
-        return btoa(s);
-    }
-    function base64ToBuffer(b64) {
-        const s = atob(b64);
-        const bytes = new Uint8Array(s.length);
-        for (let i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
-        return bytes.buffer;
-    }
+    function getLocalFpIds() { try { return JSON.parse(localStorage.getItem(FP_STORE_KEY) || '[]'); } catch(e) { return []; } }
+    function setLocalFpIds(arr) { localStorage.setItem(FP_STORE_KEY, JSON.stringify(arr || [])); }
+    function bufferToBase64(buf) { const bytes = new Uint8Array(buf); let s = ''; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s); }
+    function base64ToBuffer(b64) { const s = atob(b64); const bytes = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i); return bytes.buffer; }
 
     async function getAdminCodeFromDb() {
         try {
@@ -1047,10 +975,6 @@ const db = getDatabase(app);
             if (snap.exists() && String(snap.val()).trim()) return String(snap.val()).trim();
         } catch(e) {}
         return DEFAULT_ADMIN_CODE;
-    }
-    function codeMatches(inputCode, stored) {
-        const c = String(inputCode || '').trim();
-        return c === String(stored || '').trim() || c === DEFAULT_ADMIN_CODE;
     }
 
     function setGateStatus(msg, ok) {
@@ -1065,96 +989,28 @@ const db = getDatabase(app);
         sessionStorage.setItem('dgxen_admin_unlocked', '1');
         const g = document.getElementById('adminGate');
         if (g) g.classList.add('hidden');
-        stopGateCamera();
         try { logAdminLogin(method || 'unknown'); } catch (e) {}
-        renderFpList(); renderFaceList();
-        try { renderAdminLoginLog(); } catch (e) {}
+        renderFpList();
     }
     async function logAdminLogin(method) {
         try {
-            await push(ref(db, 'settings/adminGate/loginHistory'), {
-                at: Date.now(), method: method || 'unknown',
-                ua: (navigator.userAgent || '').slice(0, 100)
-            });
+            await push(ref(db, 'settings/adminGate/loginHistory'), { at: Date.now(), method: method || 'unknown', ua: (navigator.userAgent || '').slice(0, 100) });
         } catch (e) {}
-    }
-    window.toggleAdminLoginLog = function() {
-        const body = document.getElementById('adminLoginLogBody');
-        const arrow = document.getElementById('adminLogArrow');
-        if (!body) return;
-        const open = body.style.display === 'block';
-        body.style.display = open ? 'none' : 'block';
-        if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
-        if (!open) renderAdminLoginLog();
-    };
-    async function renderAdminLoginLog() {
-        const list = document.getElementById('adminLoginLogList');
-        if (!list) return;
-        try {
-            const snap = await get(ref(db, 'settings/adminGate/loginHistory'));
-            if (!snap.exists()) {
-                list.innerHTML = '<div style="color:var(--text-dim);padding:16px;font-size:14px;">No login history yet.</div>';
-                return;
-            }
-            const data = snap.val();
-            const rows = Object.keys(data).map(k => ({id:k,...data[k]})).sort((x,y)=>(y.at||0)-(x.at||0)).slice(0,80);
-            list.innerHTML = rows.map(r => {
-                const when = r.at ? new Date(r.at).toLocaleString() : '—';
-                return '<div class="mk-item" style="padding:16px 18px;"><div style="font-size:15px;font-weight:800;">'+(r.method||'login')+'<div style="font-size:12px;color:var(--text-dim);margin-top:6px;">'+when+'</div></div></div>';
-            }).join('');
-        } catch (e) {
-            list.innerHTML = '<div style="color:var(--error);padding:12px;">Could not load history.</div>';
-        }
-    }
-    window.clearAdminLoginHistory = async function() {
-        const st = document.getElementById('secStatus');
-        if (!(await ensureAdminIdentity(st))) return;
-        const code = prompt('Enter admin code to clear history:');
-        const real = await getAdminCodeFromDb();
-        if (!code || !(code.trim() === real || code.trim() === DEFAULT_ADMIN_CODE)) {
-            if (st) { st.style.color='var(--error)'; st.textContent='Wrong code.'; }
-            return;
-        }
-        await set(ref(db, 'settings/adminGate/loginHistory'), null);
-        renderAdminLoginLog();
-        if (st) { st.style.color='var(--accent)'; st.textContent='History cleared.'; }
-    };
-
-    function stopGateCamera() {
-        const v = document.getElementById('gateFaceVideo');
-        if (v && v.srcObject) {
-            v.srcObject.getTracks().forEach(t => t.stop());
-            v.srcObject = null;
-            v.style.display = 'none';
-        }
     }
 
     async function tryFingerprintLogin() {
         const ids = getLocalFpIds();
-        if (!ids.length) {
-            setGateStatus('No fingerprint on this device yet. Use code or enroll after first login.');
-            return;
-        }
-        if (!window.PublicKeyCredential) {
-            setGateStatus('Fingerprint not supported here.');
-            return;
-        }
+        if (!ids.length) { setGateStatus('No fingerprint on this device yet. Use code or enroll after first login.'); return; }
+        if (!window.PublicKeyCredential) { setGateStatus('Fingerprint not supported here.'); return; }
         try {
             setGateStatus('Waiting for fingerprint…', true);
             const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
             const assertion = await navigator.credentials.get({
-                publicKey: {
-                    challenge: crypto.getRandomValues(new Uint8Array(32)),
-                    timeout: 60000,
-                    userVerification: 'required',
-                    allowCredentials: allow
-                }
+                publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), timeout: 60000, userVerification: 'required', allowCredentials: allow }
             });
             if (assertion) unlockAdmin('fingerprint');
             else setGateStatus('Fingerprint failed.');
-        } catch (e) {
-            setGateStatus('Fingerprint cancelled or failed.');
-        }
+        } catch (e) { setGateStatus('Fingerprint cancelled or failed.'); }
     }
 
     async function tryCodeLogin() {
@@ -1166,10 +1022,8 @@ const db = getDatabase(app);
             const snap = await get(ref(db, 'settings/adminGate/code'));
             if (snap.exists() && String(snap.val()).trim()) real = String(snap.val()).trim();
         } catch (e) {}
-        // Accept stored code OR the hardcoded default (so default always works)
         if (code === real || code === DEFAULT_ADMIN_CODE) {
             try {
-                // If default code was used, force-sync it into Firebase so it stays valid
                 const toStore = (code === DEFAULT_ADMIN_CODE) ? DEFAULT_ADMIN_CODE : real;
                 await set(ref(db, 'settings/adminGate/code'), toStore);
             } catch (e) {}
@@ -1177,152 +1031,18 @@ const db = getDatabase(app);
         } else setGateStatus('Wrong code.');
     }
 
-    // --- Face helpers (browser FaceDetector + simple embedding fallback) ---
-    async function detectOneFace(videoEl) {
-        if (!videoEl || videoEl.readyState < 2) throw new Error('Camera not ready');
-        const w = videoEl.videoWidth, h = videoEl.videoHeight;
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0);
-        let box = null;
-        if (window.FaceDetector) {
-            const fd = new FaceDetector({ fastMode: false, maxDetectedFaces: 1 });
-            const faces = await fd.detect(canvas);
-            if (faces && faces.length) box = faces[0].boundingBox;
-        }
-        if (!box) {
-            // fallback assumed center — still enforce timing, weaker geometry
-            box = { x: w * 0.3, y: h * 0.2, width: w * 0.4, height: h * 0.5 };
-        }
-        const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
-        const ratio = box.width / Math.max(1, box.height);
-        // Frontal face: roughly square-ish, not narrow side profile
-        if (ratio < 0.55 || ratio > 1.35) throw new Error('Face the screen — no side face');
-        if (box.width < w * 0.16 || box.height < h * 0.16) throw new Error('Move closer — look at the screen');
-        if (Math.abs(cx - w / 2) > w * 0.22 || Math.abs(cy - h / 2) > h * 0.25) throw new Error('Center your face on screen');
-        // "Eyes open / looking" heuristic: upper third of face must have enough bright variance (open eyes)
-        const sx = Math.max(0, box.x|0), sy = Math.max(0, box.y|0);
-        const sw = Math.min(w - sx, box.width|0), sh = Math.min(h - sy, box.height|0);
-        const eyeBand = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, Math.floor(sh * 0.45)));
-        let sum = 0, sum2 = 0, n = 0;
-        for (let i = 0; i < eyeBand.data.length; i += 16) {
-            const lum = (eyeBand.data[i] * 3 + eyeBand.data[i+1] * 6 + eyeBand.data[i+2]) / 10;
-            sum += lum; sum2 += lum * lum; n++;
-        }
-        const mean = sum / Math.max(1, n);
-        const variance = sum2 / Math.max(1, n) - mean * mean;
-        if (variance < 180) throw new Error('Eyes open and look at the screen');
-        const faceImg = ctx.getImageData(sx, sy, Math.max(1, sw), Math.max(1, sh));
-        return { embed: embedFromImageData(faceImg), box, cx, cy };
-    }
-
-    async function captureFaceDescriptor(videoEl) {
-        // Must look ahead continuously for ~1 second (no closed eyes / side face)
-        const needMs = 1000;
-        const start = Date.now();
-        const embeds = [];
-        let lastCx = null, lastCy = null;
-        while (Date.now() - start < needMs) {
-            const { embed, cx, cy } = await detectOneFace(videoEl);
-            if (lastCx != null) {
-                if (Math.abs(cx - lastCx) > videoEl.videoWidth * 0.08 || Math.abs(cy - lastCy) > videoEl.videoHeight * 0.08) {
-                    throw new Error('Hold still — look straight for 1 second');
-                }
-            }
-            lastCx = cx; lastCy = cy;
-            embeds.push(embed);
-            await new Promise(r => setTimeout(r, 120));
-        }
-        if (embeds.length < 3) throw new Error('Look at the screen for a full second');
-        // average embedding
-        const avg = embeds[0].map((_, i) => {
-            let s = 0;
-            embeds.forEach(e => s += e[i]);
-            return +(s / embeds.length).toFixed(6);
-        });
-        return avg;
-    }
-
-    function embedFromImageData(img) {
-        const d = img.data;
-        const bins = new Array(64).fill(0);
-        let n = 0;
-        for (let i = 0; i < d.length; i += 16) {
-            const r = d[i], g = d[i+1], b = d[i+2];
-            const lum = (r * 3 + g * 6 + b) / 10;
-            const bi = Math.min(63, Math.floor(lum / 4));
-            bins[bi] += 1;
-            n++;
-        }
-        if (n) for (let i = 0; i < bins.length; i++) bins[i] = +(bins[i] / n).toFixed(6);
-        return bins;
-    }
-
-    function faceDistance(a, b) {
-        if (!a || !b || a.length !== b.length) return 99;
-        let s = 0;
-        for (let i = 0; i < a.length; i++) {
-            const d = a[i] - b[i];
-            s += d * d;
-        }
-        return Math.sqrt(s);
-    }
-
-    async function startCamera(videoId) {
-        const v = document.getElementById(videoId);
-        if (!v) throw new Error('No video element');
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-        v.srcObject = stream;
-        v.style.display = 'block';
-        await v.play();
-        return v;
-    }
-
-    async function tryFaceLogin() {
-        setGateStatus('Face unlock removed.');
-    }
-
-    async function hasEnrolledFaces() {
-        try {
-            const snap = await get(ref(db, 'settings/adminGate/faces'));
-            return snap.exists() && Object.keys(snap.val() || {}).length > 0;
-        } catch (e) { return false; }
-    }
     async function verifyExistingFingerprint() {
         const ids = getLocalFpIds();
         if (!ids.length || !window.PublicKeyCredential) return false;
         try {
             const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
             const assertion = await navigator.credentials.get({
-                publicKey: {
-                    challenge: crypto.getRandomValues(new Uint8Array(32)),
-                    timeout: 60000,
-                    userVerification: 'required',
-                    allowCredentials: allow
-                }
+                publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), timeout: 60000, userVerification: 'required', allowCredentials: allow }
             });
             return !!assertion;
         } catch (e) { return false; }
     }
-    async function verifyExistingFace() {
-        try {
-            const facesSnap = await get(ref(db, 'settings/adminGate/faces'));
-            if (!facesSnap.exists()) return false;
-            const faces = facesSnap.val() || {};
-            const v = await startCamera('secFaceVideo');
-            await new Promise(r => setTimeout(r, 500));
-            const desc = await captureFaceDescriptor(v);
-            if (v.srcObject) v.srcObject.getTracks().forEach(t => t.stop());
-            v.style.display = 'none';
-            let best = 99;
-            for (const id in faces) {
-                const f = faces[id];
-                if (f && f.descriptor) best = Math.min(best, faceDistance(desc, f.descriptor));
-            }
-            return best < 0.32;
-        } catch (e) { return false; }
-    }
+    
     async function ensureAdminIdentity(stEl) {
         const localFp = getLocalFpIds().length > 0;
         if (localFp) {
@@ -1340,23 +1060,17 @@ const db = getDatabase(app);
         }
         return true;
     }
-    async function ensureFingerprintIfRequired() {
-        return ensureAdminIdentity(document.getElementById('secStatus'));
-    }
+    async function ensureFingerprintIfRequired() { return ensureAdminIdentity(document.getElementById('secStatus')); }
 
     window.registerAdminFingerprint = async function() {
         const st = document.getElementById('secStatus');
         if (!(await ensureAdminIdentity(st))) return;
-        if (!window.PublicKeyCredential) {
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'WebAuthn not supported.'; }
-            return;
-        }
+        if (!window.PublicKeyCredential) { if (st) { st.style.color = 'var(--error)'; st.textContent = 'WebAuthn not supported.'; } return; }
         try {
             const userId = crypto.getRandomValues(new Uint8Array(16));
             const cred = await navigator.credentials.create({
                 publicKey: {
-                    challenge: crypto.getRandomValues(new Uint8Array(32)),
-                    rp: { name: 'DGXEN Admin', id: location.hostname || 'localhost' },
+                    challenge: crypto.getRandomValues(new Uint8Array(32)), rp: { name: 'DGXEN Admin', id: location.hostname || 'localhost' },
                     user: { id: userId, name: 'admin@dgxen', displayName: 'DGXEN Admin' },
                     pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
                     authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
@@ -1368,11 +1082,7 @@ const db = getDatabase(app);
             const list = getLocalFpIds();
             if (!list.includes(id)) list.push(id);
             setLocalFpIds(list);
-            try {
-                await set(ref(db, 'settings/adminGate/fingerprints/' + id.replace(/[.#$[\]\/]/g, '_')), {
-                    id, createdAt: Date.now(), device: navigator.userAgent.slice(0, 80)
-                });
-            } catch(e) {}
+            try { await set(ref(db, 'settings/adminGate/fingerprints/' + id.replace(/[.#$[\]\/]/g, '_')), { id, createdAt: Date.now(), device: navigator.userAgent.slice(0, 80) }); } catch(e) {}
             renderFpList();
             if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint added. IDs cannot be deleted from this panel.'; }
         } catch (e) {
@@ -1380,19 +1090,11 @@ const db = getDatabase(app);
         }
     };
 
-    window.enrollAdminFace = async function() {
-        const st = document.getElementById('secStatus');
-        if (st) { st.style.color = 'var(--error)'; st.textContent = 'Face system removed.'; }
-    };
-
     window.changeAdminCode = async function() {
         const st = document.getElementById('secStatus');
         if (!(await ensureAdminIdentity(st))) return;
         const neu = (document.getElementById('adminCodeNew').value || '').trim();
-        if (!neu || neu.length < 4) {
-            if (st) { st.style.color = 'var(--error)'; st.textContent = 'Code must be at least 4 characters.'; }
-            return;
-        }
+        if (!neu || neu.length < 4) { if (st) { st.style.color = 'var(--error)'; st.textContent = 'Code must be at least 4 characters.'; } return; }
         try {
             await set(ref(db, 'settings/adminGate/code'), neu);
             document.getElementById('adminCodeNew').value = '';
@@ -1406,10 +1108,8 @@ const db = getDatabase(app);
         const box = document.getElementById('fpList');
         if (!box) return;
         const ids = getLocalFpIds();
-        // also try firebase list
         get(ref(db, 'settings/adminGate/fingerprints')).then(snap => {
-            const rows = [];
-            const seen = new Set();
+            const rows = []; const seen = new Set();
             ids.forEach((id, i) => {
                 seen.add(id);
                 rows.push(`<div class="mk-item"><div style="font-size:13px;font-weight:700;">Fingerprint #${i+1}<div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div><div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div></div></div>`);
@@ -1430,27 +1130,6 @@ const db = getDatabase(app);
         });
     }
 
-    function renderFaceList() {
-        const box = document.getElementById('faceList');
-        if (!box) return;
-        get(ref(db, 'settings/adminGate/faces')).then(snap => {
-            if (!snap.exists()) {
-                box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">No faces enrolled.</div>';
-                return;
-            }
-            const data = snap.val();
-            box.innerHTML = Object.keys(data).map(id => {
-                const f = data[id] || {};
-                return `<div class="mk-item"><div style="font-size:13px;font-weight:700;">Face ID ${f.primary ? '(primary admin)' : ''}
-                    <div style="font-size:11px;color:var(--text-dim);font-family:monospace;word-break:break-all;margin-top:4px;">${id}</div>
-                    <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Delete only via Firebase</div>
-                </div></div>`;
-            }).join('');
-        }).catch(() => {
-            box.innerHTML = '<div style="color:var(--text-dim);padding:12px;">Could not load faces.</div>';
-        });
-    }
-
     window.toggleSecurityPanel = function(force) {
         const p = document.getElementById('securityPanel');
         const bd = document.getElementById('securityPanelBackdrop');
@@ -1461,10 +1140,8 @@ const db = getDatabase(app);
             p.classList.remove('closing');
             if (bd) bd.classList.add('open');
             p.classList.add('open');
-            renderFpList(); renderFaceList();
-            try { renderAdminLoginLog(); } catch(e) {}
+            renderFpList();
             setupSecHoldButtons();
-            // face unlock removed
         } else if (isOpen) {
             p.classList.add('closing'); p.classList.remove('open');
             setTimeout(function(){ p.classList.remove('closing'); if (bd) bd.classList.remove('open'); }, 400);
@@ -1503,14 +1180,12 @@ const db = getDatabase(app);
         if (codeBtn) codeBtn.onclick = () => tryCodeLogin();
         if (codeIn) codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') tryCodeLogin(); });
 
-        // Secret: hold FINGERPRINT 10s → reveal code block
         if (fpBtn) {
             let holdTimer = null;
             let holdFired = false;
             const clearHold = () => { if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; } };
             const startHold = (e) => {
-                holdFired = false;
-                clearHold();
+                holdFired = false; clearHold();
                 holdTimer = setTimeout(() => {
                     holdFired = true;
                     const wrap = document.getElementById('gateCodeWrap');
@@ -1518,22 +1193,16 @@ const db = getDatabase(app);
                     setGateStatus('Code entry unlocked', true);
                 }, 10000);
             };
-            const endHold = (e) => {
-                clearHold();
-                if (!holdFired) tryFingerprintLogin();
-            };
+            const endHold = (e) => { clearHold(); if (!holdFired) tryFingerprintLogin(); };
             fpBtn.addEventListener('pointerdown', startHold);
             fpBtn.addEventListener('pointerup', endHold);
             fpBtn.addEventListener('pointerleave', clearHold);
             fpBtn.addEventListener('pointercancel', clearHold);
-            // prevent long-press context menu
             fpBtn.addEventListener('contextmenu', e => e.preventDefault());
         }
 
-        if (!adminUnlocked && getLocalFpIds().length) {
-            setTimeout(() => tryFingerprintLogin(), 400);
-        }
-        setTimeout(() => { renderFpList(); renderFaceList(); }, 600);
+        if (!adminUnlocked && getLocalFpIds().length) { setTimeout(() => tryFingerprintLogin(), 400); }
+        setTimeout(() => { renderFpList(); }, 600);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdminGate);
     else initAdminGate();
@@ -1546,7 +1215,6 @@ const db = getDatabase(app);
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS FROM DEVICEREQUESTS ---
     onValue(ref(db, 'deviceRequests'), (snap) => {
         const box = document.getElementById('deviceRequestsBox');
         if(!box) return;
@@ -1566,7 +1234,7 @@ const db = getDatabase(app);
                     div.onclick = () => {
                         navigator.clipboard.writeText(req.deviceId);
                         const input = document.getElementById('mkExtraInput');
-                        if(input) input.value = req.deviceId; // Auto-fill the input
+                        if(input) input.value = req.deviceId; 
                         const old = div.textContent;
                         div.textContent = 'Copied!';
                         setTimeout(() => div.textContent = old, 1000);
@@ -1579,7 +1247,6 @@ const db = getDatabase(app);
         }
     });
 
-    // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
         document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
@@ -1587,13 +1254,11 @@ const db = getDatabase(app);
         document.getElementById('tab-' + tabName).classList.add('active');
     };
 
-    // --- ACCORDION TOGGLER ---
     window.toggleAccordion = function(id) {
         const item = document.getElementById(id);
         item.classList.toggle('active');
     };
 
-    // --- PURE SAFE DOWNLOAD SYSTEM (NO DOM INJECTIONS) ---
     function triggerDownload(blob, fileName, btnElement, originalText) {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1699,7 +1364,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         }
     };
 
-    // --- PASTE FIX: PAUSE FLOAT ANIMATION ON FOCUS ---
     document.addEventListener('focusin', (e) => {
         if (e.target.matches('input[type="text"], input[type="number"]')) {
             const floatParent = e.target.closest('.float-anim');
@@ -1713,9 +1377,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         }
     });
 
-    // BUTTON RIPPLE EFFECT
     document.addEventListener('click', function(e) {
-        // Click-to-copy for any .copyable element or data-copy attribute
         const copyEl = e.target.closest('.copyable, [data-copy]');
         if (copyEl) {
             const text = copyEl.getAttribute('data-copy') || copyEl.textContent.trim();
@@ -1725,7 +1387,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     copyEl.textContent = 'Copied!';
                     setTimeout(() => { copyEl.textContent = old; }, 900);
                 }).catch(() => {
-                    // fallback
                     const ta = document.createElement('textarea');
                     ta.value = text;
                     document.body.appendChild(ta);
@@ -1734,7 +1395,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     document.body.removeChild(ta);
                 });
             }
-            return; // don't trigger ripple on copy
+            return; 
         }
 
         const target = e.target.closest('.btn, .btn-full, .mk-del, .trash-btn, .nav-link, .dynamic-island, .auto-notch, .manual-refresh-btn, .m-tab, .acc-header');
@@ -1755,7 +1416,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         setTimeout(() => ripple.remove(), 600); 
     });
 
-    // SMOOTH THEME CYCLE
     const themes = ['light', 'dark', 'max'];
     let currentThemeIndex = 0;
 
@@ -1816,7 +1476,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         localStorage.setItem('dgxen_admin_theme', theme);
     }
 
-    // --- AUTO SYNC (NOTCH) LOGIC ---
     const syncGap = 5; 
     let autoSyncTimer = null;
 
@@ -1847,7 +1506,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
 
     document.getElementById('autoSyncNotch').addEventListener('click', toggleAutoSync);
 
-    // Live countdown for Active Users timers
     function updateLiveTimers() {
         document.querySelectorAll('.live-timer').forEach(el => {
             const exp = Number(el.getAttribute('data-expires') || 0);
@@ -1877,7 +1535,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         updateLiveTimers();
     }
 
-    // --- GLOBAL STATE FOR REFRESH MECHANISM ---
     let globalBannedSnap = null;
     let globalUsersSnap = null;
 
@@ -1891,7 +1548,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             <div class="skeleton-line" style="width: 30%;"></div>
         </div>`;
 
-    // --- MANUAL REFRESH BUTTON LOGIC ---
     window.forceInternalRefresh = async function(isSilent = false) {
         const icon = document.getElementById('refreshIcon');
         
@@ -1902,7 +1558,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                 setTimeout(() => icon.classList.remove('spin-anim'), 800);
             }, 10);
             
-            // Show skeletons
             ['masterKeysList','bannedKeysList','activeUserList','bannedUserList','liveActiveUserList','shareLogsList'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = getSkeletonHTML();
@@ -1910,7 +1565,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         }
 
         try {
-            // Force fresh reads from Firebase
             const [usersSnap, bannedSnap, mkSnap, usageSnap, logsSnap] = await Promise.all([
                 get(ref(db, 'users')),
                 get(ref(db, 'settings/bannedKeys')),
@@ -1930,7 +1584,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             if (window._renderShareLogs) window._renderShareLogs(logsSnap);
         } catch (e) {
             console.error('Refresh failed:', e);
-            // fallback to cached
             renderMasterKeys();
             renderBannedKeysUI(globalBannedSnap);
             renderUsersUI(globalUsersSnap);
@@ -1942,7 +1595,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         forceInternalRefresh(false);
     });
 
-    // --- FIREBASE LOGIC & UI RENDERING ---
     onValue(ref(db, 'settings/keyExpiryHours'), (snap) => {
         const hrs = snap.exists() ? snap.val() : 24;
         document.getElementById('currentExpiryDisplay').innerText = hrs;
@@ -1976,7 +1628,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         renderMasterKeys();
     });
 
-    // --- Master Key Type UI ---
     let selectedMkType = 'pure';
 
     window.selectMkType = function(type) {
@@ -2181,12 +1832,10 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         pendingConfirmAction = callback || null;
 
         if (callback) {
-            // Needs user confirmation
             document.getElementById('confirmActionTitle').style.color = "var(--error)";
             document.querySelector('#confirmActionModal .btn-cancel').style.display = "block";
             document.querySelector('#confirmActionModal .btn-confirm').innerText = "CONFIRM";
         } else {
-            // Success / info only
             document.getElementById('confirmActionTitle').style.color = "var(--accent)";
             document.querySelector('#confirmActionModal .btn-cancel').style.display = "none";
             document.querySelector('#confirmActionModal .btn-confirm').innerText = "OK";
@@ -2215,13 +1864,11 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             let safeKey = trimmedKey;
             try { safeKey = btoa(unescape(encodeURIComponent(trimmedKey))).replace(/[.#$\[\]/]/g, '_'); } catch(e){}
             
-            // 1. Delete Master Key & Usage Data
             try { await set(ref(db, 'settings/masterKeys/' + pushId), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkUsage/' + safeKey), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkUsage/' + trimmedKey), null); } catch(e) {}
             try { await set(ref(db, 'settings/mkDeviceTrack/' + safeKey), null); } catch(e) {} 
 
-            // 2. SECURITY FIX: Instantly wipe the deleted key from any active user's profile
             try {
                 const usersSnap = await get(ref(db, 'users'));
                 if (usersSnap.exists()) {
@@ -2244,13 +1891,11 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         renderBannedKeysUI(snapshot);
     });
 
-    // --- SHARE LOGS ---
     let globalUsersForLogs = {};
     let globalBannedKeysForLogs = {};
 
     onValue(ref(db, 'users'), (snap) => {
         globalUsersForLogs = snap.exists() ? snap.val() : {};
-        // Refresh share logs so unknown → name when user registers later
         try {
             if (window.__lastShareLogsSnap) window._renderShareLogs(window.__lastShareLogsSnap);
         } catch (e) {}
@@ -2279,13 +1924,11 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             return true;
         };
 
-        // Exact key match
         if (storedId && globalUsersForLogs[storedId] && norm(storedId) !== genIdN) {
             tryUser(storedId, globalUsersForLogs[storedId]);
         } else if (fp && globalUsersForLogs[fp] && fpN !== genIdN) {
             tryUser(fp, globalUsersForLogs[fp]);
         } else {
-            // Case-insensitive / field scan
             for (const uKey in globalUsersForLogs) {
                 if (norm(uKey) === genIdN) continue;
                 const u = globalUsersForLogs[uKey];
@@ -2329,7 +1972,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
 
             const deviceIdShow = log.receiverFingerprint || log.receiverDevice || resolved.displayId || 'unknown';
             const isNamed = resolved.name && resolved.name !== 'unknown user';
-            // Registered → name only. Unknown → unknown user + device id
             const receiverPart = isNamed
                 ? `<span class="copyable" style="color:var(--warn);cursor:pointer;" title="Click to copy name" data-copy="${resolved.name.replace(/"/g,'&quot;')}">${resolved.name}</span>`
                 : `<span style="color:var(--warn)">unknown user</span> <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;word-break:break-all;" title="Click to copy device id" data-copy="${String(deviceIdShow).replace(/"/g,'&quot;')}">(${deviceIdShow})</span>`;
@@ -2363,7 +2005,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         }
     });
 
-    // Ban the KEY only → appears in Banned Normal Keys section
     window.banKeyFromLog = function(keyStr, logId) {
         if (!keyStr) return showConfirm("Error", "No key to ban.", null);
         showConfirm("Ban Key?", `Ban the key "${keyStr}"? It will appear in Banned Normal Keys and stop working for everyone.`, async () => {
@@ -2372,7 +2013,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     reason: 'Ban: generate a new key to continue.',
                     bannedAt: new Date().toISOString()
                 });
-                // Clear the key from any user record
                 const usersSnap = await get(ref(db, 'users'));
                 if (usersSnap.exists()) {
                     const all = usersSnap.val();
@@ -2396,7 +2036,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         });
     };
 
-    // Click "KEY BANNED" again to unban
     window.unbanKeyFromLog = function(keyStr, logId) {
         if (!keyStr) return;
         showConfirm("Unban Key?", `Remove the ban from key "${keyStr}"?`, async () => {
@@ -2451,7 +2090,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         try {
             let foundName = null;
             let foundId = null;
-            // 1) Direct users/{deviceId}
             try {
                 const direct = await get(ref(db, 'users/' + raw));
                 if (direct.exists()) {
@@ -2462,7 +2100,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     }
                 }
             } catch (e) {}
-            // 2) Scan users for matching device fields
             if (!foundName) {
                 const usersSnap = await get(ref(db, 'users'));
                 if (usersSnap.exists()) {
@@ -2486,7 +2123,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     + (foundId ? ' <span class="copyable" style="font-size:12px;color:var(--text-dim);cursor:pointer;margin-left:6px;" title="Click to copy id" data-copy="'+String(foundId).replace(/"/g,'&quot;')+'">('+String(foundId).replace(/</g,'&lt;')+')</span>' : '');
                 return;
             }
-            // 3) Clicked Get Key but not registered → deviceRequests
             let requested = false;
             try {
                 const dr = await get(ref(db, 'deviceRequests/' + raw));
@@ -2504,7 +2140,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     }
                 } catch (e) {}
             }
-            // 4) knownDevices presence still counts as unknown if no name
             res.style.color = 'var(--warn)';
             res.textContent = 'unknown';
         } catch (e) {
@@ -2610,9 +2245,7 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         ].filter(Boolean).map(norm);
 
         for (const c of candidates) {
-            // direct key
             if (kd[c] && kd[c].appVersion) return kd[c].appVersion;
-            // sanitized key
             const safe = c.replace(/[.#$\[\]\/]/g, '_');
             if (kd[safe] && kd[safe].appVersion) return kd[safe].appVersion;
         }
@@ -2684,7 +2317,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
                     </div>`;
             }
 
-            // Live Active = has a currently valid key
             if (hasLiveKey && liveListDiv) {
                 liveCount++;
                 liveListDiv.innerHTML += `
@@ -2719,7 +2351,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         if (reasonEl) reasonEl.value = 'Ban: generate a new key to continue.';
         document.getElementById('keyBanTarget').innerText = keyStr;
         document.getElementById('keyBanModal').style.display = 'flex';
-        // Override confirm to also clear user key
         window.__banKeyFromActive = true;
     };
 
@@ -2771,7 +2402,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         if (slider) slider.style.background = on ? 'var(--error)' : '#444';
         if (knob) knob.style.transform = on ? 'translateX(24px)' : 'translateX(0)';
         if (box) box.checked = !!on;
-        // Sad / paused B&W overlay — independent of theme (theme change does not clear it)
         try {
             document.body.classList.toggle('global-kill-mode', !!on);
         } catch (e) {}
@@ -2798,7 +2428,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
             window.__gkStep = 1;
             showConfirm('Global Kill — Confirm 1/2', 'This will force-close ALL online player apps in 10 seconds with “Critical shutdown”. Continue?', async () => {
                 window.__gkStep = 2;
-                // Second confirm on next tick so modal can re-open cleanly
                 setTimeout(() => {
                     showConfirm('Global Kill — Confirm 2/2', 'Final confirmation. Every connected app will crash after the 10s warning. Proceed?', async () => {
                         if (typeof ensureFingerprintIfRequired === 'function') {
@@ -2859,7 +2488,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
     }
     async function wipeEntireDatabase() { 
         try {
-            // Preserve admin security identities (code / faces / fingerprint metadata)
             let adminGateData = null;
             try {
                 const ag = await get(ref(db, 'settings/adminGate'));
