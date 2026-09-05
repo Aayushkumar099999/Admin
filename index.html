@@ -1823,6 +1823,7 @@ function renderPendingComing(){
   const reg=window.__registeredIdSet||new Set();
   const items=[];
   const seen=new Set();
+  const now=Date.now();
   Object.keys(reqs).forEach(k=>{
     const r=reqs[k]||{};
     const id=String(r.deviceId||k||'').trim();
@@ -1831,7 +1832,12 @@ function renderPendingComing(){
     if(seen.has(n)) return;
     seen.add(n);
     if(reg.has(n)) return; // already registered — hide illusion
-    items.push({id, time:Number(r.time)||0, localId:r.localId||r.localStorageId||''});
+    const exp=Number(r.expiresAt||0);
+    const t=Number(r.time)||0;
+    // Skipped / interrupted key gen: hide after expiry (default 12 min)
+    if(exp && now>exp) return;
+    if(!exp && t && (now-t)>12*60*1000) return;
+    items.push({id, time:t, localId:r.localId||r.localStorageId||''});
   });
   items.sort((a,b)=>b.time-a.time);
   if(!items.length){
