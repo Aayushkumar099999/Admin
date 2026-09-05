@@ -310,7 +310,7 @@
         @keyframes pulseSkeleton { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
         /* --- Modals --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 50000; animation: fadeInModal 0.4s ease; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: none; justify-content: center; align-items: center; z-index: 999; animation: fadeInModal 0.4s ease; }
         @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
         .modal { background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-shine); border-left: 1px solid var(--glass-shine); border-radius: 40px; padding: 50px; width: 90%; max-width: 460px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8); transform: scale(0.85); opacity: 0; animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes scaleUp { to { transform: scale(1); opacity: 1; } }
@@ -1272,21 +1272,7 @@ const db = getDatabase(app);
         try { return JSON.parse(localStorage.getItem(FP_STORE_KEY) || '[]'); } catch(e) { return []; }
     }
     function setLocalFpIds(arr) {
-        try { localStorage.setItem(FP_STORE_KEY, JSON.stringify(arr || [])); } catch(e) {}
-    }
-    async function getFirebaseFpIds() {
-        try {
-            const snap = await get(ref(db, 'settings/adminGate/fingerprints'));
-            if (!snap.exists()) return [];
-            const val = snap.val() || {};
-            const ids = [];
-            for (const k in val) {
-                const rec = val[k];
-                const id = (rec && rec.id) ? String(rec.id) : '';
-                if (id) ids.push(id);
-            }
-            return ids;
-        } catch (e) { return []; }
+        localStorage.setItem(FP_STORE_KEY, JSON.stringify(arr || []));
     }
     function bufferToBase64(buf) {
         const bytes = new Uint8Array(buf);
@@ -1390,27 +1376,18 @@ const db = getDatabase(app);
     }
 
     async function tryFingerprintLogin() {
+        const ids = getLocalFpIds();
+        if (!ids.length) {
+            setGateStatus('No fingerprint on this device yet. Use code or enroll after first login.');
+            return;
+        }
         if (!window.PublicKeyCredential) {
             setGateStatus('Fingerprint not supported here.');
             return;
         }
         try {
-            setGateStatus('Checking Firebase…', true);
-            const ids = await getFirebaseFpIds();
-            if (!ids.length) {
-                setGateStatus('No fingerprint in Firebase. Use code (hold FP 10s), then enroll in Security.');
-                return;
-            }
-            setLocalFpIds(ids);
             setGateStatus('Waiting for fingerprint…', true);
-            const allow = [];
-            for (let i = 0; i < ids.length; i++) {
-                try { allow.push({ type: 'public-key', id: base64ToBuffer(ids[i]) }); } catch (e) {}
-            }
-            if (!allow.length) {
-                setGateStatus('Invalid fingerprint data in Firebase.');
-                return;
-            }
+            const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
             const assertion = await navigator.credentials.get({
                 publicKey: {
                     challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -1419,17 +1396,8 @@ const db = getDatabase(app);
                     allowCredentials: allow
                 }
             });
-            if (!assertion) {
-                setGateStatus('Fingerprint failed.');
-                return;
-            }
-            let usedId = '';
-            try { usedId = bufferToBase64(assertion.rawId); } catch (e) {}
-            if (!usedId || ids.indexOf(usedId) === -1) {
-                setGateStatus('Fingerprint not registered in Firebase.');
-                return;
-            }
-            unlockAdmin('fingerprint');
+            if (assertion) unlockAdmin('fingerprint');
+            else setGateStatus('Fingerprint failed.');
         } catch (e) {
             setGateStatus('Fingerprint cancelled or failed.');
         }
@@ -1568,16 +1536,10 @@ const db = getDatabase(app);
         } catch (e) { return false; }
     }
     async function verifyExistingFingerprint() {
-        if (!window.PublicKeyCredential) return false;
+        const ids = getLocalFpIds();
+        if (!ids.length || !window.PublicKeyCredential) return false;
         try {
-            const ids = await getFirebaseFpIds();
-            if (!ids.length) return false;
-            setLocalFpIds(ids);
-            const allow = [];
-            for (let i = 0; i < ids.length; i++) {
-                try { allow.push({ type: 'public-key', id: base64ToBuffer(ids[i]) }); } catch (e) {}
-            }
-            if (!allow.length) return false;
+            const allow = ids.map(id => ({ type: 'public-key', id: base64ToBuffer(id) }));
             const assertion = await navigator.credentials.get({
                 publicKey: {
                     challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -1586,10 +1548,7 @@ const db = getDatabase(app);
                     allowCredentials: allow
                 }
             });
-            if (!assertion) return false;
-            let usedId = '';
-            try { usedId = bufferToBase64(assertion.rawId); } catch (e) {}
-            return !!(usedId && ids.indexOf(usedId) !== -1);
+            return !!assertion;
         } catch (e) { return false; }
     }
     async function verifyExistingFace() {
@@ -1611,11 +1570,11 @@ const db = getDatabase(app);
         } catch (e) { return false; }
     }
     async function ensureAdminIdentity(stEl) {
-        const fbIds = await getFirebaseFpIds();
-        if (fbIds.length > 0) {
-            if (stEl) { stEl.style.color = 'var(--text-dim)'; stEl.textContent = 'Verify fingerprint (Firebase)…'; }
+        const localFp = getLocalFpIds().length > 0;
+        if (localFp) {
+            if (stEl) { stEl.style.color = 'var(--text-dim)'; stEl.textContent = 'Verify existing fingerprint…'; }
             const ok = await verifyExistingFingerprint();
-            if (!ok && stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Firebase fingerprint required.'; }
+            if (!ok && stEl) { stEl.style.color = 'var(--error)'; stEl.textContent = 'Existing fingerprint required.'; }
             return ok;
         }
         const code = prompt('Enter admin code to continue:');
@@ -1652,18 +1611,16 @@ const db = getDatabase(app);
             });
             if (!cred) return;
             const id = bufferToBase64(cred.rawId);
-            const safe = String(id).split('').map(function(ch){
-                return ('.$[]#/'.indexOf(ch)>=0) ? '_' : ch;
-            }).join('');
-            await set(ref(db, 'settings/adminGate/fingerprints/' + safe), {
-                id: id,
-                createdAt: Date.now(),
-                device: (navigator.userAgent || '').slice(0, 80)
-            });
-            const synced = await getFirebaseFpIds();
-            setLocalFpIds(synced);
+            const list = getLocalFpIds();
+            if (!list.includes(id)) list.push(id);
+            setLocalFpIds(list);
+            try {
+                await set(ref(db, 'settings/adminGate/fingerprints/' + id.replace(/[.#$[\]\/]/g, '_')), {
+                    id, createdAt: Date.now(), device: navigator.userAgent.slice(0, 80)
+                });
+            } catch(e) {}
             renderFpList();
-            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint saved to Firebase.'; }
+            if (st) { st.style.color = 'var(--accent)'; st.textContent = 'Fingerprint added. IDs cannot be deleted from this panel.'; }
         } catch (e) {
             if (st) { st.style.color = 'var(--error)'; st.textContent = 'Could not register: ' + (e.message || e); }
         }
@@ -1819,7 +1776,9 @@ const db = getDatabase(app);
             fpBtn.addEventListener('contextmenu', e => e.preventDefault());
         }
 
-        // Firebase fingerprint only — user taps FINGERPRINT (no local auto-unlock)
+        if (!adminUnlocked && getLocalFpIds().length) {
+            setTimeout(() => tryFingerprintLogin(), 400);
+        }
         setTimeout(() => { renderFpList(); renderFaceList(); }, 600);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAdminGate);
@@ -2898,59 +2857,37 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
     }
 
     window.openKeyBanModal = function() {
-        try {
-            const el = document.getElementById('keyToBanInput');
-            const key = (el && el.value ? el.value : '').trim();
-            if (!key) return showConfirm("Error", "Enter a key first!", null);
-            if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
-            pendingKeyToBan = key;
-            window.__banKeyFromActive = false;
-            window.__banKeyUserId = null;
-            const t = document.getElementById('keyBanTarget');
-            if (t) t.innerText = key;
-            const r = document.getElementById('keyBanReasonInput');
-            if (r) r.value = 'Ban: generate a new key to continue.';
-            const modal = document.getElementById('keyBanModal');
-            if (modal) modal.style.display = 'flex';
-        } catch (e) { showConfirm("Error", String(e.message||e), null); }
+        const key = document.getElementById('keyToBanInput').value.trim().toUpperCase();
+        if (!key) return showConfirm("Error", "Enter a key first!", null);
+        if (!key.startsWith('DGXEN-') || key.length < 10) return showConfirm("Invalid Key Format", "Please enter a valid running key format (e.g., DGXEN-XXXX...).", null);
+        pendingKeyToBan = key;
+        document.getElementById('keyBanTarget').innerText = key;
+        document.getElementById('keyBanReasonInput').value = 'Ban: generate a new key to continue.';
+        document.getElementById('keyBanModal').style.display = 'flex';
     }
 
     window.confirmKeyBan = async function() {
-        const keyToBan = pendingKeyToBan;
-        if (!keyToBan) return;
-        const reasonEl = document.getElementById('keyBanReasonInput');
-        const reason = (reasonEl && reasonEl.value.trim()) || "Ban: generate a new key to continue.";
-        const linkedUser = window.__banKeyUserId || null;
+        if (!pendingKeyToBan) return;
+        const reason = document.getElementById('keyBanReasonInput').value.trim() || "Ban: generate a new key to continue.";
         closeModals();
-        try {
-            await set(ref(db, 'settings/bannedKeys/' + keyToBan), {
-                key: keyToBan,
-                reason: reason,
-                bannedAt: new Date().toISOString()
-            });
-            const snap = await get(ref(db, 'users'));
-            if (snap.exists()) {
-                const allUsers = snap.val();
-                const want = String(keyToBan).trim().toUpperCase();
-                for (let uid in allUsers) {
-                    const lg = allUsers[uid] && allUsers[uid].lastGeneratedKey;
-                    if (lg && String(lg).trim().toUpperCase() === want) {
-                        await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
-                    }
+        await set(ref(db, 'settings/bannedKeys/' + pendingKeyToBan), { reason: reason, bannedAt: new Date().toISOString() });
+        const usersRef = ref(db, 'users');
+        const snap = await get(usersRef);
+        if(snap.exists()){
+            const allUsers = snap.val();
+            for(let uid in allUsers){
+                if(allUsers[uid].lastGeneratedKey && allUsers[uid].lastGeneratedKey.trim().toUpperCase() === pendingKeyToBan.toUpperCase()){
+                    await update(ref(db, 'users/' + uid), { lastGeneratedKey: null, keyExpiresAt: null });
                 }
             }
-            if (linkedUser) {
-                try { await update(ref(db, 'users/' + linkedUser), { lastGeneratedKey: null, keyExpiresAt: null }); } catch (e) {}
-            }
-            const kIn = document.getElementById('keyToBanInput');
-            if (kIn) kIn.value = '';
-            pendingKeyToBan = null;
-            window.__banKeyUserId = null;
-            window.__banKeyFromActive = false;
-        } catch (e) {
-            pendingKeyToBan = keyToBan;
-            showConfirm("Error", "Could not ban key: " + (e.message || e), null);
         }
+        if (window.__banKeyUserId) {
+            try { await update(ref(db, 'users/' + window.__banKeyUserId), { lastGeneratedKey: null, keyExpiresAt: null }); } catch(e) {}
+            window.__banKeyUserId = null;
+        }
+        window.__banKeyFromActive = false;
+        document.getElementById('keyToBanInput').value = '';
+        pendingKeyToBan = null;
     }
 
     window.unbanKey = function(keyStr) {
@@ -3091,46 +3028,27 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
 
     window.openGuideModal = () => { document.getElementById('guideModal').style.display = 'flex'; }
     window.openUnbindInfo = () => { document.getElementById('unbindInfoModal').style.display = 'flex'; }
-    window.banUserKey = function(userId, keyStr) {
-        try {
-            if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
-            pendingKeyToBan = String(keyStr);
-            window.__banKeyUserId = userId;
-            window.__banKeyFromActive = true;
-            const reasonEl = document.getElementById('keyBanReasonInput');
-            if (reasonEl) reasonEl.value = 'Ban: generate a new key to continue.';
-            const t = document.getElementById('keyBanTarget');
-            if (t) t.innerText = String(keyStr);
-            const modal = document.getElementById('keyBanModal');
-            if (modal) modal.style.display = 'flex';
-        } catch (e) { showConfirm("Error", String(e.message||e), null); }
+        window.banUserKey = function(userId, keyStr) {
+        if (!keyStr) return showConfirm("Error", "This user has no active key to ban.", null);
+        pendingKeyToBan = keyStr;
+        window.__banKeyUserId = userId;
+        const reasonEl = document.getElementById('keyBanReasonInput');
+        if (reasonEl) reasonEl.value = 'Ban: generate a new key to continue.';
+        document.getElementById('keyBanTarget').innerText = keyStr;
+        document.getElementById('keyBanModal').style.display = 'flex';
+        // Override confirm to also clear user key
+        window.__banKeyFromActive = true;
     };
 
-    window.openBanModal = function(userId) {
-        try {
-            currentBanUserId = userId;
-            const inp = document.getElementById('banReasonInput');
-            if (inp) inp.value = '';
-            const modal = document.getElementById('banModal');
-            if (modal) modal.style.display = 'flex';
-        } catch (e) { showConfirm("Error", String(e.message||e), null); }
-    };
+
+    window.openBanModal = (userId) => { currentBanUserId = userId; document.getElementById('banReasonInput').value = ''; document.getElementById('banModal').style.display = 'flex'; }
     
     window.confirmBan = async function() { 
-        try {
-            const uid = currentBanUserId;
-            if (!uid) return showConfirm("Error", "No user selected.", null);
-            const reasonEl = document.getElementById('banReasonInput');
-            const reason = (reasonEl && reasonEl.value.trim()) || "violations of terms!";
-            closeModals();
-            await update(ref(db, 'users/' + uid), { status: 'banned', banReason: reason });
-            currentBanUserId = null;
-        } catch (e) { showConfirm("Error", "Ban failed: " + (e.message||e), null); }
-    };
-    window.unbanUser = async function(userId) {
-        try { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
-        catch (e) { showConfirm("Error", "Unban failed: " + (e.message||e), null); }
-    };
+        const reason = document.getElementById('banReasonInput').value.trim() || "violations of terms!"; 
+        closeModals(); 
+        await update(ref(db, 'users/' + currentBanUserId), { status: 'banned', banReason: reason }); 
+    }
+    window.unbanUser = async function(userId) { await update(ref(db, 'users/' + userId), { status: 'active', banReason: null }); }
     
     window.deleteUser = function(userId) { 
         showConfirm("Permanently Delete User?", "This action will completely wipe the device from the database.", async () => {
