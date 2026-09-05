@@ -568,6 +568,16 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
 .notice-panel .np-actions{display:flex;gap:8px;flex-wrap:wrap}
 .notice-panel .np-actions .btn{flex:1;min-width:100px;padding:10px 12px;font-size:12px}
 
+
+#guideModal .guide-modal{
+  display:flex;flex-direction:column;max-height:min(82vh,720px)!important;
+  width:min(560px,92vw)!important;overflow:hidden;
+}
+#guideModal .guide-scroll{
+  overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;
+  max-height:min(58vh,520px);padding-right:6px;margin-top:8px;
+}
+
 </style>
 </head>
 <body>
@@ -949,7 +959,8 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
 
             <!-- TAB CONTENT: MANUAL -->
             <div id="tab-manual" class="m-content active">
-                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Important system rules, security behaviour and tips.</p>
+              <div class="guide-scroll">
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Important system rules, security behaviour and tips. Scroll for more.</p>
 
                 <div class="acc-item active" id="acc-man-1">
                     <div class="acc-header" onclick="toggleAccordion('acc-man-1')">
@@ -1044,8 +1055,56 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
                 </div>
             </div>
 
+
+                <div class="acc-item" id="acc-man-notice">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-notice')">
+                        Notice / Broadcast / JOIN Finger
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Dashboard → <b>Notice</b> (above Expiry). Opens a panel — does not stretch the expiry block.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>JOIN finger:</b> toggle ON to show bouncing pointer above JOIN on login.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Broadcast:</b> message + seconds + enable + UPDATE/SEND → bottom popup with countdown on login.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>CLEAR POPUP</b> disables broadcast for everyone.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Tagline override can replace the line under DGXEN VIP.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-live">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-live')">
+                        Live Revoke & Global Kill
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Ban user / ban key / delete master while online → 30s message then 1:30 timer then app closes.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> <b>Global Kill</b> (System Reset): 2 confirms + fingerprint → Critical shutdown 10s on all apps.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Kill mode uses black &amp; white paused theme on admin until OFF.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="acc-item" id="acc-man-sounds">
+                    <div class="acc-header" onclick="toggleAccordion('acc-man-sounds')">
+                        Login Sounds
+                        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                    <div class="acc-body">
+                        <ul class="check-list">
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Folder <b>./sounds/</b> — prefer <b>success login.mp3</b>.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Also: failed login, save key, recall big block, auto login on.</li>
+                            <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Success and fail sounds play on auto-login as well as manual unlock.</li>
+                        </ul>
+                    </div>
+                </div>
+
+
+              </div>
             <!-- TAB CONTENT: DOWNLOADS (ACCORDION STYLE) -->
             <div id="tab-downloads" class="m-content">
+              <div class="guide-scroll">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Download core module components for local integration. Offline bundles are fully updated.</p>
                 
                 <!-- Category 1: Admin Panel -->
