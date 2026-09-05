@@ -578,46 +578,6 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
   max-height:min(58vh,520px);padding-right:6px;margin-top:8px;
 }
 
-
-/* Pending Get-Key users — skeleton illusion (not solid blocks) */
-.coming-card{
-  position:relative;padding:22px 16px;min-height:88px;border-radius:20px;
-  border:1px dashed rgba(150,150,150,0.18);
-  background:rgba(150,150,150,0.04);
-  pointer-events:auto;overflow:hidden;
-  animation:pulseSkeleton 1.8s infinite ease-in-out;
-}
-.coming-card::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,0.06) 45%,transparent 70%);
-  background-size:200% 100%;animation:comingShimmer 2.4s ease-in-out infinite;
-}
-@keyframes comingShimmer{
-  0%{background-position:120% 0}
-  100%{background-position:-40% 0}
-}
-.coming-card .coming-label{
-  font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
-  color:var(--text-dim);opacity:.75;margin-bottom:10px;
-}
-.coming-card .coming-id{
-  font-family:monospace;font-size:12px;font-weight:700;color:var(--text-main);
-  opacity:.55;word-break:break-all;line-height:1.4;cursor:pointer;
-}
-.coming-card .coming-dots::after{
-  content:"";animation:comingDots 1.4s steps(4,end) infinite;
-}
-@keyframes comingDots{
-  0%{content:""}
-  25%{content:"."}
-  50%{content:".."}
-  75%{content:"..."}
-}
-.coming-section-title{
-  font-size:12px;font-weight:800;color:var(--text-dim);letter-spacing:1px;
-  text-transform:uppercase;margin:0 0 12px;opacity:.8;
-}
-
 </style>
 </head>
 <body>
@@ -825,10 +785,6 @@ body.cat-world-active #cat-world{display:block;opacity:1;transform:translateY(0)
         <div id="active-users" class="tab-section">
             <div class="section-box" style="padding: 0; background: transparent; border: none; box-shadow: none;">
                 <h2 style="margin-bottom: 30px; font-size: 28px;">Registered Users</h2>
-                <div id="pendingComingWrap" style="display:none;margin-bottom:22px;">
-                    <div class="coming-section-title">Incoming · Get Key tapped</div>
-                    <div class="user-grid" id="pendingComingList"></div>
-                </div>
                 <div class="user-grid" id="activeUserList"></div>
             </div>
         </div>
@@ -1792,103 +1748,38 @@ const db = getDatabase(app);
     let resetStep = 0;
     let pendingConfirmAction = null; 
 
-    
-// ===== PENDING GET-KEY → REGISTERED ILLUSION =====
-window.__pendingDeviceReqs = {};
-window.__registeredIdSet = new Set();
-
-function normId(s){
-  return String(s||'').trim().toLowerCase().replace(/\s+/g,'');
-}
-
-function rebuildRegisteredIdSet(usersMap){
-  const set=new Set();
-  if(usersMap){
-    for(const uid in usersMap){
-      const u=usersMap[uid]||{};
-      [uid,u.deviceId,u.fingerprint,u.lastDeviceId,u.androidId,u.lastLoginDevice].forEach(x=>{
-        const n=normId(x);
-        if(n) set.add(n);
-      });
-    }
-  }
-  window.__registeredIdSet=set;
-}
-
-function renderPendingComing(){
-  const wrap=document.getElementById('pendingComingWrap');
-  const list=document.getElementById('pendingComingList');
-  if(!wrap||!list) return;
-  const reqs=window.__pendingDeviceReqs||{};
-  const reg=window.__registeredIdSet||new Set();
-  const items=[];
-  const seen=new Set();
-  Object.keys(reqs).forEach(k=>{
-    const r=reqs[k]||{};
-    const id=String(r.deviceId||k||'').trim();
-    if(!id) return;
-    const n=normId(id);
-    if(seen.has(n)) return;
-    seen.add(n);
-    if(reg.has(n)) return; // already registered — hide illusion
-    items.push({id, time:Number(r.time)||0, localId:r.localId||r.localStorageId||''});
-  });
-  items.sort((a,b)=>b.time-a.time);
-  if(!items.length){
-    wrap.style.display='none';
-    list.innerHTML='';
-    return;
-  }
-  wrap.style.display='block';
-  list.innerHTML=items.map((it,i)=>{
-    const delay=(i%4)*0.25;
-    const extra=it.localId && normId(it.localId)!==normId(it.id)
-      ? `<div class="coming-id copyable" style="margin-top:6px;opacity:.4;font-size:11px;" data-copy="${String(it.localId).replace(/"/g,'&quot;')}" title="Click to copy local id">local: ${it.localId}</div>`
-      : '';
-    return `<div class="coming-card" style="animation-delay:${delay}s">
-      <div class="coming-label">User is coming<span class="coming-dots"></span></div>
-      <div class="coming-id copyable" data-copy="${String(it.id).replace(/"/g,'&quot;')}" title="Click to copy device id">${it.id}</div>
-      ${extra}
-    </div>`;
-  }).join('');
-}
-
-try{
-  onValue(ref(db,'deviceRequests'), (snap)=>{
-    window.__pendingDeviceReqs = snap.exists() ? (snap.val()||{}) : {};
-    // keep existing master-key deviceRequestsBox population
-    const box=document.getElementById('deviceRequestsBox');
-    if(box){
-      box.innerHTML='';
-      if(snap.exists()){
-        const sorted=Object.values(snap.val()).sort((a,b)=>(b.time||0)-(a.time||0));
-        const seen=new Set();
-        sorted.forEach(req=>{
-          const did=req.deviceId;
-          if(!did||seen.has(did)) return;
-          seen.add(did);
-          const div=document.createElement('div');
-          div.className='device-id-item';
-          div.textContent=did;
-          div.title='Requested: '+new Date(req.time||Date.now()).toLocaleString();
-          div.onclick=()=>{
-            try{navigator.clipboard.writeText(did)}catch(e){}
-            const input=document.getElementById('mkExtraInput');
-            if(input) input.value=did;
-            const old=div.textContent; div.textContent='Copied!';
-            setTimeout(()=>div.textContent=old,1000);
-          };
-          box.appendChild(div);
-        });
-      } else {
-        box.innerHTML='<div style="font-size:11px; color:var(--text-dim); text-align:center; padding:20px 10px;">No requests yet</div>';
-      }
-    }
-    renderPendingComing();
-  });
-}catch(e){ console.warn('deviceRequests listen', e); }
-
-
+    // --- POPULATE DEVICE ID LIST FOR MASTER KEYS FROM DEVICEREQUESTS ---
+    onValue(ref(db, 'deviceRequests'), (snap) => {
+        const box = document.getElementById('deviceRequestsBox');
+        if(!box) return;
+        box.innerHTML = '';
+        if(snap.exists()){
+            const reqs = snap.val();
+            const sorted = Object.values(reqs).sort((a,b) => b.time - a.time);
+            const seen = new Set();
+            
+            sorted.forEach(req => {
+                if (!seen.has(req.deviceId)) {
+                    seen.add(req.deviceId);
+                    const div = document.createElement('div');
+                    div.className = 'device-id-item';
+                    div.textContent = req.deviceId;
+                    div.title = "Requested: " + new Date(req.time).toLocaleString();
+                    div.onclick = () => {
+                        navigator.clipboard.writeText(req.deviceId);
+                        const input = document.getElementById('mkExtraInput');
+                        if(input) input.value = req.deviceId; // Auto-fill the input
+                        const old = div.textContent;
+                        div.textContent = 'Copied!';
+                        setTimeout(() => div.textContent = old, 1000);
+                    };
+                    box.appendChild(div);
+                }
+            });
+        } else {
+            box.innerHTML = '<div style="font-size:11px; color:var(--text-dim); text-align:center; padding:20px 10px;">No requests yet</div>';
+        }
+    });
 
     // --- TAB SWITCHER FOR GUIDE MODAL ---
     window.switchGuideTab = function(tabName, el) {
@@ -3013,12 +2904,6 @@ window.downloadSpecificFile = async function(fileId, btnElement) {
         if (bannedCount === 0 && bannedListDiv) bannedListDiv.innerHTML = getSkeletonHTML();
         if (liveCount === 0 && liveListDiv) liveListDiv.innerHTML = '<div style="color:var(--text-dim);padding:30px;text-align:center;">No users with a live key right now</div>';
 
-        try{
-          const map={};
-          users.forEach(u=>{ if(u&&u.id) map[u.id]=u; });
-          rebuildRegisteredIdSet(map);
-          renderPendingComing();
-        }catch(e){}
         document.getElementById('stat-total').innerText = users.length;
         document.getElementById('stat-active').innerText = registeredCount;
         document.getElementById('stat-banned').innerText = bannedCount;
